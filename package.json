@@ -1,0 +1,23 @@
+{
+  "name": "@o2ter/lang-vector",
+  "version": "1.0.0",
+  "main": "dist/index",
+  "module": "dist/index",
+  "types": "dist/index",
+  "files": [
+    "dist/*"
+  ],
+  "repository": "https://github.com/o2ter/LangVector.git",
+  "author": "Susan Cheng <susan.doggie@gmail.com>",
+  "license": "MIT",
+  "scripts": {
+    "download": "./scripts/download",
+    "convert": "./scripts/convert",
+    "make_convertor": "./scripts/make_convertor"
+  },
+  "dependencies": {
+    "lodash": "^4.17.21",
+    "mupdf": "^0.2.2",
+    "node-llama-cpp": "^3.0.0-beta.36"
+  }
+}

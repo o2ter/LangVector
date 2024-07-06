@@ -1,0 +1,33 @@
+#!/bin/bash
+set -e
+
+SCRIPT_DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )"
+
+cd $SCRIPT_DIR
+cd ../
+
+LIST=(
+  # meta-llama/Meta-Llama-3-8B
+  # meta-llama/Meta-Llama-3-70B
+  Trelis/Meta-Llama-3-8B-Instruct-function-calling
+  # Trelis/Meta-Llama-3-70B-Instruct-function-calling
+)
+
+OUTTYPE=f16
+QUANTITY=(
+  q5_k_m
+)
+
+for SOURCE in "${LIST[@]}"; do
+
+  if [ ! -f "./models/${SOURCE}/ggml-model-${OUTTYPE}.gguf" ]; then
+    python3 llama.cpp/convert_hf_to_gguf.py --outtype ${OUTTYPE} ./models/${SOURCE}
+  fi
+
+  for q in "${QUANTITY[@]}"; do
+    if [ ! -f "./models/${SOURCE}/ggml-model-${q}.gguf" ]; then
+      llama.cpp/llama-quantize ./models/${SOURCE}/ggml-model-f16.gguf ./models/${SOURCE}/ggml-model-${q}.gguf ${q}
+    fi
+  done
+
+done

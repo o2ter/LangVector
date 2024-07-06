@@ -1,0 +1,19 @@
+#!/bin/bash
+set -e
+
+SCRIPT_DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )"
+
+cd $SCRIPT_DIR
+cd ../
+
+LIST=(
+  # meta-llama/Meta-Llama-3-8B
+  # meta-llama/Meta-Llama-3-70B
+  DavidAU/Meta-Llama-3-8B-Instruct-function-calling-Q8_0-GGUF
+  Trelis/Meta-Llama-3-8B-Instruct-function-calling
+  # Trelis/Meta-Llama-3-70B-Instruct-function-calling
+)
+
+for SOURCE in "${LIST[@]}"; do
+  huggingface-cli download ${SOURCE} --local-dir ./models/${SOURCE}
+done
