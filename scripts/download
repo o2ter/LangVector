@@ -9,7 +9,6 @@ cd ../
 LIST=(
   # meta-llama/Meta-Llama-3-8B
   # meta-llama/Meta-Llama-3-70B
-  DavidAU/Meta-Llama-3-8B-Instruct-function-calling-Q8_0-GGUF
   Trelis/Meta-Llama-3-8B-Instruct-function-calling
   # Trelis/Meta-Llama-3-70B-Instruct-function-calling
 )
