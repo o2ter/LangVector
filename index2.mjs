@@ -38,10 +38,10 @@ const options = {
   documentFunctionParams: true,
   functions: {
     datetime: defineChatSessionFunction({
-      description: "Get current ISO datetime",
+      description: "Get current datetime",
       handler() {
         console.log('function called');
-        return (new Date()).toISOString();
+        return new Date();
       }
     }),
     random: defineChatSessionFunction({
