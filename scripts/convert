@@ -15,9 +15,10 @@ LIST=(
 
 OUTTYPE=f16
 QUANTITY=(
+  q3_k_m
   # q4_k_s
   # q4_k_m
-  q5_k_m
+  # q5_k_m
 )
 
 for SOURCE in "${LIST[@]}"; do

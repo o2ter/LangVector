@@ -7,7 +7,7 @@ const __dirname = path.dirname(fileURLToPath(import.meta.url));
 
 const llama = await getLlama();
 const model = await llama.loadModel({
-  modelPath: path.join(__dirname, 'models/meta-llama/Meta-Llama-3-8B/ggml-model-q5_k_m.gguf')
+  modelPath: path.join(__dirname, 'models/meta-llama/Meta-Llama-3-8B/ggml-model-q3_k_m.gguf')
 });
 
 console.log(`systemInfo: ${llama.systemInfo}`);
@@ -42,6 +42,7 @@ for (const question of questions) {
 
   const ans = await session.prompt(question, {
     ...options,
+    temperature: 0.2,
     onToken: (token) => {
       cache.push(...token)
       console.log(model.detokenize(cache, true))
