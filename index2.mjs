@@ -58,3 +58,5 @@ for (const question of questions) {
 
   console.log("AI: ", ans);
 }
+
+console.log(model.detokenize(session.sequence.contextTokens, true))
