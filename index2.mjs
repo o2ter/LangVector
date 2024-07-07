@@ -66,6 +66,7 @@ const questions = [
   'Hi there, how are you?',
   'Give me a random number between 1 to 9',
   'What\'s the date today',
+  'What\'s the time now',
 ];
 
 for (const question of questions) {
