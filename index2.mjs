@@ -26,6 +26,7 @@ const session = new LlamaChatSession({
 });
 
 const options = {
+  documentFunctionParams: true,
   functions: {
     random: defineChatSessionFunction({
       description: "Generates a GGN",
@@ -64,6 +65,7 @@ for (const question of questions) {
       frequencyPenalty: 0.2,
       presencePenalty: 0.2,
     },
+    maxTokens: 100,
     onToken: (token) => {
       cache.push(...token)
       console.log(model.detokenize(cache, true))
