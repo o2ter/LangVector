@@ -12,7 +12,7 @@ const __dirname = path.dirname(fileURLToPath(import.meta.url));
 
 const llama = await getLlama();
 const model = await llama.loadModel({
-  modelPath: path.join(__dirname, 'models/meta-llama/Meta-Llama-3-8B/ggml-model-q3_k_m.gguf')
+  modelPath: path.join(__dirname, 'models/meta-llama/Meta-Llama-3-8B-Instruct/ggml-model-q3_k_m.gguf')
 });
 
 console.log(`systemInfo: ${llama.systemInfo}`);
@@ -22,7 +22,7 @@ console.log(`GPU Devices: ${await llama.getGpuDeviceNames()}`);
 const context = await model.createContext();
 const session = new LlamaChatSession({
   contextSequence: context.getSequence(),
-  // chatWrapper: new Llama3ChatWrapper(),
+  chatWrapper: new Llama3ChatWrapper(),
 });
 
 const options = {

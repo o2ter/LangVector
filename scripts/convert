@@ -7,8 +7,8 @@ cd $SCRIPT_DIR
 cd ../
 
 LIST=(
-  meta-llama/Meta-Llama-3-8B
-  # meta-llama/Meta-Llama-3-70B
+  meta-llama/Meta-Llama-3-8B-Instruct
+  # meta-llama/Meta-Llama-3-70B-Instruct
   # Trelis/Meta-Llama-3-8B-Instruct-function-calling
   # Trelis/Meta-Llama-3-70B-Instruct-function-calling
 )
