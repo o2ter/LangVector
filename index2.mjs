@@ -28,6 +28,13 @@ const session = new LlamaChatSession({
 const options = {
   documentFunctionParams: true,
   functions: {
+    datetime: defineChatSessionFunction({
+      description: "Get current ISO datetime",
+      handler() {
+        console.log('function called');
+        return (new Date()).toISOString();
+      }
+    }),
     random: defineChatSessionFunction({
       description: "Generates a random number",
       params: {
@@ -49,6 +56,7 @@ const options = {
 const questions = [
   'Hi there, how are you?',
   'Give me a random number between 1 to 9',
+  'What\'s the date today',
 ];
 
 for (const question of questions) {
