@@ -1,3 +1,4 @@
+import _ from "lodash";
 import * as PDF from 'mupdf';
 import { fileURLToPath } from "url";
 import path from "path";
@@ -19,10 +20,18 @@ console.log(`systemInfo: ${llama.systemInfo}`);
 console.log(`GPU: ${llama.gpu}`);
 console.log(`GPU Devices: ${await llama.getGpuDeviceNames()}`);
 
+class MyChatWrapper extends Llama3ChatWrapper {
+  
+  generateAvailableFunctionsSystemText(availableFunctions, { documentParams = true }) {
+    const result = super.generateAvailableFunctionsSystemText(availableFunctions, { documentParams });
+    return result.mapValues(s => _.isString(s) ? s.replace('Note that the || prefix is mandatory', 'Note that the ||call: prefix is mandatory') : s);
+  }
+}
+
 const context = await model.createContext();
 const session = new LlamaChatSession({
   contextSequence: context.getSequence(),
-  chatWrapper: new Llama3ChatWrapper(),
+  chatWrapper: new MyChatWrapper(),
 });
 
 const options = {
