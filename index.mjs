@@ -7,7 +7,7 @@ const __dirname = path.dirname(fileURLToPath(import.meta.url));
 
 const llama = await getLlama();
 const model = await llama.loadModel({
-  modelPath: path.join(__dirname, 'models/Trelis/Meta-Llama-3-8B-Instruct-function-calling/ggml-model-q5_k_m.gguf')
+  modelPath: path.join(__dirname, 'models/meta-llama/Meta-Llama-3-8B/ggml-model-q5_k_m.gguf')
 });
 
 const embeddingContext = await model.createEmbeddingContext();
