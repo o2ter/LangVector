@@ -22,8 +22,9 @@ const session = new LlamaChatSession({
 const options = {
   functions: {
     random: defineChatSessionFunction({
-      description: "Generates a random number",
+      description: "Generates a GG number",
       handler() {
+        console.log('function called');
         return Math.random();
       }
     })
@@ -32,7 +33,7 @@ const options = {
 
 const questions = [
   'Hi there, how are you?',
-  'Give me a random number',
+  'Give me a GG number',
 ];
 
 for (const question of questions) {
@@ -45,7 +46,7 @@ for (const question of questions) {
     // minP: 0.05,
     // topK: 5,
     topP: 0.75,
-    temperature: 0.8,
+    temperature: 0.5,
     onToken: (token) => {
       cache.push(...token)
       console.log(model.detokenize(cache, true))
