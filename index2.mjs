@@ -24,7 +24,6 @@ const options = {
     random: defineChatSessionFunction({
       description: "Generates a random number",
       handler() {
-        console.log('check random called')
         return Math.random();
       }
     })
