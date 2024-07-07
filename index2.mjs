@@ -40,7 +40,7 @@ for (const question of questions) {
 
   console.log("User: " + question);
 
-  const ans = await session.prompt(question, {
+  const ans = await session.promptWithMeta(question, {
     ...options,
     temperature: 0.8,
     onToken: (token) => {
@@ -49,5 +49,5 @@ for (const question of questions) {
     }
   });
 
-  console.log("AI: " + ans);
+  console.log("AI: ", ans);
 }
