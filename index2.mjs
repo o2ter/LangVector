@@ -42,7 +42,7 @@ for (const question of questions) {
 
   const ans = await session.prompt(question, {
     ...options,
-    temperature: 0.2,
+    temperature: 0.8,
     onToken: (token) => {
       cache.push(...token)
       console.log(model.detokenize(cache, true))
