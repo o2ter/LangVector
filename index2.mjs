@@ -22,7 +22,7 @@ const session = new LlamaChatSession({
 const options = {
   functions: {
     random: defineChatSessionFunction({
-      description: "Generates a GG number",
+      description: "Generates a GGN",
       handler() {
         console.log('function called');
         return Math.random();
@@ -33,7 +33,7 @@ const options = {
 
 const questions = [
   'Hi there, how are you?',
-  'Give me a GG number',
+  'Give me a GGN',
 ];
 
 for (const question of questions) {
@@ -43,10 +43,13 @@ for (const question of questions) {
 
   const ans = await session.promptWithMeta(question, {
     ...options,
-    // minP: 0.05,
-    // topK: 5,
+    topK: 40,
     topP: 0.75,
-    temperature: 0.5,
+    temperature: 0.8,
+    repeatPenalty: {
+      frequencyPenalty: 0.2,
+      presencePenalty: 0.2,
+    },
     onToken: (token) => {
       cache.push(...token)
       console.log(model.detokenize(cache, true))
