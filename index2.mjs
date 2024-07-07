@@ -29,7 +29,7 @@ const options = {
   documentFunctionParams: true,
   functions: {
     random: defineChatSessionFunction({
-      description: "Generates a GGG",
+      description: "Generates a random number",
       params: {
         type: 'object',
         properties: {
@@ -48,7 +48,7 @@ const options = {
 
 const questions = [
   'Hi there, how are you?',
-  'Give me a GGG between 1 to 9',
+  'Give me a random number between 1 to 9',
 ];
 
 for (const question of questions) {
