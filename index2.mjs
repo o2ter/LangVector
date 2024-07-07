@@ -10,9 +10,9 @@ const model = await llama.loadModel({
   modelPath: path.join(__dirname, 'models/meta-llama/Meta-Llama-3-8B/ggml-model-q5_k_m.gguf')
 });
 
-console.log(`systemInfo: ${llama.systemInfo}`)
-console.log(`GPU: ${llama.gpu}`)
-console.log(`GPU Devices: ${llama.getGpuDeviceNames()}`)
+console.log(`systemInfo: ${llama.systemInfo}`);
+console.log(`GPU: ${llama.gpu}`);
+console.log(`GPU Devices: ${await llama.getGpuDeviceNames()}`);
 
 const context = await model.createContext();
 const session = new LlamaChatSession({
