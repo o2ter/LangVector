@@ -42,7 +42,9 @@ for (const question of questions) {
 
   const ans = await session.promptWithMeta(question, {
     ...options,
-    minP: 0.05,
+    // minP: 0.05,
+    // topK: 5,
+    topP: 0.75,
     temperature: 0.8,
     onToken: (token) => {
       cache.push(...token)
