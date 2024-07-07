@@ -1,7 +1,12 @@
 import * as PDF from 'mupdf';
 import { fileURLToPath } from "url";
 import path from "path";
-import { getLlama, LlamaChatSession, defineChatSessionFunction } from 'node-llama-cpp';
+import {
+  getLlama,
+  LlamaChatSession,
+  defineChatSessionFunction,
+  Llama3ChatWrapper,
+} from 'node-llama-cpp';
 
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
 
@@ -16,7 +21,8 @@ console.log(`GPU Devices: ${await llama.getGpuDeviceNames()}`);
 
 const context = await model.createContext();
 const session = new LlamaChatSession({
-  contextSequence: context.getSequence()
+  contextSequence: context.getSequence(),
+  // chatWrapper: new Llama3ChatWrapper(),
 });
 
 const options = {
