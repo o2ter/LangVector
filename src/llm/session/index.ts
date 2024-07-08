@@ -25,9 +25,11 @@
 
 import _ from 'lodash';
 import { LLMContext } from '../context';
+import { LLMDevice } from '../device';
+import { LLMModel } from '../model';
 import { ContextTokensDeleteRange, Token } from '../plugins/llama-cpp';
 
-export abstract class LLMSession<C extends LLMContext<any>> {
+export abstract class LLMSession<D extends LLMDevice<any>, M extends LLMModel<D, any>, C extends LLMContext<D, M>> {
 
   protected _context: C;
 

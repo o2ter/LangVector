@@ -24,6 +24,8 @@
 //
 
 import { LlamaContext } from '../context/llama';
+import { LlamaDevice } from '../device/llama';
+import { LlamaModel } from '../model/llama';
 import {
   LlamaModel as _LlamaModel,
   ChatHistoryItem,
@@ -38,7 +40,7 @@ import {
 } from '../plugins/llama-cpp';
 import { LLMSession } from './index';
 
-export class LlamaSession extends LLMSession<LlamaContext> {
+export class LlamaSession extends LLMSession<LlamaDevice, LlamaModel, LlamaContext> {
 
   private _seq: LlamaContextSequence;
   private _chat?: LlamaChatSession;

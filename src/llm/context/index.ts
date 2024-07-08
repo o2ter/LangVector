@@ -26,8 +26,9 @@
 import _ from 'lodash';
 import { LLMModel } from '../model';
 import { LlamaEmbedding, Token } from '../plugins/llama-cpp';
+import { LLMDevice } from '../device';
 
-export abstract class LLMContext<M extends LLMModel<any, any>> {
+export abstract class LLMContext<D extends LLMDevice<any>, M extends LLMModel<D, any>> {
 
   protected _model: M;
 

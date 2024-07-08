@@ -23,6 +23,7 @@
 //  THE SOFTWARE.
 //
 
+import { LlamaDevice } from '../device/llama';
 import { LlamaModel } from '../model/llama';
 import {
   LlamaModel as _LlamaModel,
@@ -36,7 +37,7 @@ import {
 import { LlamaSession } from '../session/llama';
 import { LLMContext } from './index';
 
-export class LlamaContext extends LLMContext<LlamaModel> {
+export class LlamaContext extends LLMContext<LlamaDevice, LlamaModel> {
 
   private _pool: _LlamaContext[] = [];
   private _embedding?: _LlamaEmbeddingContext;
