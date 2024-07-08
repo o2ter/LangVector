@@ -40,7 +40,7 @@ export default async (app: Server, env: Record<string, any>) => {
     proto: Proto,
   }));
 
-  //const device = await LLMDevice.llama();
+  const device = await LLMDevice.llama();
 
   const io = app.socket();
 
