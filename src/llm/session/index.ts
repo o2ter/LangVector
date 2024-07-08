@@ -25,6 +25,7 @@
 
 import _ from 'lodash';
 import { LLMContext } from '../context';
+import { ContextTokensDeleteRange, Token } from '../plugins/llama-cpp';
 
 export abstract class LLMSession<C extends LLMContext<any>> {
 
@@ -37,4 +38,9 @@ export abstract class LLMSession<C extends LLMContext<any>> {
   abstract dispose(): Promise<void>;
   abstract get disposed(): boolean;
 
+  abstract get nextTokenIndex(): number;
+  abstract get tokens(): Token[];
+
+  abstract clearHistory(): Promise<void>;
+  abstract eraseContextTokenRanges(ranges: ContextTokensDeleteRange[]): Promise<void>;
 }
