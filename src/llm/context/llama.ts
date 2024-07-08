@@ -32,6 +32,7 @@ import {
   LlamaText,
   Token,
 } from '../plugins/llama-cpp';
+import { LlamaSession } from '../session/llama';
 import { LLMContext } from './index';
 
 export class LlamaContext extends LLMContext<LlamaModel> {
@@ -64,5 +65,15 @@ export class LlamaContext extends LLMContext<LlamaModel> {
   async getEmbeddingFor(input: Token[] | string | LlamaText) {
     this._embedding = this._embedding ?? await this._model._createEmbeddingContext(this._options);
     return this._embedding.getEmbeddingFor(input);
+  }
+
+  async createSession(options?: Parameters<_LlamaContext['getSequence']>[0]) {
+    for (const ctx of this._pool) {
+      if (ctx.sequencesLeft === 0) continue;
+      return new LlamaSession(this, ctx.getSequence(options));
+    }
+    const ctx = await this._model._createContext(this._options);
+    this._pool.push(ctx);
+    return new LlamaSession(this, ctx.getSequence(options));
   }
 }

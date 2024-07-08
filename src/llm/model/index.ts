@@ -37,7 +37,6 @@ export abstract class LLMModel<D extends LLMDevice<any>, M> {
   }
 
   abstract dispose(): Promise<void>;
-
   abstract get disposed(): boolean;
 
 }

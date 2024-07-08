@@ -1,5 +1,5 @@
 //
-//  index.ts
+//  llama.ts
 //
 //  The MIT License
 //  Copyright (c) 2021 - 2024 O2ter Limited. All rights reserved.
@@ -23,20 +23,28 @@
 //  THE SOFTWARE.
 //
 
-import _ from 'lodash';
-import { LLMModel } from '../model';
-import { LlamaEmbedding, Token } from '../plugins/llama-cpp';
+import { LlamaContext } from '../context/llama';
+import {
+  LlamaModel as _LlamaModel,
+  LlamaContextSequence,
+} from '../plugins/llama-cpp';
+import { LLMSession } from './index';
 
-export abstract class LLMContext<M extends LLMModel<any, any>> {
+export class LlamaSession extends LLMSession<LlamaContext> {
 
-  protected _model: M;
+  private _seq: LlamaContextSequence;
 
-  constructor(model: M) {
-    this._model = model;
+  constructor(context: LlamaContext, seq: LlamaContextSequence) {
+    super(context);
+    this._seq = seq;
   }
 
-  abstract dispose(): Promise<void>;
-  abstract get disposed(): boolean;
+  async dispose() {
+    if (!this._seq.disposed) await this._seq.dispose();
+  }
 
-  abstract getEmbeddingFor(input: Token[] | string): Promise<LlamaEmbedding>;
+  get disposed() {
+    return this._seq.disposed;
+  }
+
 }

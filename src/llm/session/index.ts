@@ -24,19 +24,17 @@
 //
 
 import _ from 'lodash';
-import { LLMModel } from '../model';
-import { LlamaEmbedding, Token } from '../plugins/llama-cpp';
+import { LLMContext } from '../context';
 
-export abstract class LLMContext<M extends LLMModel<any, any>> {
+export abstract class LLMSession<C extends LLMContext<any>> {
 
-  protected _model: M;
+  protected _context: C;
 
-  constructor(model: M) {
-    this._model = model;
+  constructor(context: C) {
+    this._context = context;
   }
 
   abstract dispose(): Promise<void>;
   abstract get disposed(): boolean;
 
-  abstract getEmbeddingFor(input: Token[] | string): Promise<LlamaEmbedding>;
 }
