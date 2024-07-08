@@ -1,5 +1,6 @@
 
 const path = require('path');
+const webpack = require('webpack');
 
 module.exports = (env, argv) => ({
   output: path.join(__dirname, 'test/dist'),
@@ -9,5 +10,14 @@ module.exports = (env, argv) => ({
       uri: '/',
     },
   },
-  serverEntry: './test/server/index.ts'
+  serverEntry: './test/server/index.ts',
+  options: {
+    plugins: [
+      new webpack.IgnorePlugin({ resourceRegExp: /^pg-native$/ }),
+    ],
+    externals: {
+      'mupdf': 'commonjs2 mupdf',
+      'node-llama-cpp': 'commonjs2 node-llama-cpp',
+    },
+  },
 })
