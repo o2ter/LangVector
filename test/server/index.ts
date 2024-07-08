@@ -46,8 +46,6 @@ export default async (app: Server, env: Record<string, any>) => {
 
   io.on('connection', async (socket) => {
 
-    console.log(socket)
-
     socket.on('disconnect', () => {
       
     });
