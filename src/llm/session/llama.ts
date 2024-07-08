@@ -131,7 +131,7 @@ export class LlamaSession extends LLMSession<LlamaDevice, LlamaModel, LlamaConte
   set chatHistory(chatHistory: ChatHistoryItem[]) {
     this.#chat.setChatHistory(chatHistory);
   }
-  getLastEvaluationContextWindow() {
+  get lastEvaluationContextWindow() {
     return this.#chat.getLastEvaluationContextWindow();
   }
 }
