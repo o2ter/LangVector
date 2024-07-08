@@ -68,13 +68,17 @@ export class LlamaContext extends LLMContext<LlamaModel> {
     return this._embedding.getEmbeddingFor(input);
   }
 
-  async createSession(options?: Omit<LlamaChatSessionOptions, 'contextSequence'>) {
+  async createSession(
+    options?: Parameters<_LlamaContext['getSequence']>[0] & {
+      chatOptions?: Omit<LlamaChatSessionOptions, 'contextSequence'>;
+    }
+  ) {
     for (const ctx of this._pool) {
       if (ctx.sequencesLeft === 0) continue;
-      return new LlamaSession(this, ctx.getSequence(), options ?? {});
+      return new LlamaSession(this, ctx.getSequence(options), options?.chatOptions ?? {});
     }
     const ctx = await this._model._createContext(this._options);
     this._pool.push(ctx);
-    return new LlamaSession(this, ctx.getSequence(), options ?? {});
+    return new LlamaSession(this, ctx.getSequence(options), options?.chatOptions ?? {});
   }
 }

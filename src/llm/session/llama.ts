@@ -26,6 +26,7 @@
 import { LlamaContext } from '../context/llama';
 import {
   LlamaModel as _LlamaModel,
+  LlamaChatSession,
   LlamaChatSessionOptions,
   LlamaContextSequence,
 } from '../plugins/llama-cpp';
@@ -34,6 +35,7 @@ import { LLMSession } from './index';
 export class LlamaSession extends LLMSession<LlamaContext> {
 
   private _seq: LlamaContextSequence;
+  private _chat?: LlamaChatSession;
   private _options: Omit<LlamaChatSessionOptions, 'contextSequence'>;
 
   constructor(
