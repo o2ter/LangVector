@@ -72,6 +72,10 @@ export default async (app: Server, env: Record<string, any>) => {
 
     socket.on('disconnect', () => {
 
+      if (model) {
+        model.dispose();
+        model = null;
+      }
     });
   });
 
