@@ -30,7 +30,7 @@ import { LLMDevice } from './index';
 export class LlamaDevice extends LLMDevice<Llama> {
 
   async dispose() {
-    await this._device.dispose();
+    if (!this._device.disposed) await this._device.dispose();
   }
 
   get disposed() {

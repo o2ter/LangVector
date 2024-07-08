@@ -36,7 +36,7 @@ import { LLMContext } from './index';
 
 export class LlamaContext extends LLMContext<LlamaModel> {
 
-  private _ctx?: _LlamaContext;
+  private _pool: _LlamaContext[] = [];
   private _embedding?: _LlamaEmbeddingContext;
 
   private _options?: LlamaContextOptions;
@@ -47,13 +47,17 @@ export class LlamaContext extends LLMContext<LlamaModel> {
   }
 
   async dispose() {
-    if (this._ctx && !this._ctx.disposed) await this._ctx.dispose();
     if (this._embedding && !this._embedding.disposed) await this._embedding.dispose();
+    for (const ctx of this._pool) {
+      if (!ctx.disposed) await ctx.dispose();
+    }
   }
 
   get disposed() {
-    if (this._ctx && !this._ctx.disposed) return false;
     if (this._embedding && !this._embedding.disposed) return false;
+    for (const ctx of this._pool) {
+      if (!ctx.disposed) return false;
+    }
     return true;
   }
 

@@ -35,7 +35,7 @@ import { LLMModel } from './index';
 export class LlamaModel extends LLMModel<LlamaDevice, _LlamaModel> {
 
   async dispose() {
-    await this._model.dispose();
+    if (!this._model.disposed) await this._model.dispose();
   }
 
   get disposed() {
