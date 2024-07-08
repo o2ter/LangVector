@@ -27,13 +27,10 @@ import { LlamaContext } from '../context/llama';
 import { LlamaModel as _LlamaModel } from '../plugins/llama-cpp';
 import { LLMModel } from './index';
 
-export class LlamaModel extends LLMModel {
-
-  private _model: _LlamaModel;
+export class LlamaModel extends LLMModel<LlamaContext, _LlamaModel> {
 
   constructor(ctx: LlamaContext, model: _LlamaModel) {
-    super(ctx);
-    this._model = model;
+    super(ctx, model);
   }
 
   async dispose() {

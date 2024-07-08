@@ -27,13 +27,10 @@ import { LlamaModel } from '../model/llama';
 import { Llama, LlamaModelOptions, LlamaModel as _LlamaModel } from '../plugins/llama-cpp';
 import { LLMContext } from './index';
 
-export class LlamaContext extends LLMContext {
+export class LlamaContext extends LLMContext<Llama> {
 
-  private _ctx: Awaited<Llama>;
-
-  constructor(ctx: Awaited<Llama>) {
-    super();
-    this._ctx = ctx;
+  constructor(ctx: Llama) {
+    super(ctx);
   }
 
   async dispose() {

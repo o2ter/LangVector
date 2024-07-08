@@ -24,14 +24,16 @@
 //
 
 import _ from 'lodash';
-import { LlamaContext } from '../context/llama';
+import { LLMContext } from '../context';
 
-export abstract class LLMModel {
+export abstract class LLMModel<C extends LLMContext<any>, M> {
 
-  private _ctx: LlamaContext;
+  protected _ctx: C;
+  protected _model: M;
 
-  constructor(ctx: LlamaContext) {
+  constructor(ctx: C, model: M) {
     this._ctx = ctx;
+    this._model = model;
   }
 
   abstract dispose(): Promise<void>;

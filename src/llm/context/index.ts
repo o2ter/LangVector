@@ -27,7 +27,13 @@ import _ from 'lodash';
 import { getLlama, LlamaOptions } from '../plugins/llama-cpp';
 import { LlamaContext } from './llama';
 
-export abstract class LLMContext {
+export abstract class LLMContext<C> {
+
+  protected _ctx: C;
+
+  constructor(ctx: C) {
+    this._ctx = ctx;
+  }
 
   abstract dispose(): Promise<void>;
   abstract get disposed(): boolean;
