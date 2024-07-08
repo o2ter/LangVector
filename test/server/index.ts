@@ -24,12 +24,25 @@
 //
 
 import _ from 'lodash';
+import path from 'path';
+import fs from 'fs/promises';
 import { Server } from '@o2ter/server-js';
 import ProtoRoute from 'proto.io';
 import { Proto } from './proto';
 import './cloud/main';
 
 import { LLMDevice } from '../../src';
+
+const walkDirAsync = async function* (dir: string): AsyncGenerator<string, void> {
+  const files = await fs.readdir(dir, { withFileTypes: true });
+  for (const file of files) {
+    if (file.isDirectory()) {
+      yield* walkDirAsync(path.join(dir, file.name));
+    } else {
+      yield path.join(dir, file.name);
+    }
+  }
+}
 
 /* eslint-disable no-param-reassign */
 export default async (app: Server, env: Record<string, any>) => {
@@ -40,14 +53,25 @@ export default async (app: Server, env: Record<string, any>) => {
     proto: Proto,
   }));
 
+  let models = [];
+  try {
+    for await (const file of walkDirAsync(path.join(__dirname, '../../models'))) {
+      if (file.endsWith('.gguf')) {
+        models.push(file);
+      }
+    }
+  } catch { }
+
   const device = await LLMDevice.llama();
 
-  const io = app.socket();
+  app.socket().on('connection', async (socket) => {
 
-  io.on('connection', async (socket) => {
+    let model = models.length ? await device.loadModel({
+      modelPath: models[0]
+    }) : null;
 
     socket.on('disconnect', () => {
-      
+
     });
   });
 
