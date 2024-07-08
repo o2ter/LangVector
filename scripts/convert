@@ -21,10 +21,15 @@ QUANTITY=(
   # q5_k_m
 )
 
+PYTHON=$(which python3)
+if [ -f "${HOMEBREW_PREFIX}/bin/python3" ]; then
+  PYTHON="${HOMEBREW_PREFIX}/bin/python3"
+fi
+
 for SOURCE in "${LIST[@]}"; do
 
   if [ ! -f "./models/${SOURCE}/ggml-model-${OUTTYPE}.gguf" ]; then
-    llama.cpp/convert_hf_to_gguf.py ./.cache/${SOURCE} --outtype ${OUTTYPE} --outfile ./models/${SOURCE}/ggml-model-${OUTTYPE}.gguf
+    ${PYTHON} llama.cpp/convert_hf_to_gguf.py ./.cache/${SOURCE} --outtype ${OUTTYPE} --outfile ./models/${SOURCE}/ggml-model-${OUTTYPE}.gguf
   fi
 
   for q in "${QUANTITY[@]}"; do
