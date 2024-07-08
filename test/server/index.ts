@@ -29,6 +29,8 @@ import ProtoRoute from 'proto.io';
 import { Proto } from './proto';
 import './cloud/main';
 
+import { LLMDevice } from '../../src';
+
 /* eslint-disable no-param-reassign */
 export default async (app: Server, env: Record<string, any>) => {
 
@@ -37,4 +39,18 @@ export default async (app: Server, env: Record<string, any>) => {
   app.express().use('/proto', await ProtoRoute({
     proto: Proto,
   }));
+
+  //const device = await LLMDevice.llama();
+
+  const io = app.socket();
+
+  io.on('connection', async (socket) => {
+
+    console.log(socket)
+
+    socket.on('disconnect', () => {
+      
+    });
+  });
+
 }

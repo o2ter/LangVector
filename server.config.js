@@ -9,5 +9,5 @@ module.exports = (env, argv) => ({
       uri: '/',
     },
   },
-  serverEntry: './test/server/index.js'
+  serverEntry: './test/server/index.ts'
 })

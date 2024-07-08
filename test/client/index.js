@@ -24,7 +24,23 @@
 //
 
 import _ from 'lodash';
-import { env } from '@o2ter/react-booster/src/route/client';
+import React from 'react';
+import { io } from 'socket.io-client';
 import './css/main.scss';
 
-export default () => <div />;
+export default () => {
+
+  const socket = React.useRef(io()).current;
+
+  React.useEffect(() => {
+
+    socket.on('data', (data) => {
+
+    });
+
+  }, []);
+
+  return (
+    <div />
+  );
+};
