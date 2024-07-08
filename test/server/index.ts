@@ -108,7 +108,6 @@ export default async (app: Server, env: Record<string, any>) => {
     let session = currentModel ? await createSession(currentModel) : null;
 
     const options = {
-      ...defaultOptions,
       minP: 0,
       topK: 40,
       topP: 0.75,
@@ -155,6 +154,7 @@ export default async (app: Server, env: Record<string, any>) => {
       let partial: Token[] = [];
 
       const { responseText } = await _session.prompt(msg, {
+        ...defaultOptions,
         ...options,
         onToken: (token) => {
           partial.push(...token);
