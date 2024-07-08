@@ -29,12 +29,10 @@ import { LLMModel } from './index';
 
 export class LlamaModel extends LLMModel {
 
-  private _ctx: LlamaContext;
   private _model: _LlamaModel;
 
   constructor(ctx: LlamaContext, model: _LlamaModel) {
-    super();
-    this._ctx = ctx;
+    super(ctx);
     this._model = model;
   }
 
