@@ -1,4 +1,4 @@
-import * as PDF from 'mupdf';
+import _ from "lodash";
 import { fileURLToPath } from "url";
 import path from "path";
 import { getLlama } from 'node-llama-cpp';

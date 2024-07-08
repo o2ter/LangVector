@@ -1,5 +1,4 @@
 import _ from "lodash";
-import * as PDF from 'mupdf';
 import { fileURLToPath } from "url";
 import path from "path";
 import {
