@@ -1,5 +1,5 @@
 //
-//  index.js
+//  llama-cpp.js
 //
 //  The MIT License
 //  Copyright (c) 2021 - 2024 O2ter Limited. All rights reserved.
@@ -23,5 +23,4 @@
 //  THE SOFTWARE.
 //
 
-export { PDF } from './pdf';
-export * from './llm';
+export * from 'node-llama-cpp';

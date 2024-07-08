@@ -23,5 +23,4 @@
 //  THE SOFTWARE.
 //
 
-export { PDF } from './pdf';
-export * from './llm';
+export * as PDF from 'mupdf';

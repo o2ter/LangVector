@@ -1,5 +1,5 @@
 //
-//  pdf.ts
+//  index.js
 //
 //  The MIT License
 //  Copyright (c) 2021 - 2024 O2ter Limited. All rights reserved.
@@ -23,4 +23,29 @@
 //  THE SOFTWARE.
 //
 
-export * as PDF from 'mupdf';
+import _ from 'lodash';
+import { getLlama, Llama, LlamaOptions } from './llama-cpp';
+
+export abstract class LLMContext {
+
+  abstract dispose(): Promise<void>;
+
+  static async llama(options?: LlamaOptions) {
+    const ctx = await getLlama(options);
+    return new LlamaContext(ctx);
+  }
+}
+
+class LlamaContext extends LLMContext {
+
+  private _ctx: Awaited<Llama>;
+
+  constructor(ctx: Awaited<Llama>) {
+    super();
+    this._ctx = ctx;
+  }
+
+  async dispose() {
+    await this._ctx.dispose();
+  }
+}
