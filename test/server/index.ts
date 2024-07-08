@@ -124,8 +124,8 @@ export default async (app: Server, env: Record<string, any>) => {
       if (opts.topK) options.topK = opts.topK;
       if (opts.topP) options.topP = opts.topP;
       if (opts.temperature) options.temperature = opts.temperature;
-      if (opts.frequencyPenalty) options.repeatPenalty.frequencyPenalty = opts.frequencyPenalty;
-      if (opts.presencePenalty) options.repeatPenalty.presencePenalty = opts.presencePenalty;
+      if (opts.repeatPenalty?.frequencyPenalty) options.repeatPenalty.frequencyPenalty = opts.repeatPenalty?.frequencyPenalty;
+      if (opts.repeatPenalty?.presencePenalty) options.repeatPenalty.presencePenalty = opts.repeatPenalty?.presencePenalty;
       if (opts.maxTokens) options.maxTokens = opts.maxTokens;
     });
 
@@ -141,6 +141,7 @@ export default async (app: Server, env: Record<string, any>) => {
       socket.emit('response', {
         models,
         currentModel,
+        options,
         history: _session.chatHistory,
         raw: _session.model.detokenize(_session.tokens, true),
       });
@@ -168,10 +169,11 @@ export default async (app: Server, env: Record<string, any>) => {
       socket.emit('response', {
         models,
         currentModel,
-        partial: false,
-        responseText,
+        options,
         history: _session.chatHistory,
         raw: _session.model.detokenize(_session.tokens, true),
+        partial: false,
+        responseText,
       });
     });
 
