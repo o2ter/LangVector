@@ -26,7 +26,7 @@
 import _ from 'lodash';
 import React from 'react';
 import { io } from 'socket.io-client';
-import { TextInput } from 'react-native';
+import { Button, TextInput } from '@o2ter/react-ui';
 import './css/main.scss';
 
 export default () => {
@@ -58,6 +58,10 @@ export default () => {
       <div className='d-flex flex-column flex-fill'></div>
       <div className='d-flex flex-column flex-fill'>
         <TextInput value={input} onChangeText={setInput} />
+        <Button title='Send' onPress={() => {
+          socket.emit('msg', input);
+          setInput('');
+        }} />
       </div>
     </div>
   );
