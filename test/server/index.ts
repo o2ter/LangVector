@@ -118,7 +118,7 @@ export default async (app: Server, env: Record<string, any>) => {
       maxTokens: 100,
     };
 
-    socket.on('sync', async (msg: string) => {
+    socket.on('sync', () => {
 
       const _session = session;
       if (!_session) return;
