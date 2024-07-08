@@ -25,7 +25,11 @@
 
 import { LlamaContext } from '../context/llama';
 import { LlamaDevice } from '../device/llama';
-import { LlamaModel as _LlamaModel, LlamaContextOptions } from '../plugins/llama-cpp';
+import {
+  LlamaModel as _LlamaModel,
+  LlamaContextOptions,
+  LlamaEmbeddingContextOptions,
+} from '../plugins/llama-cpp';
 import { LLMModel } from './index';
 
 export class LlamaModel extends LLMModel<LlamaDevice, _LlamaModel> {
@@ -40,5 +44,13 @@ export class LlamaModel extends LLMModel<LlamaDevice, _LlamaModel> {
 
   async createContext(options?: LlamaContextOptions) {
     return new LlamaContext(this, options);
+  }
+
+  _createContext(options?: LlamaContextOptions) {
+    return this._model.createContext(options)
+  }
+
+  _createEmbeddingContext(options?: LlamaEmbeddingContextOptions) {
+    return this._model.createEmbeddingContext(options)
   }
 }

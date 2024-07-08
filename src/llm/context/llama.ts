@@ -28,7 +28,9 @@ import {
   LlamaModel as _LlamaModel,
   LlamaContext as _LlamaContext,
   LlamaEmbeddingContext as _LlamaEmbeddingContext,
-  LlamaContextOptions
+  LlamaContextOptions,
+  LlamaText,
+  Token,
 } from '../plugins/llama-cpp';
 import { LLMContext } from './index';
 
@@ -53,5 +55,10 @@ export class LlamaContext extends LLMContext<LlamaModel> {
     if (this._ctx && !this._ctx.disposed) return false;
     if (this._embedding && !this._embedding.disposed) return false;
     return true;
+  }
+
+  async getEmbeddingFor(input: Token[] | string | LlamaText) {
+    this._embedding = this._embedding ?? await this._model._createEmbeddingContext(this._options);
+    return this._embedding.getEmbeddingFor(input);
   }
 }
