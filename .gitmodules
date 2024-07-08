@@ -1,3 +1,4 @@
 [submodule "llama.cpp"]
 	path = packages/llama.cpp
 	url = https://github.com/ggerganov/llama.cpp
+	shallow = true
