@@ -130,9 +130,7 @@ export default async (app: Server, env: Record<string, any>) => {
     });
 
     socket.on('reset', () => {
-      const _session = session;
-      if (!_session) return;
-      _session.clearHistory();
+      session?.clearHistory();
     });
 
     socket.on('sync', () => {
