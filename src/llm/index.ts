@@ -23,4 +23,4 @@
 //  THE SOFTWARE.
 //
 
-export { LLMDevice as LLMContext } from './device';
+export { LLMDevice } from './device';
