@@ -26,3 +26,5 @@
 export { defineChatSessionFunction } from './plugins/llama-cpp';
 export { LLMDevice } from './device';
 export { LLMModel } from './model';
+export { LLMContext } from './context';
+export { LLMSession } from './session';
