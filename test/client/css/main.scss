@@ -1,0 +1,26 @@
+//
+//  main.scss
+//
+//  Copyright (c) 2021 - 2024 O2ter Limited. All rights reserved.
+//
+
+html {
+  display: flex;
+  width: 100%;
+}
+
+body, #root {
+  width: 100%;
+}
+
+body {
+  -webkit-font-smoothing: auto;
+  -moz-osx-font-smoothing: auto;
+  font-smooth: auto;
+}
+
+#root {
+  display: flex;
+  min-height: 100vh;
+  min-height: 100dvh;
+}

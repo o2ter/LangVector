@@ -1,0 +1,30 @@
+#!/bin/bash
+set -e
+
+SCRIPT_DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )"
+
+cd $SCRIPT_DIR
+cd ../
+
+RAND=$(echo $RANDOM | md5 | head -c 16)
+
+export POSTGRES_DATABASE=postgres
+export POSTGRES_USERNAME=o2ter
+export POSTGRES_PASSWORD=o2ter
+
+docker run -d --rm --name postgres_test_db_${RAND} \
+  -p 5432:5432 \
+  -e "POSTGRES_USER=${POSTGRES_USERNAME}" \
+  -e "POSTGRES_PASSWORD=${POSTGRES_PASSWORD}" \
+  -e "POSTGRES_DB=${POSTGRES_DATABASE}" \
+  postgres
+
+function cleanup {
+  docker stop postgres_test_db_${RAND}
+}
+
+trap cleanup EXIT
+
+docker inspect --format="{{if .Config.Healthcheck}}{{print .State.Health.Status}}{{end}}" postgres_test_db_${RAND}
+
+yarn test
