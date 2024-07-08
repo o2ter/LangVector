@@ -68,7 +68,7 @@ export default async (app: Server, env: Record<string, any>) => {
 
   const createSession = async (modelPath: string) => {
     if (contexts[modelPath]) return contexts[modelPath].createSession();
-    const model = await device.loadModel({ modelPath: models[0] });
+    const model = await device.loadModel({ modelPath });
     const context = await model.createContext();
     contexts[modelPath] = context;
     return context.createSession();
