@@ -28,3 +28,4 @@ export { LLMDevice } from './device';
 export { LLMModel } from './model';
 export { LLMContext } from './context';
 export { LLMSession } from './session';
+export { Token } from './plugins/llama-cpp';
