@@ -26,6 +26,9 @@
 import { LlamaContext } from '../context/llama';
 import {
   LlamaModel as _LlamaModel,
+  ChatSessionModelFunctions,
+  LLamaChatCompletePromptOptions,
+  LLamaChatPromptOptions,
   LlamaChatSession,
   LlamaChatSessionOptions,
   LlamaContextSequence,
@@ -50,10 +53,32 @@ export class LlamaSession extends LLMSession<LlamaContext> {
 
   async dispose() {
     if (!this._seq.disposed) await this._seq.dispose();
+    if (this._chat && !this._chat.disposed) await this._chat.dispose();
   }
 
   get disposed() {
+    if (this._chat && !this._chat.disposed) return false;
     return this._seq.disposed;
   }
 
+  async clearHistory() {
+    if (this._chat) this._chat.setChatHistory([]);
+    await this._seq.clearHistory();
+  }
+
+  prompt<const Functions extends ChatSessionModelFunctions | undefined = undefined>(
+    prompt: string,
+    options?: LLamaChatPromptOptions<Functions>
+  ) {
+    this._chat = this._chat ?? new LlamaChatSession({ contextSequence: this._seq, ...this._options });
+    return this._chat.promptWithMeta(prompt, options);
+  }
+
+  completePrompt(
+    prompt: string,
+    options?: LLamaChatCompletePromptOptions
+  ) {
+    this._chat = this._chat ?? new LlamaChatSession({ contextSequence: this._seq, ...this._options });
+    return this._chat.completePromptWithMeta(prompt, options);
+  }
 }
