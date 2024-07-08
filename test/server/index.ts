@@ -66,9 +66,7 @@ export default async (app: Server, env: Record<string, any>) => {
 
   app.socket().on('connection', async (socket) => {
 
-    let model = models.length ? await device.loadModel({
-      modelPath: models[0]
-    }) : null;
+    let model = models.length ? await device.loadModel({ modelPath: models[0] }) : null;
 
     socket.on('disconnect', () => {
 
