@@ -87,17 +87,16 @@ export class LlamaSession extends LLMSession<LlamaContext> {
     return this._seq.evaluateWithoutGeneratingNewTokens(tokens, options);
   }
 
+  get #chat() {
+    this._chat = this._chat ?? new LlamaChatSession({ contextSequence: this._seq, ...this._options });
+    return this._chat;
+  }
+
   prompt<const Functions extends ChatSessionModelFunctions | undefined = undefined>(
     prompt: string,
     options?: LLamaChatPromptOptions<Functions>
   ) {
-    this._chat = this._chat ?? new LlamaChatSession({ contextSequence: this._seq, ...this._options });
-    return this._chat.promptWithMeta(prompt, options);
-  }
-
-  get #chat() {
-    this._chat = this._chat ?? new LlamaChatSession({ contextSequence: this._seq, ...this._options });
-    return this._chat;
+    return this.#chat.promptWithMeta(prompt, options);
   }
 
   completePrompt(
