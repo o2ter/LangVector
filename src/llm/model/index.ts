@@ -41,4 +41,5 @@ export abstract class LLMModel<D extends LLMDevice<any>, M> {
   abstract get disposed(): boolean;
 
   abstract tokenize(text: string): Token[];
+  abstract detokenize(tokens: readonly Token[]): string;
 }
