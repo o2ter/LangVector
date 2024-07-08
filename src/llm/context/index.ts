@@ -24,7 +24,7 @@
 //
 
 import _ from 'lodash';
-import { getLlama, LlamaOptions } from './llama-cpp';
+import { getLlama, LlamaOptions } from '../plugins/llama-cpp';
 import { LlamaContext } from './llama';
 
 export abstract class LLMContext {

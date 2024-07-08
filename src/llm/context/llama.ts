@@ -23,7 +23,7 @@
 //  THE SOFTWARE.
 //
 
-import { Llama } from './llama-cpp';
+import { Llama } from '../plugins/llama-cpp';
 import { LLMContext } from './index';
 
 export class LlamaContext extends LLMContext {
