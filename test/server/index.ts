@@ -31,7 +31,7 @@ import ProtoRoute from 'proto.io';
 import { Proto } from './proto';
 import './cloud/main';
 
-import { LLMDevice } from '../../src';
+import { defineChatSessionFunction, LLMDevice, Token } from '../../src';
 import { LlamaContext } from '../../src/llm/context/llama';
 
 const walkDirAsync = async function* (dir: string): AsyncGenerator<string, void> {
@@ -44,6 +44,34 @@ const walkDirAsync = async function* (dir: string): AsyncGenerator<string, void>
     }
   }
 }
+
+const options = {
+  documentFunctionParams: true,
+  functions: {
+    datetime: defineChatSessionFunction({
+      description: "Get current datetime",
+      handler() {
+        console.log('function called');
+        return new Date();
+      }
+    }),
+    random: defineChatSessionFunction({
+      description: "Generates a random number",
+      params: {
+        type: 'object',
+        properties: {
+          maximum: { type: 'number' },
+          minimum: { type: 'number' },
+        },
+        required: ['maximum', 'minimum'],
+      },
+      handler({ maximum, minimum }) {
+        console.log('function called');
+        return Math.random() * (maximum - minimum) + minimum;
+      }
+    })
+  }
+};
 
 /* eslint-disable no-param-reassign */
 export default async (app: Server, env: Record<string, any>) => {
@@ -80,8 +108,34 @@ export default async (app: Server, env: Record<string, any>) => {
 
     socket.on('msg', async (msg: string) => {
 
-      if (session) {
+      const _session = session;
+      if (_session) {
 
+        let partial: Token[] = [];
+
+        const { responseText } = await _session.prompt(msg, {
+          ...options,
+          topK: 40,
+          topP: 0.75,
+          temperature: 0.8,
+          repeatPenalty: {
+            frequencyPenalty: 0.2,
+            presencePenalty: 0.2,
+          },
+          maxTokens: 100,
+          onToken: (token) => {
+            partial.push(...token);
+            socket.emit('response', {
+              partial: true,
+              responseText: _session.model.detokenize(partial, true),
+            });
+          }
+        });
+
+        socket.emit('response', {
+          partial: false,
+          responseText,
+        });
       }
 
     })
