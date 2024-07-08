@@ -45,7 +45,7 @@ const walkDirAsync = async function* (dir: string): AsyncGenerator<string, void>
   }
 }
 
-const options = {
+const defaultOptions = {
   documentFunctionParams: true,
   functions: {
     datetime: defineChatSessionFunction({
@@ -106,6 +106,18 @@ export default async (app: Server, env: Record<string, any>) => {
 
     let session = models.length ? await createSession(models[0]) : null;
 
+    const options = {
+      ...defaultOptions,
+      topK: 40,
+      topP: 0.75,
+      temperature: 0.8,
+      repeatPenalty: {
+        frequencyPenalty: 0.2,
+        presencePenalty: 0.2,
+      },
+      maxTokens: 100,
+    };
+
     socket.on('msg', async (msg: string) => {
 
       const _session = session;
@@ -115,14 +127,6 @@ export default async (app: Server, env: Record<string, any>) => {
 
         const { responseText } = await _session.prompt(msg, {
           ...options,
-          topK: 40,
-          topP: 0.75,
-          temperature: 0.8,
-          repeatPenalty: {
-            frequencyPenalty: 0.2,
-            presencePenalty: 0.2,
-          },
-          maxTokens: 100,
           onToken: (token) => {
             partial.push(...token);
             socket.emit('response', {
