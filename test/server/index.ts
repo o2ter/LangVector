@@ -108,6 +108,7 @@ export default async (app: Server, env: Record<string, any>) => {
 
     const options = {
       ...defaultOptions,
+      minP: 0,
       topK: 40,
       topP: 0.75,
       temperature: 0.8,
@@ -117,6 +118,16 @@ export default async (app: Server, env: Record<string, any>) => {
       },
       maxTokens: 100,
     };
+
+    socket.on('options', (opts: any) => {
+      if (opts.minP) options.minP = opts.minP;
+      if (opts.topK) options.topK = opts.topK;
+      if (opts.topP) options.topP = opts.topP;
+      if (opts.temperature) options.temperature = opts.temperature;
+      if (opts.frequencyPenalty) options.repeatPenalty.frequencyPenalty = opts.frequencyPenalty;
+      if (opts.presencePenalty) options.repeatPenalty.presencePenalty = opts.presencePenalty;
+      if (opts.maxTokens) options.maxTokens = opts.maxTokens;
+    });
 
     socket.on('sync', () => {
 
