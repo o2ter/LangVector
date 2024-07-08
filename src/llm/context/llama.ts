@@ -40,6 +40,10 @@ export class LlamaContext extends LLMContext {
     await this._ctx.dispose();
   }
 
+  get disposed() {
+    return this._ctx.disposed;
+  }
+
   async loadModel(options: LlamaModelOptions) {
     const model = await this._ctx.loadModel(options);
     return new LlamaModel(this, model);

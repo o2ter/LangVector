@@ -41,4 +41,8 @@ export class LlamaModel extends LLMModel {
   async dispose() {
     await this._model.dispose();
   }
+
+  get disposed() {
+    return this._model.disposed;
+  }
 }

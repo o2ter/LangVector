@@ -30,5 +30,6 @@ import { LlamaModel } from './llama';
 export abstract class LLMModel {
 
   abstract dispose(): Promise<void>;
+  abstract get disposed(): boolean;
 
 }

@@ -30,6 +30,7 @@ import { LlamaContext } from './llama';
 export abstract class LLMContext {
 
   abstract dispose(): Promise<void>;
+  abstract get disposed(): boolean;
 
   static async llama(options?: LlamaOptions) {
     const ctx = await getLlama(options);
