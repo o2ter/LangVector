@@ -129,6 +129,12 @@ export default async (app: Server, env: Record<string, any>) => {
       if (opts.maxTokens) options.maxTokens = opts.maxTokens;
     });
 
+    socket.on('reset', () => {
+      const _session = session;
+      if (!_session) return;
+      _session.clearHistory();
+    });
+
     socket.on('sync', () => {
 
       const _session = session;
