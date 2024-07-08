@@ -50,11 +50,38 @@ export class LlamaModel extends LLMModel<LlamaDevice, _LlamaModel> {
   }
 
   _createContext(options?: LlamaContextOptions) {
-    return this._model.createContext(options)
+    return this._model.createContext(options);
   }
 
   _createEmbeddingContext(options?: LlamaEmbeddingContextOptions) {
-    return this._model.createEmbeddingContext(options)
+    return this._model.createEmbeddingContext(options);
+  }
+
+  get tokens() {
+    return this._model.tokens;
+  }
+  get filename() {
+    return this._model.filename;
+  }
+  get fileInfo() {
+    return this._model.fileInfo;
+  }
+  get fileInsights() {
+    return this._model.fileInsights;
+  }
+
+  get gpuLayers() {
+    return this._model.gpuLayers;
+  }
+
+  get size() {
+    return this._model.size;
+  }
+  get flashAttentionSupported() {
+    return this._model.flashAttentionSupported;
+  }
+  get defaultContextFlashAttention() {
+    return this._model.defaultContextFlashAttention;
   }
 
   tokenize(text: BuiltinSpecialTokenValue, specialTokens: 'builtin'): Token[];
