@@ -25,14 +25,14 @@
 
 import _ from 'lodash';
 import { getLlama, LlamaOptions } from '../plugins/llama-cpp';
-import { LlamaContext } from './llama';
+import { LlamaDevice } from './llama';
 
-export abstract class LLMContext<C> {
+export abstract class LLMDevice<D> {
 
-  protected _ctx: C;
+  protected _device: D;
 
-  constructor(ctx: C) {
-    this._ctx = ctx;
+  constructor(device: D) {
+    this._device = device;
   }
 
   abstract dispose(): Promise<void>;
@@ -40,6 +40,6 @@ export abstract class LLMContext<C> {
 
   static async llama(options?: LlamaOptions) {
     const ctx = await getLlama(options);
-    return new LlamaContext(ctx);
+    return new LlamaDevice(ctx);
   }
 }

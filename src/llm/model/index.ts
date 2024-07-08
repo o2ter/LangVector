@@ -24,15 +24,15 @@
 //
 
 import _ from 'lodash';
-import { LLMContext } from '../context';
+import { LLMDevice } from '../device';
 
-export abstract class LLMModel<C extends LLMContext<any>, M> {
+export abstract class LLMModel<D extends LLMDevice<any>, M> {
 
-  protected _ctx: C;
+  protected _device: D;
   protected _model: M;
 
-  constructor(ctx: C, model: M) {
-    this._ctx = ctx;
+  constructor(device: D, model: M) {
+    this._device = device;
     this._model = model;
   }
 

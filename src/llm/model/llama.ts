@@ -23,15 +23,11 @@
 //  THE SOFTWARE.
 //
 
-import { LlamaContext } from '../context/llama';
+import { LlamaDevice } from '../device/llama';
 import { LlamaModel as _LlamaModel } from '../plugins/llama-cpp';
 import { LLMModel } from './index';
 
-export class LlamaModel extends LLMModel<LlamaContext, _LlamaModel> {
-
-  constructor(ctx: LlamaContext, model: _LlamaModel) {
-    super(ctx, model);
-  }
+export class LlamaModel extends LLMModel<LlamaDevice, _LlamaModel> {
 
   async dispose() {
     await this._model.dispose();

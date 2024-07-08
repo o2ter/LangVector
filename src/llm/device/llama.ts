@@ -25,24 +25,20 @@
 
 import { LlamaModel } from '../model/llama';
 import { Llama, LlamaModelOptions, LlamaModel as _LlamaModel } from '../plugins/llama-cpp';
-import { LLMContext } from './index';
+import { LLMDevice } from './index';
 
-export class LlamaContext extends LLMContext<Llama> {
-
-  constructor(ctx: Llama) {
-    super(ctx);
-  }
+export class LlamaDevice extends LLMDevice<Llama> {
 
   async dispose() {
-    await this._ctx.dispose();
+    await this._device.dispose();
   }
 
   get disposed() {
-    return this._ctx.disposed;
+    return this._device.disposed;
   }
 
   async loadModel(options: LlamaModelOptions) {
-    const model = await this._ctx.loadModel(options);
+    const model = await this._device.loadModel(options);
     return new LlamaModel(this, model);
   }
 }
