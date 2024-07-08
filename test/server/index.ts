@@ -121,36 +121,40 @@ export default async (app: Server, env: Record<string, any>) => {
     socket.on('msg', async (msg: string) => {
 
       const _session = session;
-      if (_session) {
+      if (!_session) return;
 
-        let partial: Token[] = [];
-
-        const { responseText } = await _session.prompt(msg, {
-          ...options,
-          onToken: (token) => {
-            partial.push(...token);
-            socket.emit('response', {
-              partial: true,
-              responseText: _session.model.detokenize(partial, true),
-            });
-          }
-        });
-
+      socket.on('sync', async (msg: string) => {
         socket.emit('response', {
-          partial: false,
-          responseText,
           history: _session.chatHistory,
           raw: _session.model.detokenize(_session.tokens, true),
         });
-      }
+      });
+
+      let partial: Token[] = [];
+
+      const { responseText } = await _session.prompt(msg, {
+        ...options,
+        onToken: (token) => {
+          partial.push(...token);
+          socket.emit('response', {
+            partial: true,
+            responseText: _session.model.detokenize(partial, true),
+          });
+        }
+      });
+
+      socket.emit('response', {
+        partial: false,
+        responseText,
+        history: _session.chatHistory,
+        raw: _session.model.detokenize(_session.tokens, true),
+      });
     });
 
     socket.on('disconnect', () => {
-
-      if (session) {
-        session.dispose();
-        session = null;
-      }
+      if (!session) return;
+      session.dispose();
+      session = null;
     });
   });
 
