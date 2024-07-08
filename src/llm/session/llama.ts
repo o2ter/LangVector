@@ -26,6 +26,7 @@
 import { LlamaContext } from '../context/llama';
 import {
   LlamaModel as _LlamaModel,
+  ChatHistoryItem,
   ChatSessionModelFunctions,
   ContextTokensDeleteRange,
   LLamaChatCompletePromptOptions,
@@ -94,11 +95,25 @@ export class LlamaSession extends LLMSession<LlamaContext> {
     return this._chat.promptWithMeta(prompt, options);
   }
 
+  get #chat() {
+    this._chat = this._chat ?? new LlamaChatSession({ contextSequence: this._seq, ...this._options });
+    return this._chat;
+  }
+
   completePrompt(
     prompt: string,
     options?: LLamaChatCompletePromptOptions
   ) {
-    this._chat = this._chat ?? new LlamaChatSession({ contextSequence: this._seq, ...this._options });
-    return this._chat.completePromptWithMeta(prompt, options);
+    return this.#chat.completePromptWithMeta(prompt, options);
+  }
+
+  getChatHistory() {
+    return this.#chat.getChatHistory();
+  }
+  getLastEvaluationContextWindow() {
+    return this.#chat.getLastEvaluationContextWindow();
+  }
+  setChatHistory(chatHistory: ChatHistoryItem[]) {
+    return this.#chat.setChatHistory(chatHistory);
   }
 }
