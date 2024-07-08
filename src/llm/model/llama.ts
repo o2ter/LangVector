@@ -23,25 +23,22 @@
 //  THE SOFTWARE.
 //
 
-import { LlamaModel } from '../model/llama';
-import { Llama, LlamaModelOptions, LlamaModel as _LlamaModel } from '../plugins/llama-cpp';
-import { LLMContext } from './index';
+import { LlamaContext } from '../context/llama';
+import { LlamaModel as _LlamaModel } from '../plugins/llama-cpp';
+import { LLMModel } from './index';
 
-export class LlamaContext extends LLMContext {
+export class LlamaModel extends LLMModel {
 
-  private _ctx: Awaited<Llama>;
+  private _ctx: LlamaContext;
+  private _model: _LlamaModel;
 
-  constructor(ctx: Awaited<Llama>) {
+  constructor(ctx: LlamaContext, model: _LlamaModel) {
     super();
     this._ctx = ctx;
+    this._model = model;
   }
 
   async dispose() {
-    await this._ctx.dispose();
-  }
-
-  async loadModel(options: LlamaModelOptions) {
-    const model = await this._ctx.loadModel(options);
-    return new LlamaModel(this, model);
+    await this._model.dispose();
   }
 }

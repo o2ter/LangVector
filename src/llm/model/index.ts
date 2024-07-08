@@ -1,5 +1,5 @@
 //
-//  llama.ts
+//  index.ts
 //
 //  The MIT License
 //  Copyright (c) 2021 - 2024 O2ter Limited. All rights reserved.
@@ -23,25 +23,12 @@
 //  THE SOFTWARE.
 //
 
-import { LlamaModel } from '../model/llama';
-import { Llama, LlamaModelOptions, LlamaModel as _LlamaModel } from '../plugins/llama-cpp';
-import { LLMContext } from './index';
+import _ from 'lodash';
+import { getLlama, LlamaOptions } from '../plugins/llama-cpp';
+import { LlamaModel } from './llama';
 
-export class LlamaContext extends LLMContext {
+export abstract class LLMModel {
 
-  private _ctx: Awaited<Llama>;
+  abstract dispose(): Promise<void>;
 
-  constructor(ctx: Awaited<Llama>) {
-    super();
-    this._ctx = ctx;
-  }
-
-  async dispose() {
-    await this._ctx.dispose();
-  }
-
-  async loadModel(options: LlamaModelOptions) {
-    const model = await this._ctx.loadModel(options);
-    return new LlamaModel(this, model);
-  }
 }
