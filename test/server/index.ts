@@ -118,17 +118,21 @@ export default async (app: Server, env: Record<string, any>) => {
       maxTokens: 100,
     };
 
-    socket.on('msg', async (msg: string) => {
+    socket.on('sync', async (msg: string) => {
 
       const _session = session;
       if (!_session) return;
 
-      socket.on('sync', async (msg: string) => {
-        socket.emit('response', {
-          history: _session.chatHistory,
-          raw: _session.model.detokenize(_session.tokens, true),
-        });
+      socket.emit('response', {
+        history: _session.chatHistory,
+        raw: _session.model.detokenize(_session.tokens, true),
       });
+    });
+
+    socket.on('msg', async (msg: string) => {
+
+      const _session = session;
+      if (!_session) return;
 
       let partial: Token[] = [];
 
