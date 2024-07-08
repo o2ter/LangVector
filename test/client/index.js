@@ -36,6 +36,8 @@ export default () => {
   const [input, setInput] = React.useState('');
   const [state, setState] = React.useState({});
 
+  console.log(state);
+
   React.useEffect(() => {
 
     socket.emit('sync');
