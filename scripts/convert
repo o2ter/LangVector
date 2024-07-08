@@ -24,7 +24,7 @@ QUANTITY=(
 for SOURCE in "${LIST[@]}"; do
 
   if [ ! -f "./models/${SOURCE}/ggml-model-${OUTTYPE}.gguf" ]; then
-    python3 llama.cpp/convert_hf_to_gguf.py --outtype ${OUTTYPE} ./models/${SOURCE}
+    llama.cpp/convert_hf_to_gguf.py ./.cache/${SOURCE} --outtype ${OUTTYPE} --outfile ./models/${SOURCE}
   fi
 
   for q in "${QUANTITY[@]}"; do
