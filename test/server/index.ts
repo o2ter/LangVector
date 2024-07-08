@@ -32,6 +32,7 @@ import { Proto } from './proto';
 import './cloud/main';
 
 import { LLMDevice } from '../../src';
+import { LlamaContext } from '../../src/llm/context/llama';
 
 const walkDirAsync = async function* (dir: string): AsyncGenerator<string, void> {
   const files = await fs.readdir(dir, { withFileTypes: true });
@@ -63,16 +64,33 @@ export default async (app: Server, env: Record<string, any>) => {
   } catch { }
 
   const device = await LLMDevice.llama();
+  const contexts: Record<string, LlamaContext> = {};
+
+  const createSession = async (modelPath: string) => {
+    if (contexts[modelPath]) return contexts[modelPath].createSession();
+    const model = await device.loadModel({ modelPath: models[0] });
+    const context = await model.createContext();
+    contexts[modelPath] = context;
+    return context.createSession();
+  }
 
   app.socket().on('connection', async (socket) => {
 
-    let model = models.length ? await device.loadModel({ modelPath: models[0] }) : null;
+    let session = models.length ? await createSession(models[0]) : null;
+
+    socket.on('msg', async (msg: string) => {
+
+      if (session) {
+
+      }
+
+    })
 
     socket.on('disconnect', () => {
 
-      if (model) {
-        model.dispose();
-        model = null;
+      if (session) {
+        session.dispose();
+        session = null;
       }
     });
   });
