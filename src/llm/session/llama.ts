@@ -125,13 +125,13 @@ export class LlamaSession extends LLMSession<LlamaDevice, LlamaModel, LlamaConte
     return this.#chat.completePromptWithMeta(prompt, options);
   }
 
-  getChatHistory() {
+  get chatHistory() {
     return this.#chat.getChatHistory();
+  }
+  set chatHistory(chatHistory: ChatHistoryItem[]) {
+    this.#chat.setChatHistory(chatHistory);
   }
   getLastEvaluationContextWindow() {
     return this.#chat.getLastEvaluationContextWindow();
-  }
-  setChatHistory(chatHistory: ChatHistoryItem[]) {
-    return this.#chat.setChatHistory(chatHistory);
   }
 }
