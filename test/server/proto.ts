@@ -1,5 +1,5 @@
 //
-//  index.ts
+//  proto.ts
 //
 //  The MIT License
 //  Copyright (c) 2021 - 2024 O2ter Limited. All rights reserved.
@@ -24,17 +24,35 @@
 //
 
 import _ from 'lodash';
-import { Server } from '@o2ter/server-js';
-import ProtoRoute from 'proto.io';
-import { Proto } from './proto';
-import './cloud/main';
+import { ProtoService } from 'proto.io';
+import { DatabaseFileStorage } from 'proto.io/dist/adapters/file/database';
+import { PostgresStorage } from 'proto.io/dist/adapters/storage/progres';
 
-/* eslint-disable no-param-reassign */
-export default async (app: Server, env: Record<string, any>) => {
+const db_host = process.env['POSTGRES_HOST'] ?? "localhost";
+const db_user = process.env['POSTGRES_USERNAME'];
+const db_pass = process.env['POSTGRES_PASSWORD'];
+const db = `/${process.env['POSTGRES_DATABASE'] ?? ''}`;
+const db_ssl = process.env['POSTGRES_SSLMODE'];
 
-  env.PROTO_ENDPOINT = 'http://localhost:8080/proto';
+const uri = _.compact([
+  'postgres://',
+  db_user && db_pass && `${db_user}:${db_pass}@`,
+  db_host, db,
+  db_ssl && `?ssl=true&sslmode=${db_ssl}`
+]).join('');
 
-  app.express().use('/proto', await ProtoRoute({
-    proto: Proto,
-  }));
-}
+const database = new PostgresStorage(uri);
+const masterUsers = [{
+  user: 'admin',
+  pass: 'password'
+}];
+
+export const Proto = new ProtoService({
+  endpoint: 'http://localhost:8080/proto',
+  masterUsers: masterUsers,
+  jwtToken: 'test token',
+  storage: database,
+  fileStorage: new DatabaseFileStorage(),
+  schema: {
+  },
+});
