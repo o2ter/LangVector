@@ -24,12 +24,11 @@
 //
 
 import _ from 'lodash';
-import { getLlama, LlamaOptions } from '../plugins/llama-cpp';
-import { LlamaModel } from './llama';
 
 export abstract class LLMModel {
 
   abstract dispose(): Promise<void>;
+
   abstract get disposed(): boolean;
 
 }
