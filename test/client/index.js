@@ -34,6 +34,8 @@ export default () => {
 
   React.useEffect(() => {
 
+    socket.emit('sync');
+
     socket.on('response', ({
       models,
       currentModel,
