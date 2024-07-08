@@ -54,9 +54,9 @@ export default () => {
 
   return (
     <div className='d-flex flex-row flex-fill'>
-      <div className='d-flex flex-column flex-fill border-right'></div>
+      <div className='d-flex flex-column flex-fill border-right'>{state.raw}</div>
       <div className='d-flex flex-column flex-fill'>
-        <div className='d-flex flex-column flex-fill'></div>
+        <div className='d-flex flex-column flex-fill'>{JSON.stringify(state.history)}</div>
         <div className='d-flex flex-row p-2 gap-2 border-top'>
           <TextInput classes='flex-fill' value={input} onChangeText={setInput} />
           <Button title='Send' onPress={() => {
