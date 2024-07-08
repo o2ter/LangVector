@@ -56,11 +56,14 @@ export default () => {
     <div className='d-flex flex-row flex-fill'>
       <div className='d-flex flex-column flex-fill'></div>
       <div className='d-flex flex-column flex-fill'>
-        <TextInput value={input} onChangeText={setInput} />
-        <Button title='Send' onPress={() => {
-          socket.emit('msg', input);
-          setInput('');
-        }} />
+        <div className='d-flex flex-column flex-fill'></div>
+        <div className='d-flex flex-row'>
+          <TextInput classes='flex-fill' value={input} onChangeText={setInput} />
+          <Button title='Send' onPress={() => {
+            socket.emit('msg', input);
+            setInput('');
+          }} />
+        </div>
       </div>
     </div>
   );
