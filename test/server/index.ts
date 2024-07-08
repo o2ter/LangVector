@@ -139,10 +139,11 @@ export default async (app: Server, env: Record<string, any>) => {
         socket.emit('response', {
           partial: false,
           responseText,
+          history: _session.chatHistory,
+          raw: _session.model.detokenize(_session.tokens, true),
         });
       }
-
-    })
+    });
 
     socket.on('disconnect', () => {
 
