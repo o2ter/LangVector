@@ -64,6 +64,23 @@ export class LlamaSession extends LLMSession<LlamaContext> {
     return this._seq.disposed;
   }
 
+  get nextTokenIndex() {
+    return this._seq.nextTokenIndex;
+  }
+  get tokens() {
+    return this._seq.contextTokens;
+  }
+  get tokenMeter() {
+    return this._seq.tokenMeter;
+  }
+  get isLoadedToMemory() {
+    return this._seq.isLoadedToMemory;
+  }
+
+  compareContextTokens(tokens: Token[]) {
+    return this._seq.compareContextTokens(tokens);
+  }
+
   async clearHistory() {
     if (this._chat) this._chat.setChatHistory([]);
     await this._seq.clearHistory();
