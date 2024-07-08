@@ -78,7 +78,7 @@ export class LlamaSession extends LLMSession<LlamaContext> {
   ) {
     return this._seq.evaluate(tokens, options);
   }
-  
+
   evaluateWithoutGeneratingNewTokens(
     tokens: Token[],
     options?: Parameters<LlamaContextSequence['evaluateWithoutGeneratingNewTokens']>[1]
