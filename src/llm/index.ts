@@ -23,5 +23,6 @@
 //  THE SOFTWARE.
 //
 
+export { defineChatSessionFunction } from './plugins/llama-cpp';
 export { LLMDevice } from './device';
 export { LLMModel } from './model';
