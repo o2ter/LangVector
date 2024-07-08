@@ -9,4 +9,9 @@ cd ../
 cd llama.cpp
 make
 
-python3 -m pip install -r requirements.txt --break-system-packages
+PYTHON=$(which python3)
+if [ -f "${HOMEBREW_PREFIX}/bin/python3" ]; then
+  PYTHON="${HOMEBREW_PREFIX}/bin/python3"
+fi
+
+${PYTHON} -m pip install -r requirements.txt --break-system-packages
