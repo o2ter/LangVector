@@ -24,3 +24,4 @@
 //
 
 export { LLMDevice } from './device';
+export { LLMModel } from './model';
