@@ -27,11 +27,13 @@ import { LlamaContext } from '../context/llama';
 import {
   LlamaModel as _LlamaModel,
   ChatSessionModelFunctions,
+  ContextTokensDeleteRange,
   LLamaChatCompletePromptOptions,
   LLamaChatPromptOptions,
   LlamaChatSession,
   LlamaChatSessionOptions,
   LlamaContextSequence,
+  Token,
 } from '../plugins/llama-cpp';
 import { LLMSession } from './index';
 
@@ -64,6 +66,24 @@ export class LlamaSession extends LLMSession<LlamaContext> {
   async clearHistory() {
     if (this._chat) this._chat.setChatHistory([]);
     await this._seq.clearHistory();
+  }
+
+  async eraseContextTokenRanges(ranges: ContextTokensDeleteRange[]) {
+    await this._seq.eraseContextTokenRanges(ranges);
+  }
+
+  evaluate(
+    tokens: Token[],
+    options?: Parameters<LlamaContextSequence['evaluate']>[1]
+  ) {
+    return this._seq.evaluate(tokens, options);
+  }
+  
+  evaluateWithoutGeneratingNewTokens(
+    tokens: Token[],
+    options?: Parameters<LlamaContextSequence['evaluateWithoutGeneratingNewTokens']>[1]
+  ) {
+    return this._seq.evaluateWithoutGeneratingNewTokens(tokens, options);
   }
 
   prompt<const Functions extends ChatSessionModelFunctions | undefined = undefined>(
