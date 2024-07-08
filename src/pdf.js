@@ -1,5 +1,5 @@
 //
-//  index.js
+//  pdf.ts
 //
 //  The MIT License
 //  Copyright (c) 2021 - 2024 O2ter Limited. All rights reserved.
@@ -23,6 +23,4 @@
 //  THE SOFTWARE.
 //
 
-import _ from 'lodash';
-
-export { PDF } from './pdf';
+export * as PDF from 'mupdf';
