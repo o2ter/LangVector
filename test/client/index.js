@@ -34,20 +34,19 @@ export default () => {
   const socket = React.useRef(io()).current;
 
   const [input, setInput] = React.useState('');
+  const [state, setState] = React.useState({});
 
   React.useEffect(() => {
 
     socket.emit('sync');
 
     socket.on('response', ({
-      models,
-      currentModel,
-      options,
-      history,
-      raw,
       partial,
       responseText,
+      ...state
     }) => {
+
+      if (models) setState(v => ({ ...v, ...state }));
 
     });
 
