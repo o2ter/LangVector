@@ -104,7 +104,8 @@ export default async (app: Server, env: Record<string, any>) => {
 
   app.socket().on('connection', async (socket) => {
 
-    let session = models.length ? await createSession(models[0]) : null;
+    let currentModel = models.length ? models[0] : null;
+    let session = currentModel ? await createSession(currentModel) : null;
 
     const options = {
       ...defaultOptions,
@@ -139,6 +140,8 @@ export default async (app: Server, env: Record<string, any>) => {
       if (!_session) return;
 
       socket.emit('response', {
+        models,
+        currentModel,
         history: _session.chatHistory,
         raw: _session.model.detokenize(_session.tokens, true),
       });
@@ -163,6 +166,8 @@ export default async (app: Server, env: Record<string, any>) => {
       });
 
       socket.emit('response', {
+        models,
+        currentModel,
         partial: false,
         responseText,
         history: _session.chatHistory,
