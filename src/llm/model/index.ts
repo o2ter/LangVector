@@ -25,6 +25,7 @@
 
 import _ from 'lodash';
 import { LLMDevice } from '../device';
+import { Token } from '../plugins/llama-cpp';
 
 export abstract class LLMModel<D extends LLMDevice<any>, M> {
 
@@ -39,4 +40,5 @@ export abstract class LLMModel<D extends LLMDevice<any>, M> {
   abstract dispose(): Promise<void>;
   abstract get disposed(): boolean;
 
+  abstract tokenize(text: string): Token[];
 }
