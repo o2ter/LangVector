@@ -14,5 +14,5 @@ LIST=(
 )
 
 for SOURCE in "${LIST[@]}"; do
-  huggingface-cli download ${SOURCE} --local-dir ./.cache/${SOURCE}
+  huggingface-cli download ${SOURCE} --local-dir ./.cache/models/${SOURCE}
 done
