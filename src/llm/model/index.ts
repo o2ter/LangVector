@@ -37,6 +37,10 @@ export abstract class LLMModel<D extends LLMDevice<any>, M> {
     this._model = model;
   }
 
+  get device() {
+    return this._device;
+  }
+
   abstract dispose(): Promise<void>;
   abstract get disposed(): boolean;
 

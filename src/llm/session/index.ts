@@ -35,6 +35,18 @@ export abstract class LLMSession<C extends LLMContext<any>> {
     this._context = context;
   }
 
+  get device() {
+    return this._context.model.device;
+  }
+
+  get model() {
+    return this._context.model;
+  }
+
+  get context() {
+    return this._context;
+  }
+
   abstract dispose(): Promise<void>;
   abstract get disposed(): boolean;
 
