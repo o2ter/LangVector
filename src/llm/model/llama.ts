@@ -23,12 +23,15 @@
 //  THE SOFTWARE.
 //
 
+import _ from 'lodash';
 import { LlamaContext } from '../context/llama';
 import { LlamaDevice } from '../device/llama';
 import {
   LlamaModel as _LlamaModel,
+  BuiltinSpecialTokenValue,
   LlamaContextOptions,
   LlamaEmbeddingContextOptions,
+  Token,
 } from '../plugins/llama-cpp';
 import { LLMModel } from './index';
 
@@ -52,5 +55,29 @@ export class LlamaModel extends LLMModel<LlamaDevice, _LlamaModel> {
 
   _createEmbeddingContext(options?: LlamaEmbeddingContextOptions) {
     return this._model.createEmbeddingContext(options)
+  }
+
+  tokenize(text: BuiltinSpecialTokenValue, specialTokens: 'builtin'): Token[];
+  tokenize(text: string, specialTokens?: boolean, options?: "trimLeadingSpace"): Token[];
+  tokenize(text: string, specialTokens?: boolean | 'builtin', options?: "trimLeadingSpace") {
+    if (specialTokens === 'builtin') {
+      return this._model.tokenize(text as BuiltinSpecialTokenValue, specialTokens);
+    }
+    return this._model.tokenize(text, specialTokens, options);
+  }
+
+  detokenize(tokens: readonly Token[], specialTokens?: boolean) {
+    return this._model.detokenize(tokens, specialTokens);
+  }
+  getTokenAttributes(token: Token) {
+    return this._model.getTokenAttributes(token);
+  }
+
+  isSpecialToken(token?: Token) {
+    return this._model.isSpecialToken(token);
+  }
+
+  isEogToken(token?: Token) {
+    return this._model.isEogToken(token);
   }
 }
