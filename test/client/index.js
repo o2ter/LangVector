@@ -34,7 +34,14 @@ export default () => {
 
   React.useEffect(() => {
 
-    socket.on('response', ({ partial, responseText, history, raw }) => {
+    socket.on('response', ({
+      models,
+      currentModel,
+      partial,
+      responseText,
+      history,
+      raw,
+    }) => {
 
     });
 
