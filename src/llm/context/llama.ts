@@ -1,5 +1,5 @@
 //
-//  index.ts
+//  llama.ts
 //
 //  The MIT License
 //  Copyright (c) 2021 - 2024 O2ter Limited. All rights reserved.
@@ -23,26 +23,35 @@
 //  THE SOFTWARE.
 //
 
-import _ from 'lodash';
-import { getLlama, LlamaOptions } from '../plugins/llama-cpp';
-import { LlamaDevice } from './llama';
-import { LLMModel } from '../model';
+import { LlamaModel } from '../model/llama';
+import {
+  LlamaModel as _LlamaModel,
+  LlamaContext as _LlamaContext,
+  LlamaEmbeddingContext as _LlamaEmbeddingContext,
+  LlamaContextOptions
+} from '../plugins/llama-cpp';
+import { LLMContext } from './index';
 
-export abstract class LLMDevice<D> {
+export class LlamaContext extends LLMContext<LlamaModel> {
 
-  protected _device: D;
+  private _ctx?: _LlamaContext;
+  private _embedding?: _LlamaEmbeddingContext;
 
-  constructor(device: D) {
-    this._device = device;
+  private _options?: LlamaContextOptions;
+
+  constructor(model: LlamaModel, options?: LlamaContextOptions) {
+    super(model);
+    this._options = options;
   }
 
-  abstract dispose(): Promise<void>;
-  abstract get disposed(): boolean;
+  async dispose() {
+    if (this._ctx && !this._ctx.disposed) await this._ctx.dispose();
+    if (this._embedding && !this._embedding.disposed) await this._embedding.dispose();
+  }
 
-  abstract loadModel(options: any): Promise<LLMModel<any, any>>;
-
-  static async llama(options?: LlamaOptions) {
-    const ctx = await getLlama(options);
-    return new LlamaDevice(ctx);
+  get disposed() {
+    if (this._ctx && !this._ctx.disposed) return false;
+    if (this._embedding && !this._embedding.disposed) return false;
+    return true;
   }
 }

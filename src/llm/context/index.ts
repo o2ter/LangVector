@@ -24,25 +24,18 @@
 //
 
 import _ from 'lodash';
-import { getLlama, LlamaOptions } from '../plugins/llama-cpp';
-import { LlamaDevice } from './llama';
 import { LLMModel } from '../model';
 
-export abstract class LLMDevice<D> {
+export abstract class LLMContext<M extends LLMModel<any, any>> {
 
-  protected _device: D;
+  protected _model: M;
 
-  constructor(device: D) {
-    this._device = device;
+  constructor(model: M) {
+    this._model = model;
   }
 
   abstract dispose(): Promise<void>;
+
   abstract get disposed(): boolean;
 
-  abstract loadModel(options: any): Promise<LLMModel<any, any>>;
-
-  static async llama(options?: LlamaOptions) {
-    const ctx = await getLlama(options);
-    return new LlamaDevice(ctx);
-  }
 }

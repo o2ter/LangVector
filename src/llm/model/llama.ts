@@ -23,8 +23,9 @@
 //  THE SOFTWARE.
 //
 
+import { LlamaContext } from '../context/llama';
 import { LlamaDevice } from '../device/llama';
-import { LlamaModel as _LlamaModel } from '../plugins/llama-cpp';
+import { LlamaModel as _LlamaModel, LlamaContextOptions } from '../plugins/llama-cpp';
 import { LLMModel } from './index';
 
 export class LlamaModel extends LLMModel<LlamaDevice, _LlamaModel> {
@@ -35,5 +36,9 @@ export class LlamaModel extends LLMModel<LlamaDevice, _LlamaModel> {
 
   get disposed() {
     return this._model.disposed;
+  }
+
+  async createContext(options?: LlamaContextOptions) {
+    return new LlamaContext(this, options);
   }
 }
