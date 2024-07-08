@@ -51,7 +51,6 @@ const defaultOptions = {
     datetime: defineChatSessionFunction({
       description: "Get current datetime",
       handler() {
-        console.log('function called');
         return new Date();
       }
     }),
@@ -66,7 +65,6 @@ const defaultOptions = {
         required: ['maximum', 'minimum'],
       },
       handler({ maximum, minimum }) {
-        console.log('function called');
         return Math.random() * (maximum - minimum) + minimum;
       }
     })
