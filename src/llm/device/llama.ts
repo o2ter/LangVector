@@ -24,7 +24,7 @@
 //
 
 import { LlamaModel } from '../model/llama';
-import { Llama, LlamaModelOptions, LlamaModel as _LlamaModel } from '../plugins/llama-cpp';
+import { Llama, LlamaLogLevel, LlamaModelOptions, LlamaModel as _LlamaModel } from '../plugins/llama-cpp';
 import { LLMDevice } from './index';
 
 export class LlamaDevice extends LLMDevice<Llama> {
@@ -40,5 +40,52 @@ export class LlamaDevice extends LLMDevice<Llama> {
   async loadModel(options: LlamaModelOptions) {
     const model = await this._device.loadModel(options);
     return new LlamaModel(this, model);
+  }
+
+  get gpu() {
+    return this._device.gpu;
+  }
+  get supportsGpuOffloading() {
+    return this._device.supportsGpuOffloading;
+  }
+  get supportsMmap() {
+    return this._device.supportsMmap;
+  }
+  get supportsMlock() {
+    return this._device.supportsMlock;
+  }
+  get logLevel() {
+    return this._device.logLevel;
+  }
+  set logLevel(value: LlamaLogLevel) {
+     this._device.logLevel = value;
+  }
+  get logger() {
+    return this._device.logger;
+  }
+  set logger(value: (level: LlamaLogLevel, message: string) => void) {
+    this._device.logger = value;
+  }
+  get buildType() {
+    return this._device.buildType;
+  }
+  get cmakeOptions() {
+    return this._device.cmakeOptions;
+  }
+  get llamaCppRelease() {
+    return this._device.llamaCppRelease;
+  }
+  get systemInfo() {
+    return this._device.systemInfo;
+  }
+  
+  get vramPaddingSize() {
+    return this._device.vramPaddingSize;
+  }
+  getVramState() {
+    return this._device.getVramState;
+  }
+  getGpuDeviceNames() {
+    return this._device.getGpuDeviceNames;
   }
 }
