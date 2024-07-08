@@ -1,5 +1,5 @@
 //
-//  index.js
+//  llama.ts
 //
 //  The MIT License
 //  Copyright (c) 2021 - 2024 O2ter Limited. All rights reserved.
@@ -23,4 +23,19 @@
 //  THE SOFTWARE.
 //
 
-export { LLMContext } from './context';
+import { Llama } from './llama-cpp';
+import { LLMContext } from './index';
+
+export class LlamaContext extends LLMContext {
+
+  private _ctx: Awaited<Llama>;
+
+  constructor(ctx: Awaited<Llama>) {
+    super();
+    this._ctx = ctx;
+  }
+
+  async dispose() {
+    await this._ctx.dispose();
+  }
+}
