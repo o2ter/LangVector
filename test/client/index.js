@@ -26,11 +26,14 @@
 import _ from 'lodash';
 import React from 'react';
 import { io } from 'socket.io-client';
+import { TextInput } from 'react-native';
 import './css/main.scss';
 
 export default () => {
 
   const socket = React.useRef(io()).current;
+
+  const [input, setInput] = React.useState('');
 
   React.useEffect(() => {
 
@@ -51,6 +54,11 @@ export default () => {
   }, []);
 
   return (
-    <div />
+    <div className='d-flex flex-row flex-fill'>
+      <div className='d-flex flex-column flex-fill'></div>
+      <div className='d-flex flex-column flex-fill'>
+        <TextInput value={input} onChangeText={setInput} />
+      </div>
+    </div>
   );
 };
