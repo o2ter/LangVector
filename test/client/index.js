@@ -35,6 +35,7 @@ export default () => {
 
   const [input, setInput] = React.useState('');
   const [state, setState] = React.useState({});
+  const [partial, setPartial] = React.useState('');
 
   React.useEffect(() => {
 
@@ -45,9 +46,8 @@ export default () => {
       responseText,
       ...state
     }) => {
-
-      if (models) setState(v => ({ ...v, ...state }));
-
+      setPartial(partial ? responseText : '');
+      setState(v => ({ ...v, ...state }));
     });
 
   }, []);
