@@ -30,12 +30,12 @@ for SOURCE in "${LIST[@]}"; do
 
   if [ ! -f "./models/${SOURCE}/ggml-model-${OUTTYPE}.gguf" ]; then
     mkdir -p ./models/${SOURCE}
-    ${PYTHON} llama.cpp/convert_hf_to_gguf.py ./.cache/models/${SOURCE} --outtype ${OUTTYPE} --outfile ./models/${SOURCE}/ggml-model-${OUTTYPE}.gguf
+    ${PYTHON} packages/llama.cpp/convert_hf_to_gguf.py ./.cache/models/${SOURCE} --outtype ${OUTTYPE} --outfile ./models/${SOURCE}/ggml-model-${OUTTYPE}.gguf
   fi
 
   for q in "${QUANTITY[@]}"; do
     if [ ! -f "./models/${SOURCE}/ggml-model-${q}.gguf" ]; then
-      llama.cpp/llama-quantize ./models/${SOURCE}/ggml-model-f16.gguf ./models/${SOURCE}/ggml-model-${q}.gguf ${q}
+      packages/llama.cpp/llama-quantize ./models/${SOURCE}/ggml-model-f16.gguf ./models/${SOURCE}/ggml-model-${q}.gguf ${q}
     fi
   done
 
