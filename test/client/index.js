@@ -39,10 +39,11 @@ export default () => {
     socket.on('response', ({
       models,
       currentModel,
-      partial,
-      responseText,
+      options,
       history,
       raw,
+      partial,
+      responseText,
     }) => {
 
     });
