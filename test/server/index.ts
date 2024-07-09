@@ -71,6 +71,17 @@ const defaultOptions = {
   }
 };
 
+class ChatWrapper extends llamaCpp.Llama3ChatWrapper {
+
+  generateAvailableFunctionsSystemText(
+    availableFunctions: llamaCpp.ChatModelFunctions,
+    { documentParams = true },
+  ) {
+    const result = super.generateAvailableFunctionsSystemText(availableFunctions, { documentParams });
+    return result.mapValues(s => _.isString(s) ? s.replace('Note that the || prefix is mandatory', 'Note that the ||call: prefix is mandatory') : s);
+  }
+}
+
 /* eslint-disable no-param-reassign */
 export default async (app: Server, env: Record<string, any>) => {
 
@@ -92,7 +103,7 @@ export default async (app: Server, env: Record<string, any>) => {
 
   const device = await LLMDevice.llama();
   const contexts: Record<string, LlamaContext> = {};
-  const chatOptions = { chatWrapper: new llamaCpp.Llama3ChatWrapper };
+  const chatOptions = { chatWrapper: new ChatWrapper };
 
   const createSession = async (name: string) => {
     if (contexts[name]) return contexts[name].createSession({ chatOptions });
