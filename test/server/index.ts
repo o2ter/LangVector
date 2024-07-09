@@ -33,6 +33,7 @@ import './cloud/main';
 
 import { defineChatSessionFunction, LLMDevice, Token, llamaCpp } from '../../src';
 import { LlamaContext } from '../../src/llm/context/llama';
+import { LlamaSession } from '../../src/llm/session/llama';
 
 const walkDirAsync = async function* (dir: string): AsyncGenerator<string, void> {
   const files = await fs.readdir(dir, { withFileTypes: true });
@@ -147,6 +148,14 @@ export default async (app: Server, env: Record<string, any>) => {
       if (opts.maxTokens) options.maxTokens = opts.maxTokens;
     });
 
+    const defaultResponse = (session: LlamaSession) => ({
+      models,
+      currentModel,
+      options,
+      history: session.chatHistory,
+      raw: session.model.detokenize(session.tokens, true),
+    });
+
     socket.on('reset', () => {
       session?.clearHistory();
     });
@@ -156,13 +165,7 @@ export default async (app: Server, env: Record<string, any>) => {
       const _session = session;
       if (!_session) return;
 
-      socket.emit('response', {
-        models,
-        currentModel,
-        options,
-        history: _session.chatHistory,
-        raw: _session.model.detokenize(_session.tokens, true),
-      });
+      socket.emit('response', defaultResponse(_session));
     });
 
     socket.on('msg', async (msg: string) => {
@@ -180,11 +183,7 @@ export default async (app: Server, env: Record<string, any>) => {
         onToken: (token) => {
           partial.push(...token);
           socket.emit('response', {
-            models,
-            currentModel,
-            options,
-            history: _session.chatHistory,
-            raw: _session.model.detokenize(_session.tokens, true),
+            ...defaultResponse(_session),
             partial: true,
             responseText: _session.model.detokenize(partial, true),
           });
@@ -192,11 +191,7 @@ export default async (app: Server, env: Record<string, any>) => {
       });
 
       socket.emit('response', {
-        models,
-        currentModel,
-        options,
-        history: _session.chatHistory,
-        raw: _session.model.detokenize(_session.tokens, true),
+        ...defaultResponse(_session),
         partial: false,
         responseText,
       });
