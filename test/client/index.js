@@ -37,8 +37,9 @@ const ChatBox = ({ text }) => {
   );
 }
 
-const ChatBody = ({ socket }) => {
+export default () => {
 
+  const [socket] = React.useState(() => io());
   const [input, setInput] = React.useState('');
   const [state, setState] = React.useState({});
   const [userMessage, setUserMessage] = React.useState('');
@@ -110,12 +111,5 @@ const ChatBody = ({ socket }) => {
         </div>
       </div>
     </div>
-  );
-};
-
-export default () => {
-  const socket = React.useRef(io()).current;
-  return (
-    <ChatBody socket={socket} />
   );
 };
