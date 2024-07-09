@@ -180,6 +180,11 @@ export default async (app: Server, env: Record<string, any>) => {
         onToken: (token) => {
           partial.push(...token);
           socket.emit('response', {
+            models,
+            currentModel,
+            options,
+            history: _session.chatHistory,
+            raw: _session.model.detokenize(_session.tokens, true),
             partial: true,
             responseText: _session.model.detokenize(partial, true),
           });
