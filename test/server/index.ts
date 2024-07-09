@@ -31,9 +31,8 @@ import ProtoRoute from 'proto.io';
 import { Proto } from './proto';
 import './cloud/main';
 
-import { defineChatSessionFunction, LLMDevice, Token } from '../../src';
+import { defineChatSessionFunction, LLMDevice, Token, llamaCpp } from '../../src';
 import { LlamaContext } from '../../src/llm/context/llama';
-import { llamaCpp } from '../../src/llm/plugins/llama-cpp';
 
 const walkDirAsync = async function* (dir: string): AsyncGenerator<string, void> {
   const files = await fs.readdir(dir, { withFileTypes: true });
