@@ -195,7 +195,11 @@ export default async (app: Server, env: Record<string, any>) => {
       });
     }
 
-    socket.on('options', (opts: any) => {
+    socket.on('reset', () => {
+      session?.clearHistory();
+    });
+
+    socket.on('sync', (opts: any) => {
       if (opts.minP) options.minP = opts.minP;
       if (opts.topK) options.topK = opts.topK;
       if (opts.topP) options.topP = opts.topP;
@@ -203,18 +207,14 @@ export default async (app: Server, env: Record<string, any>) => {
       if (opts.repeatPenalty?.frequencyPenalty) options.repeatPenalty.frequencyPenalty = opts.repeatPenalty?.frequencyPenalty;
       if (opts.repeatPenalty?.presencePenalty) options.repeatPenalty.presencePenalty = opts.repeatPenalty?.presencePenalty;
       if (opts.maxTokens) options.maxTokens = opts.maxTokens;
-    });
-
-    socket.on('reset', () => {
-      session?.clearHistory();
-    });
-
-    socket.on('sync', () => {
 
       const _session = session;
       if (!_session) return;
 
-      socket.emit('response', defaultResponse(_session));
+      socket.emit('response', {
+        status: 'ready',
+        ...defaultResponse(_session),
+      });
     });
 
     socket.on('msg', async (msg: string) => {
