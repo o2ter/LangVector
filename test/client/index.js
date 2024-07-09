@@ -64,16 +64,96 @@ export default () => {
     setInput('');
   }, [input]);
 
+  const onchange = React.useCallback((key, value) => {
+    socket.emit('sync', _.set({}, key, value));
+  }, []);
+
   return (
     <div className='d-flex flex-row flex-fill'>
       <div className='d-flex flex-column w-50 border-right'>
-        <div className='d-flex border-bottom'>
-          <div>status: {state.status}</div>
-        </div>
         <div className='d-flex flex-column flex-fill position-relative'>
           <ScrollView classes='absolute-fill'>
             <Text>{state.raw}</Text>
           </ScrollView>
+        </div>
+        <div className='d-flex flex-column border-top'>
+          <div className='mb-3 px-3'>status: {state.status}</div>
+          <div className='row mb-3 px-3 gap-3'>
+            <div className='col input-group align-items-center gap-1'>
+              <label>max tokens</label>
+              <input
+                className='form-control'
+                type='number'
+                min={0} step={1}
+                value={state.options?.maxTokens ?? ''}
+                onChange={(e) => onchange('maxTokens', e.target.valueAsNumber)}
+              />
+            </div>
+            <div className='col input-group align-items-center gap-1'>
+              <label>temperature</label>
+              <input
+                className='form-control'
+                type='number'
+                min={0} step={0.1}
+                value={state.options?.temperature ?? ''}
+                onChange={(e) => onchange('temperature', e.target.valueAsNumber)}
+              />
+            </div>
+          </div>
+          <div className='row mb-3 px-3 gap-3'>
+            <div className='col input-group align-items-center gap-1'>
+              <label>frequency penalty</label>
+              <input
+                className='form-control'
+                type='number'
+                min={0} max={1} step={1}
+                value={state.options?.repeatPenalty?.frequencyPenalty ?? ''}
+                onChange={(e) => onchange('repeatPenalty.frequencyPenalty', e.target.valueAsNumber)}
+              />
+            </div>
+            <div className='col input-group align-items-center gap-1'>
+              <label>presence penalty</label>
+              <input
+                className='form-control'
+                type='number'
+                min={0} max={1} step={0.1}
+                value={state.options?.repeatPenalty?.presencePenalty ?? ''}
+                onChange={(e) => onchange('repeatPenalty.presencePenalty', e.target.valueAsNumber)}
+              />
+            </div>
+          </div>
+          <div className='row mb-3 px-3 gap-3'>
+            <div className='col input-group align-items-center gap-1'>
+              <label>minP</label>
+              <input
+                className='form-control'
+                type='number'
+                min={0} max={1} step={0.1}
+                value={state.options?.minP ?? ''}
+                onChange={(e) => onchange('minP', e.target.valueAsNumber)}
+              />
+            </div>
+            <div className='col input-group align-items-center gap-1'>
+              <label>topK</label>
+              <input
+                className='form-control'
+                type='number'
+                min={0} step={1}
+                value={state.options?.topK ?? ''}
+                onChange={(e) => onchange('topK', e.target.valueAsNumber)}
+              />
+            </div>
+            <div className='col input-group align-items-center gap-1'>
+              <label>topP</label>
+              <input
+                className='form-control'
+                type='number'
+                min={0} max={1} step={0.1}
+                value={state.options?.topP ?? ''}
+                onChange={(e) => onchange('topP', e.target.valueAsNumber)}
+              />
+            </div>
+          </div>
         </div>
       </div>
       <div className='d-flex flex-column w-50'>
