@@ -26,7 +26,7 @@
 import _ from 'lodash';
 import React from 'react';
 import { io } from 'socket.io-client';
-import { Button, Text, TextInput } from '@o2ter/react-ui';
+import { Button, ScrollView, Text, TextInput } from '@o2ter/react-ui';
 import './css/main.scss';
 
 const ChatBody = ({ socket }) => {
@@ -53,29 +53,33 @@ const ChatBody = ({ socket }) => {
   return (
     <div className='d-flex flex-row flex-fill'>
       <div className='d-flex flex-column w-50 border-right'>
-        <div className='d-flex flex-column flex-fill border-right'>
-          <Text>{state.raw}</Text>
+        <div className='d-flex flex-column flex-fill border-right position-relative'>
+          <ScrollView classes='absolute-fill'>
+            <Text>{state.raw}</Text>
+          </ScrollView>
         </div>
       </div>
       <div className='d-flex flex-column w-50'>
-        <div className='d-flex flex-column flex-fill'>
-          {_.map(state.history, (x, i) => {
-            switch (x.type) {
-              case 'user':
-                return (
-                  <div key={i}>
-                    <Text>{x.text}</Text>
-                  </div>
-                );
-              case 'model':
-                return (
-                  <div key={i}>
-                    <Text>{_.last(_.filter(x.response, s => _.isString(s)))}</Text>
-                  </div>
-                );
-              default: return null;
-            }
-          })}
+        <div className='d-flex flex-column flex-fill position-relative'>
+          <ScrollView classes='absolute-fill'>
+            {_.map(state.history, (x, i) => {
+              switch (x.type) {
+                case 'user':
+                  return (
+                    <div key={i}>
+                      <Text>{x.text}</Text>
+                    </div>
+                  );
+                case 'model':
+                  return (
+                    <div key={i}>
+                      <Text>{_.last(_.filter(x.response, s => _.isString(s)))}</Text>
+                    </div>
+                  );
+                default: return null;
+              }
+            })}
+          </ScrollView>
         </div>
         <div className='d-flex flex-row p-2 gap-2 border-top'>
           <TextInput classes='flex-fill' value={input} onChangeText={setInput} />
