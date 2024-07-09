@@ -4,6 +4,8 @@ This package includes scripts to download the pre-trained model from huggingface
 
 Therefore, you are required to install `huggingface-cli` and log in with a huggingface account.
 
+## Huggingface
+
 You can use homebrew to install the `huggingface-cli`:
 ```
 brew install huggingface-cli
