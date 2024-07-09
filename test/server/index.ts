@@ -183,6 +183,7 @@ export default async (app: Server, env: Record<string, any>) => {
     });
 
     socket.on('disconnect', () => {
+      console.info('socket disconnected:', socket.id);
       if (!session) return;
       session.dispose();
       session = null;
