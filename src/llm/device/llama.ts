@@ -83,9 +83,9 @@ export class LlamaDevice extends LLMDeviceBase<llamaCpp.Llama> {
     return this._device.vramPaddingSize;
   }
   getVramState() {
-    return this._device.getVramState;
+    return this._device.getVramState();
   }
   getGpuDeviceNames() {
-    return this._device.getGpuDeviceNames;
+    return this._device.getGpuDeviceNames();
   }
 }
