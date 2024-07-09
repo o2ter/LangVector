@@ -107,6 +107,8 @@ export default async (app: Server, env: Record<string, any>) => {
 
   app.socket().on('connection', async (socket) => {
 
+    console.log('socket connected:', socket.id);
+
     let currentModel = 'meta-llama/Meta-Llama-3-8B-Instruct/ggml-model-q3_k_m.gguf';
     let session = currentModel ? await createSession(currentModel) : null;
 
