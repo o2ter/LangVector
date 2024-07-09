@@ -24,6 +24,7 @@
 //
 
 export { LLMDevice } from './device';
+export { LLMDeviceBase } from './device/base';
 export { LLMModel } from './model/base';
 export { LLMContext } from './context/base';
 export { LLMSession } from './session/base';
