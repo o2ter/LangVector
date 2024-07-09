@@ -29,13 +29,9 @@ import { io } from 'socket.io-client';
 import { Button, ScrollView, Text, TextInput } from '@o2ter/react-ui';
 import './css/main.scss';
 
-const ChatBox = ({ text }) => {
-  return (
-    <div>
-      <Text>{text}</Text>
-    </div>
-  );
-}
+const ChatBox = ({ classes, text, ...props }) => (
+  <Text classes={['m-3 px-3 py-1 rounded', classes]} {...props}>{text}</Text>
+);
 
 export default () => {
 
@@ -84,20 +80,36 @@ export default () => {
               switch (x.type) {
                 case 'user':
                   return (
-                    <ChatBox key={i} text={x.text} />
+                    <ChatBox
+                      key={i}
+                      classes='bg-primary ml-auto'
+                      style={{ color: 'white' }}
+                      text={x.text}
+                    />
                   );
                 case 'model':
                   return (
-                    <ChatBox key={i} text={_.last(_.filter(x.response, s => _.isString(s)))} />
+                    <ChatBox
+                      key={i}
+                      classes='bg-light mr-auto'
+                      text={_.last(_.filter(x.response, s => _.isString(s)))}
+                    />
                   );
                 default: return null;
               }
             })}
             {!_.isEmpty(userMessage) && (
-              <ChatBox text={userMessage} />
+              <ChatBox
+                classes='bg-primary ml-auto'
+                style={{ color: 'white' }}
+                text={userMessage}
+              />
             )}
             {!_.isEmpty(partial) && (
-              <ChatBox text={partial} />
+              <ChatBox
+                classes='bg-light mr-auto'
+                text={partial}
+              />
             )}
           </ScrollView>
         </div>
