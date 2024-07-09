@@ -1,5 +1,5 @@
 //
-//  index.ts
+//  base.ts
 //
 //  The MIT License
 //  Copyright (c) 2021 - 2024 O2ter Limited. All rights reserved.
@@ -23,10 +23,9 @@
 //  THE SOFTWARE.
 //
 
-import _ from 'lodash';
-import { getLlama, LlamaOptions } from '../plugins/llama-cpp';
+import { LLMModel } from '../model/base';
 import { LlamaDevice } from './llama';
-import { LLMModel } from '../model';
+import { llamaCpp } from '../plugins/llama-cpp';
 
 export abstract class LLMDevice<D> {
 
@@ -41,8 +40,8 @@ export abstract class LLMDevice<D> {
 
   abstract loadModel(options: any): Promise<LLMModel<any, any>>;
 
-  static async llama(options?: LlamaOptions) {
-    const ctx = await getLlama(options);
+  static async llama(options?: llamaCpp.LlamaOptions) {
+    const ctx = await llamaCpp.getLlama(options);
     return new LlamaDevice(ctx);
   }
 }

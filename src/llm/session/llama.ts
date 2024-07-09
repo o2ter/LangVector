@@ -26,30 +26,19 @@
 import { LlamaContext } from '../context/llama';
 import { LlamaDevice } from '../device/llama';
 import { LlamaModel } from '../model/llama';
-import {
-  LlamaModel as _LlamaModel,
-  ChatHistoryItem,
-  ChatSessionModelFunctions,
-  ContextTokensDeleteRange,
-  LLamaChatCompletePromptOptions,
-  LLamaChatPromptOptions,
-  LlamaChatSession,
-  LlamaChatSessionOptions,
-  LlamaContextSequence,
-  Token,
-} from '../plugins/llama-cpp';
-import { LLMSession } from './index';
+import { LLMSession } from './base';
+import { llamaCpp } from '../plugins/llama-cpp';
 
 export class LlamaSession extends LLMSession<LlamaDevice, LlamaModel, LlamaContext> {
 
-  private _seq: LlamaContextSequence;
-  private _chat?: LlamaChatSession;
-  private _options: Omit<LlamaChatSessionOptions, 'contextSequence'>;
+  private _seq: llamaCpp.LlamaContextSequence;
+  private _chat?: llamaCpp.LlamaChatSession;
+  private _options: Omit<llamaCpp.LlamaChatSessionOptions, 'contextSequence'>;
 
   constructor(
     context: LlamaContext,
-    seq: LlamaContextSequence,
-    options: Omit<LlamaChatSessionOptions, 'contextSequence'>,
+    seq: llamaCpp.LlamaContextSequence,
+    options: Omit<llamaCpp.LlamaChatSessionOptions, 'contextSequence'>,
   ) {
     super(context);
     this._seq = seq;
@@ -79,7 +68,7 @@ export class LlamaSession extends LLMSession<LlamaDevice, LlamaModel, LlamaConte
     return this._seq.isLoadedToMemory;
   }
 
-  compareContextTokens(tokens: Token[]) {
+  compareContextTokens(tokens: llamaCpp.Token[]) {
     return this._seq.compareContextTokens(tokens);
   }
 
@@ -88,39 +77,39 @@ export class LlamaSession extends LLMSession<LlamaDevice, LlamaModel, LlamaConte
     await this._seq.clearHistory();
   }
 
-  async eraseContextTokenRanges(ranges: ContextTokensDeleteRange[]) {
+  async eraseContextTokenRanges(ranges: llamaCpp.ContextTokensDeleteRange[]) {
     await this._seq.eraseContextTokenRanges(ranges);
   }
 
   evaluate(
-    tokens: Token[],
-    options?: Parameters<LlamaContextSequence['evaluate']>[1]
+    tokens: llamaCpp.Token[],
+    options?: Parameters<llamaCpp.LlamaContextSequence['evaluate']>[1]
   ) {
     return this._seq.evaluate(tokens, options);
   }
 
   evaluateWithoutGeneratingNewTokens(
-    tokens: Token[],
-    options?: Parameters<LlamaContextSequence['evaluateWithoutGeneratingNewTokens']>[1]
+    tokens: llamaCpp.Token[],
+    options?: Parameters<llamaCpp.LlamaContextSequence['evaluateWithoutGeneratingNewTokens']>[1]
   ) {
     return this._seq.evaluateWithoutGeneratingNewTokens(tokens, options);
   }
 
   get #chat() {
-    this._chat = this._chat ?? new LlamaChatSession({ contextSequence: this._seq, ...this._options });
+    this._chat = this._chat ?? new llamaCpp.LlamaChatSession({ contextSequence: this._seq, ...this._options });
     return this._chat;
   }
 
-  prompt<const Functions extends ChatSessionModelFunctions | undefined = undefined>(
+  prompt<const Functions extends llamaCpp.ChatSessionModelFunctions | undefined = undefined>(
     prompt: string,
-    options?: LLamaChatPromptOptions<Functions>
+    options?: llamaCpp.LLamaChatPromptOptions<Functions>
   ) {
     return this.#chat.promptWithMeta(prompt, options);
   }
 
   completePrompt(
     prompt: string,
-    options?: LLamaChatCompletePromptOptions
+    options?: llamaCpp.LLamaChatCompletePromptOptions
   ) {
     return this.#chat.completePromptWithMeta(prompt, options);
   }
@@ -128,7 +117,7 @@ export class LlamaSession extends LLMSession<LlamaDevice, LlamaModel, LlamaConte
   get chatHistory() {
     return this.#chat.getChatHistory();
   }
-  set chatHistory(history: ChatHistoryItem[]) {
+  set chatHistory(history: llamaCpp.ChatHistoryItem[]) {
     this.#chat.setChatHistory(history);
   }
   get lastEvaluationContextWindow() {

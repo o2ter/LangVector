@@ -23,4 +23,4 @@
 //  THE SOFTWARE.
 //
 
-export * from 'node-llama-cpp';
+export * as llamaCpp from 'node-llama-cpp';

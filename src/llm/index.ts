@@ -23,9 +23,13 @@
 //  THE SOFTWARE.
 //
 
-export { defineChatSessionFunction } from './plugins/llama-cpp';
-export { LLMDevice } from './device';
-export { LLMModel } from './model';
-export { LLMContext } from './context';
-export { LLMSession } from './session';
-export { Token } from './plugins/llama-cpp';
+export { LLMDevice } from './device/base';
+export { LLMModel } from './model/base';
+export { LLMContext } from './context/base';
+export { LLMSession } from './session/base';
+
+import { llamaCpp } from './plugins/llama-cpp';
+
+export type Token = llamaCpp.Token;
+export const defineChatSessionFunction = llamaCpp.defineChatSessionFunction;
+export { llamaCpp };

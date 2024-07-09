@@ -26,16 +26,10 @@
 import _ from 'lodash';
 import { LlamaContext } from '../context/llama';
 import { LlamaDevice } from '../device/llama';
-import {
-  LlamaModel as _LlamaModel,
-  BuiltinSpecialTokenValue,
-  LlamaContextOptions,
-  LlamaEmbeddingContextOptions,
-  Token,
-} from '../plugins/llama-cpp';
-import { LLMModel } from './index';
+import { llamaCpp } from '../plugins/llama-cpp';
+import { LLMModel } from './base';
 
-export class LlamaModel extends LLMModel<LlamaDevice, _LlamaModel> {
+export class LlamaModel extends LLMModel<LlamaDevice, llamaCpp.LlamaModel> {
 
   async dispose() {
     if (!this._model.disposed) await this._model.dispose();
@@ -45,15 +39,15 @@ export class LlamaModel extends LLMModel<LlamaDevice, _LlamaModel> {
     return this._model.disposed;
   }
 
-  async createContext(options?: LlamaContextOptions) {
+  async createContext(options?: llamaCpp.LlamaContextOptions) {
     return new LlamaContext(this, options);
   }
 
-  _createContext(options?: LlamaContextOptions) {
+  _createContext(options?: llamaCpp.LlamaContextOptions) {
     return this._model.createContext(options);
   }
 
-  _createEmbeddingContext(options?: LlamaEmbeddingContextOptions) {
+  _createEmbeddingContext(options?: llamaCpp.LlamaEmbeddingContextOptions) {
     return this._model.createEmbeddingContext(options);
   }
 
@@ -84,27 +78,27 @@ export class LlamaModel extends LLMModel<LlamaDevice, _LlamaModel> {
     return this._model.defaultContextFlashAttention;
   }
 
-  tokenize(text: BuiltinSpecialTokenValue, specialTokens: 'builtin'): Token[];
-  tokenize(text: string, specialTokens?: boolean, options?: "trimLeadingSpace"): Token[];
+  tokenize(text: llamaCpp.BuiltinSpecialTokenValue, specialTokens: 'builtin'): llamaCpp.Token[];
+  tokenize(text: string, specialTokens?: boolean, options?: "trimLeadingSpace"): llamaCpp.Token[];
   tokenize(text: string, specialTokens?: boolean | 'builtin', options?: "trimLeadingSpace") {
     if (specialTokens === 'builtin') {
-      return this._model.tokenize(text as BuiltinSpecialTokenValue, specialTokens);
+      return this._model.tokenize(text as llamaCpp.BuiltinSpecialTokenValue, specialTokens);
     }
     return this._model.tokenize(text, specialTokens, options);
   }
 
-  detokenize(tokens: readonly Token[], specialTokens?: boolean) {
+  detokenize(tokens: readonly llamaCpp.Token[], specialTokens?: boolean) {
     return this._model.detokenize(tokens, specialTokens);
   }
-  getTokenAttributes(token: Token) {
+  getTokenAttributes(token: llamaCpp.Token) {
     return this._model.getTokenAttributes(token);
   }
 
-  isSpecialToken(token?: Token) {
+  isSpecialToken(token?: llamaCpp.Token) {
     return this._model.isSpecialToken(token);
   }
 
-  isEogToken(token?: Token) {
+  isEogToken(token?: llamaCpp.Token) {
     return this._model.isEogToken(token);
   }
 }

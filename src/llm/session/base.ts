@@ -24,10 +24,10 @@
 //
 
 import _ from 'lodash';
-import { LLMContext } from '../context';
-import { LLMDevice } from '../device';
-import { LLMModel } from '../model';
-import { ContextTokensDeleteRange, Token } from '../plugins/llama-cpp';
+import { LLMContext } from '../context/base';
+import { LLMDevice } from '../device/base';
+import { LLMModel } from '../model/base';
+import { llamaCpp } from '../plugins/llama-cpp';
 
 export abstract class LLMSession<D extends LLMDevice<any>, M extends LLMModel<D, any>, C extends LLMContext<D, M>> {
 
@@ -53,8 +53,8 @@ export abstract class LLMSession<D extends LLMDevice<any>, M extends LLMModel<D,
   abstract get disposed(): boolean;
 
   abstract get nextTokenIndex(): number;
-  abstract get tokens(): Token[];
+  abstract get tokens(): llamaCpp.Token[];
 
   abstract clearHistory(): Promise<void>;
-  abstract eraseContextTokenRanges(ranges: ContextTokensDeleteRange[]): Promise<void>;
+  abstract eraseContextTokenRanges(ranges: llamaCpp.ContextTokensDeleteRange[]): Promise<void>;
 }

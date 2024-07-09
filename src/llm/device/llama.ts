@@ -24,10 +24,10 @@
 //
 
 import { LlamaModel } from '../model/llama';
-import { Llama, LlamaLogLevel, LlamaModelOptions, LlamaModel as _LlamaModel } from '../plugins/llama-cpp';
-import { LLMDevice } from './index';
+import { LLMDevice } from './base';
+import { llamaCpp } from '../plugins/llama-cpp';
 
-export class LlamaDevice extends LLMDevice<Llama> {
+export class LlamaDevice extends LLMDevice<llamaCpp.Llama> {
 
   async dispose() {
     if (!this._device.disposed) await this._device.dispose();
@@ -37,7 +37,7 @@ export class LlamaDevice extends LLMDevice<Llama> {
     return this._device.disposed;
   }
 
-  async loadModel(options: LlamaModelOptions) {
+  async loadModel(options: llamaCpp.LlamaModelOptions) {
     const model = await this._device.loadModel(options);
     return new LlamaModel(this, model);
   }
@@ -57,13 +57,13 @@ export class LlamaDevice extends LLMDevice<Llama> {
   get logLevel() {
     return this._device.logLevel;
   }
-  set logLevel(value: LlamaLogLevel) {
+  set logLevel(value: llamaCpp.LlamaLogLevel) {
      this._device.logLevel = value;
   }
   get logger() {
     return this._device.logger;
   }
-  set logger(value: (level: LlamaLogLevel, message: string) => void) {
+  set logger(value: (level: llamaCpp.LlamaLogLevel, message: string) => void) {
     this._device.logger = value;
   }
   get buildType() {

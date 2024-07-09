@@ -25,26 +25,18 @@
 
 import { LlamaDevice } from '../device/llama';
 import { LlamaModel } from '../model/llama';
-import {
-  LlamaModel as _LlamaModel,
-  LlamaContext as _LlamaContext,
-  LlamaEmbeddingContext as _LlamaEmbeddingContext,
-  LlamaContextOptions,
-  LlamaText,
-  Token,
-  LlamaChatSessionOptions,
-} from '../plugins/llama-cpp';
+import { llamaCpp } from '../plugins/llama-cpp';
 import { LlamaSession } from '../session/llama';
-import { LLMContext } from './index';
+import { LLMContext } from './base';
 
 export class LlamaContext extends LLMContext<LlamaDevice, LlamaModel> {
 
-  private _pool: _LlamaContext[] = [];
-  private _embedding?: _LlamaEmbeddingContext;
+  private _pool: llamaCpp.LlamaContext[] = [];
+  private _embedding?: llamaCpp.LlamaEmbeddingContext;
 
-  private _options?: LlamaContextOptions;
+  private _options?: llamaCpp.LlamaContextOptions;
 
-  constructor(model: LlamaModel, options?: LlamaContextOptions) {
+  constructor(model: LlamaModel, options?: llamaCpp.LlamaContextOptions) {
     super(model);
     this._options = options;
   }
@@ -64,14 +56,14 @@ export class LlamaContext extends LLMContext<LlamaDevice, LlamaModel> {
     return true;
   }
 
-  async getEmbeddingFor(input: Token[] | string | LlamaText) {
+  async getEmbeddingFor(input: llamaCpp.Token[] | string | llamaCpp.LlamaText) {
     this._embedding = this._embedding ?? await this._model._createEmbeddingContext(this._options);
     return this._embedding.getEmbeddingFor(input);
   }
 
   async createSession(
-    options?: Parameters<_LlamaContext['getSequence']>[0] & {
-      chatOptions?: Omit<LlamaChatSessionOptions, 'contextSequence'>;
+    options?: Parameters<llamaCpp.LlamaContext['getSequence']>[0] & {
+      chatOptions?: Omit<llamaCpp.LlamaChatSessionOptions, 'contextSequence'>;
     }
   ) {
     for (const ctx of this._pool) {

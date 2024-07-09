@@ -24,28 +24,26 @@
 //
 
 import _ from 'lodash';
-import { LLMModel } from '../model';
-import { LlamaEmbedding, Token } from '../plugins/llama-cpp';
-import { LLMDevice } from '../device';
+import { LLMDevice } from '../device/base';
+import { llamaCpp } from '../plugins/llama-cpp';
 
-export abstract class LLMContext<D extends LLMDevice<any>, M extends LLMModel<D, any>> {
+export abstract class LLMModel<D extends LLMDevice<any>, M> {
 
+  protected _device: D;
   protected _model: M;
 
-  constructor(model: M) {
+  constructor(device: D, model: M) {
+    this._device = device;
     this._model = model;
   }
 
   get device() {
-    return this._model.device;
-  }
-
-  get model() {
-    return this._model;
+    return this._device;
   }
 
   abstract dispose(): Promise<void>;
   abstract get disposed(): boolean;
 
-  abstract getEmbeddingFor(input: Token[] | string): Promise<LlamaEmbedding>;
+  abstract tokenize(text: string): llamaCpp.Token[];
+  abstract detokenize(tokens: readonly llamaCpp.Token[]): string;
 }
