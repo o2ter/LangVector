@@ -29,6 +29,14 @@ import { io } from 'socket.io-client';
 import { Button, ScrollView, Text, TextInput } from '@o2ter/react-ui';
 import './css/main.scss';
 
+const ChatBox = ({ text }) => {
+  return (
+    <div>
+      <Text>{text}</Text>
+    </div>
+  );
+}
+
 const ChatBody = ({ socket }) => {
 
   const [input, setInput] = React.useState('');
@@ -66,19 +74,18 @@ const ChatBody = ({ socket }) => {
               switch (x.type) {
                 case 'user':
                   return (
-                    <div key={i}>
-                      <Text>{x.text}</Text>
-                    </div>
+                    <ChatBox key={i} text={x.text} />
                   );
                 case 'model':
                   return (
-                    <div key={i}>
-                      <Text>{_.last(_.filter(x.response, s => _.isString(s)))}</Text>
-                    </div>
+                    <ChatBox key={i} text={_.last(_.filter(x.response, s => _.isString(s)))} />
                   );
                 default: return null;
               }
             })}
+            {!_.isEmpty(partial) && (
+              <ChatBox text={partial} />
+            )}
           </ScrollView>
         </div>
         <div className='d-flex flex-row p-2 gap-2 border-top'>
