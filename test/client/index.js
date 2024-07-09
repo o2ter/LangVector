@@ -41,6 +41,7 @@ const ChatBody = ({ socket }) => {
 
   const [input, setInput] = React.useState('');
   const [state, setState] = React.useState({});
+  const [userMessage, setUserMessage] = React.useState('');
   const [partial, setPartial] = React.useState('');
 
   React.useEffect(() => {
@@ -49,9 +50,11 @@ const ChatBody = ({ socket }) => {
 
     socket.on('response', ({
       partial,
+      message,
       responseText,
       ...state
     }) => {
+      setUserMessage(partial ? message : '');
       setPartial(partial ? responseText : '');
       setState(v => ({ ...v, ...state }));
     });
@@ -83,6 +86,9 @@ const ChatBody = ({ socket }) => {
                 default: return null;
               }
             })}
+            {!_.isEmpty(userMessage) && (
+              <ChatBox text={userMessage} />
+            )}
             {!_.isEmpty(partial) && (
               <ChatBox text={partial} />
             )}

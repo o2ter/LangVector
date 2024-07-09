@@ -185,6 +185,7 @@ export default async (app: Server, env: Record<string, any>) => {
           socket.emit('response', {
             ...defaultResponse(_session),
             partial: true,
+            message: msg,
             responseText: _session.model.detokenize(partial, true),
           });
         }
@@ -193,6 +194,7 @@ export default async (app: Server, env: Record<string, any>) => {
       socket.emit('response', {
         ...defaultResponse(_session),
         partial: false,
+        message: msg,
         responseText,
       });
     });
