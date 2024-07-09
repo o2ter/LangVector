@@ -55,8 +55,22 @@ const defaultOptions = {
         return new Date();
       }
     }),
-    random: defineChatSessionFunction({
-      description: "Generates a random number",
+    randomInt: defineChatSessionFunction({
+      description: "Generates a random integer between maximum and minimum inclusively",
+      params: {
+        type: 'object',
+        properties: {
+          maximum: { type: 'number' },
+          minimum: { type: 'number' },
+        },
+        required: ['maximum', 'minimum'],
+      },
+      handler({ maximum, minimum }) {
+        return Math.floor(Math.random() * (maximum - minimum + 1) + minimum);
+      }
+    }),
+    randomFloat: defineChatSessionFunction({
+      description: "Generates a random floating number between maximum and minimum",
       params: {
         type: 'object',
         properties: {
