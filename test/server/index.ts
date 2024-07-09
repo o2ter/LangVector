@@ -200,13 +200,13 @@ export default async (app: Server, env: Record<string, any>) => {
     });
 
     socket.on('sync', (opts: any) => {
-      if (opts.minP) options.minP = opts.minP;
-      if (opts.topK) options.topK = opts.topK;
-      if (opts.topP) options.topP = opts.topP;
-      if (opts.temperature) options.temperature = opts.temperature;
-      if (opts.repeatPenalty?.frequencyPenalty) options.repeatPenalty.frequencyPenalty = opts.repeatPenalty?.frequencyPenalty;
-      if (opts.repeatPenalty?.presencePenalty) options.repeatPenalty.presencePenalty = opts.repeatPenalty?.presencePenalty;
-      if (opts.maxTokens) options.maxTokens = opts.maxTokens;
+      if (opts?.minP) options.minP = opts.minP;
+      if (opts?.topK) options.topK = opts.topK;
+      if (opts?.topP) options.topP = opts.topP;
+      if (opts?.temperature) options.temperature = opts.temperature;
+      if (opts?.repeatPenalty?.frequencyPenalty) options.repeatPenalty.frequencyPenalty = opts.repeatPenalty?.frequencyPenalty;
+      if (opts?.repeatPenalty?.presencePenalty) options.repeatPenalty.presencePenalty = opts.repeatPenalty?.presencePenalty;
+      if (opts?.maxTokens) options.maxTokens = opts.maxTokens;
 
       const _session = session;
       if (!_session) return;
