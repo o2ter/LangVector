@@ -16,6 +16,7 @@ module.exports = (env, argv) => ({
       new webpack.IgnorePlugin({ resourceRegExp: /^pg-native$/ }),
     ],
     externals: {
+      'mupdf': 'commonjs2 mupdf',
       'node-llama-cpp': 'commonjs2 node-llama-cpp',
     },
   },
