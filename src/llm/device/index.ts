@@ -1,5 +1,5 @@
 //
-//  index.ts
+//  base.ts
 //
 //  The MIT License
 //  Copyright (c) 2021 - 2024 O2ter Limited. All rights reserved.
@@ -23,38 +23,14 @@
 //  THE SOFTWARE.
 //
 
-import _ from 'lodash';
-import { LLMContext } from '../context/base';
-import { LLMDeviceBase } from '../device/base';
-import { LLMModel } from '../model/base';
+import { LlamaDevice } from './llama';
+import { LLMDeviceBase } from './base';
 import { llamaCpp } from '../plugins/llama-cpp';
 
-export abstract class LLMSession<D extends LLMDeviceBase<any>, M extends LLMModel<D, any>, C extends LLMContext<D, M>> {
+export abstract class LLMDevice<D> extends LLMDeviceBase<D> {
 
-  protected _context: C;
-
-  constructor(context: C) {
-    this._context = context;
+  static async llama(options?: llamaCpp.LlamaOptions) {
+    const ctx = await llamaCpp.getLlama(options);
+    return new LlamaDevice(ctx);
   }
-
-  get device() {
-    return this._context.model.device;
-  }
-
-  get model() {
-    return this._context.model;
-  }
-
-  get context() {
-    return this._context;
-  }
-
-  abstract dispose(): Promise<void>;
-  abstract get disposed(): boolean;
-
-  abstract get nextTokenIndex(): number;
-  abstract get tokens(): llamaCpp.Token[];
-
-  abstract clearHistory(): Promise<void>;
-  abstract eraseContextTokenRanges(ranges: llamaCpp.ContextTokensDeleteRange[]): Promise<void>;
 }

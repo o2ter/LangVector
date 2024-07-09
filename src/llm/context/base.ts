@@ -25,10 +25,10 @@
 
 import _ from 'lodash';
 import { LLMModel } from '../model/base';
-import { LLMDevice } from '../device/base';
+import { LLMDeviceBase } from '../device/base';
 import { llamaCpp } from '../plugins/llama-cpp';
 
-export abstract class LLMContext<D extends LLMDevice<any>, M extends LLMModel<D, any>> {
+export abstract class LLMContext<D extends LLMDeviceBase<any>, M extends LLMModel<D, any>> {
 
   protected _model: M;
 

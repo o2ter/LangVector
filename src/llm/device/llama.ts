@@ -24,10 +24,10 @@
 //
 
 import { LlamaModel } from '../model/llama';
-import { LLMDevice } from './base';
+import { LLMDeviceBase } from './base';
 import { llamaCpp } from '../plugins/llama-cpp';
 
-export class LlamaDevice extends LLMDevice<llamaCpp.Llama> {
+export class LlamaDevice extends LLMDeviceBase<llamaCpp.Llama> {
 
   async dispose() {
     if (!this._device.disposed) await this._device.dispose();

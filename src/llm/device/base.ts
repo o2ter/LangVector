@@ -24,10 +24,8 @@
 //
 
 import { LLMModel } from '../model/base';
-import { LlamaDevice } from './llama';
-import { llamaCpp } from '../plugins/llama-cpp';
 
-export abstract class LLMDevice<D> {
+export abstract class LLMDeviceBase<D> {
 
   protected _device: D;
 
@@ -39,9 +37,4 @@ export abstract class LLMDevice<D> {
   abstract get disposed(): boolean;
 
   abstract loadModel(options: any): Promise<LLMModel<any, any>>;
-
-  static async llama(options?: llamaCpp.LlamaOptions) {
-    const ctx = await llamaCpp.getLlama(options);
-    return new LlamaDevice(ctx);
-  }
 }

@@ -23,7 +23,7 @@
 //  THE SOFTWARE.
 //
 
-export { LLMDevice } from './device/base';
+export { LLMDevice } from './device';
 export { LLMModel } from './model/base';
 export { LLMContext } from './context/base';
 export { LLMSession } from './session/base';
