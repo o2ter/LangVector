@@ -96,8 +96,11 @@ export default async (app: Server, env: Record<string, any>) => {
 
   const createSession = async (name: string) => {
     if (contexts[name]) return contexts[name].createSession({ chatOptions });
-    const model = await device.loadModel({ modelPath: path.join(modelsDir, name) });
-    const context = await model.createContext();
+    const model = await device.loadModel({
+      modelPath: path.join(modelsDir, name),
+      ignoreMemorySafetyChecks: true,
+     });
+    const context = await model.createContext({ ignoreMemorySafetyChecks: true });
     contexts[name] = context;
     return context.createSession({ chatOptions });
   }
