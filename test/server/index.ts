@@ -68,7 +68,29 @@ const defaultOptions = {
       handler({ maximum, minimum }) {
         return Math.random() * (maximum - minimum) + minimum;
       }
-    })
+    }),
+    todayMenu: defineChatSessionFunction({
+      description: "A list of today’s special menu",
+      handler() {
+        return {
+          totalCount: 3,
+          menus: [
+            {
+              name: 'Pizza',
+              price: 75,
+            },
+            {
+              name: 'Hamburger',
+              price: 80,
+            },
+            {
+              name: 'Fish And Chips',
+              price: 75,
+            },
+          ],
+        };
+      }
+    }),
   }
 };
 
