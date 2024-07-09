@@ -33,7 +33,7 @@ import './cloud/main';
 
 import { defineChatSessionFunction, LLMDevice, Token } from '../../src';
 import { LlamaContext } from '../../src/llm/context/llama';
-import { Llama3ChatWrapper } from '../../src/llm/plugins/llama-cpp';
+import { llamaCpp } from '../../src/llm/plugins/llama-cpp';
 
 const walkDirAsync = async function* (dir: string): AsyncGenerator<string, void> {
   const files = await fs.readdir(dir, { withFileTypes: true });
@@ -92,7 +92,7 @@ export default async (app: Server, env: Record<string, any>) => {
 
   const device = await LLMDevice.llama();
   const contexts: Record<string, LlamaContext> = {};
-  const chatOptions = { chatWrapper: new Llama3ChatWrapper };
+  const chatOptions = { chatWrapper: new llamaCpp.Llama3ChatWrapper };
 
   const createSession = async (modelPath: string) => {
     if (contexts[modelPath]) return contexts[modelPath].createSession({ chatOptions });
