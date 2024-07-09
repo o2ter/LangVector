@@ -26,7 +26,7 @@
 import _ from 'lodash';
 import React from 'react';
 import { io } from 'socket.io-client';
-import { Button, TextInput } from '@o2ter/react-ui';
+import { Button, Text, TextInput } from '@o2ter/react-ui';
 import './css/main.scss';
 
 const ChatBody = ({ socket }) => {
@@ -53,7 +53,9 @@ const ChatBody = ({ socket }) => {
   return (
     <div className='d-flex flex-row flex-fill'>
       <div className='d-flex flex-column w-50 border-right'>
-        <div className='d-flex flex-column flex-fill border-right'>{state.raw}</div>
+        <div className='d-flex flex-column flex-fill border-right'>
+          <Text>{state.raw}</Text>
+        </div>
       </div>
       <div className='d-flex flex-column w-50'>
         <div className='d-flex flex-column flex-fill'>{JSON.stringify(state.history)}</div>
