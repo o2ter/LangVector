@@ -58,7 +58,25 @@ const ChatBody = ({ socket }) => {
         </div>
       </div>
       <div className='d-flex flex-column w-50'>
-        <div className='d-flex flex-column flex-fill'>{JSON.stringify(state.history)}</div>
+        <div className='d-flex flex-column flex-fill'>
+          {_.map(state.history, (x, i) => {
+            switch (x.type) {
+              case 'user':
+                return (
+                  <div key={i}>
+                    <Text>{x.text}</Text>
+                  </div>
+                );
+              case 'model':
+                return (
+                  <div key={i}>
+                    <Text>{_.last(_.filter(x.response, s => _.isString(s)))}</Text>
+                  </div>
+                );
+              default: return null;
+            }
+          })}
+        </div>
         <div className='d-flex flex-row p-2 gap-2 border-top'>
           <TextInput classes='flex-fill' value={input} onChangeText={setInput} />
           <Button title='Send' onPress={() => {
