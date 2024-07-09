@@ -61,6 +61,11 @@ const ChatBody = ({ socket }) => {
 
   }, []);
 
+  const submit = React.useCallback(() => {
+    socket.emit('msg', input);
+    setInput('');
+  }, [input]);
+
   return (
     <div className='d-flex flex-row flex-fill'>
       <div className='d-flex flex-column w-50 border-right'>
@@ -95,11 +100,13 @@ const ChatBody = ({ socket }) => {
           </ScrollView>
         </div>
         <div className='d-flex flex-row p-2 gap-2 border-top'>
-          <TextInput classes='flex-fill' value={input} onChangeText={setInput} />
-          <Button title='Send' onPress={() => {
-            socket.emit('msg', input);
-            setInput('');
-          }} />
+          <TextInput
+            classes='flex-fill'
+            value={input}
+            onChangeText={setInput}
+            onSubmitEditing={submit}
+          />
+          <Button title='Send' onPress={submit} />
         </div>
       </div>
     </div>
