@@ -17,6 +17,8 @@ module.exports = (env, argv) => ({
     ],
     externals: {
       '@reflink/reflink': 'commonjs2 @reflink/reflink',
+      '@node-llama-cpp/win-x64-cuda': 'commonjs2 @node-llama-cpp/win-x64-cuda',
+      '@node-llama-cpp/linux-x64-cuda': 'commonjs2 @node-llama-cpp/linux-x64-cuda',
     },
   },
 })
