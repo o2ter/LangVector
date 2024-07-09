@@ -173,6 +173,13 @@ export default async (app: Server, env: Record<string, any>) => {
       const _session = session;
       if (!_session) return;
 
+      socket.emit('response', {
+        ...defaultResponse(_session),
+        partial: true,
+        message: msg,
+        responseText: '',
+      });
+
       let partial: Token[] = [];
 
       const { responseText } = await _session.prompt(msg, {
