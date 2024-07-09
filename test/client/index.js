@@ -39,7 +39,8 @@ const ChatBox = ({ text }) => {
 
 export default () => {
 
-  const [socket] = React.useState(() => io());
+  const socket = React.useMemo(() => io(), []);
+
   const [input, setInput] = React.useState('');
   const [state, setState] = React.useState({});
   const [userMessage, setUserMessage] = React.useState('');
