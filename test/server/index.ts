@@ -157,11 +157,6 @@ export default async (app: Server, env: Record<string, any>) => {
 
     console.info('socket connected:', socket.id);
 
-    const abort = new AbortController;
-
-    let currentModel = 'meta-llama/Meta-Llama-3-8B-Instruct/ggml-model-q3_k_m.gguf';
-    let session = currentModel ? await createSession(currentModel) : null;
-
     const options = {
       minP: 0,
       topK: 40,
@@ -174,6 +169,32 @@ export default async (app: Server, env: Record<string, any>) => {
       maxTokens: 100,
     };
 
+    socket.emit('response', {
+      status: 'initiating',
+      models,
+      options,
+    });
+
+    const abort = new AbortController;
+
+    let currentModel = 'meta-llama/Meta-Llama-3-8B-Instruct/ggml-model-q3_k_m.gguf';
+    let session = currentModel ? await createSession(currentModel) : null;
+
+    const defaultResponse = (session: LlamaSession) => ({
+      models,
+      currentModel,
+      options,
+      history: session.chatHistory,
+      raw: session.model.detokenize(session.tokens, true),
+    });
+
+    if (session) {
+      socket.emit('response', {
+        status: 'ready',
+        ...defaultResponse(session),
+      });
+    }
+
     socket.on('options', (opts: any) => {
       if (opts.minP) options.minP = opts.minP;
       if (opts.topK) options.topK = opts.topK;
@@ -182,14 +203,6 @@ export default async (app: Server, env: Record<string, any>) => {
       if (opts.repeatPenalty?.frequencyPenalty) options.repeatPenalty.frequencyPenalty = opts.repeatPenalty?.frequencyPenalty;
       if (opts.repeatPenalty?.presencePenalty) options.repeatPenalty.presencePenalty = opts.repeatPenalty?.presencePenalty;
       if (opts.maxTokens) options.maxTokens = opts.maxTokens;
-    });
-
-    const defaultResponse = (session: LlamaSession) => ({
-      models,
-      currentModel,
-      options,
-      history: session.chatHistory,
-      raw: session.model.detokenize(session.tokens, true),
     });
 
     socket.on('reset', () => {
@@ -210,6 +223,7 @@ export default async (app: Server, env: Record<string, any>) => {
       if (!_session) return;
 
       socket.emit('response', {
+        status: 'responding',
         ...defaultResponse(_session),
         partial: true,
         message: msg,
@@ -226,6 +240,7 @@ export default async (app: Server, env: Record<string, any>) => {
         onToken: (token) => {
           partial.push(...token);
           socket.emit('response', {
+            status: 'responding',
             ...defaultResponse(_session),
             partial: true,
             message: msg,
@@ -235,6 +250,7 @@ export default async (app: Server, env: Record<string, any>) => {
       });
 
       socket.emit('response', {
+        status: 'ready',
         ...defaultResponse(_session),
         partial: false,
         message: msg,

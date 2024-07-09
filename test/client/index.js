@@ -44,8 +44,6 @@ export default () => {
 
   React.useEffect(() => {
 
-    socket.emit('sync');
-
     socket.on('response', ({
       partial,
       message,
@@ -57,6 +55,8 @@ export default () => {
       setState(v => ({ ...v, ...state }));
     });
 
+    socket.emit('sync');
+
   }, []);
 
   const submit = React.useCallback(() => {
@@ -67,7 +67,10 @@ export default () => {
   return (
     <div className='d-flex flex-row flex-fill'>
       <div className='d-flex flex-column w-50 border-right'>
-        <div className='d-flex flex-column flex-fill border-right position-relative'>
+        <div className='d-flex border-bottom'>
+          <div>status: {state.status}</div>
+        </div>
+        <div className='d-flex flex-column flex-fill position-relative'>
           <ScrollView classes='absolute-fill'>
             <Text>{state.raw}</Text>
           </ScrollView>
