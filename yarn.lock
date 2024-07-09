@@ -1489,15 +1489,15 @@
   dependencies:
     make-dir "^3.0.2"
 
-"@node-llama-cpp/linux-x64-cuda@3.0.0-beta.37":
-  version "3.0.0-beta.37"
-  resolved "https://registry.yarnpkg.com/@node-llama-cpp/linux-x64-cuda/-/linux-x64-cuda-3.0.0-beta.37.tgz#93c715b0e1b86d5bb633cc78328ba44f60c22a56"
-  integrity sha512-vV19eKB/iSEqXOAzYNJn5Tv0EMqluKp4ILrwo3DDfdoKpfjdCjUPG3vTqde4a/6HJIMG0X9rYNYaD9FPclc1BA==
+"@node-llama-cpp/linux-x64-cuda@3.0.0-beta.38":
+  version "3.0.0-beta.38"
+  resolved "https://registry.yarnpkg.com/@node-llama-cpp/linux-x64-cuda/-/linux-x64-cuda-3.0.0-beta.38.tgz#959af899eaa1b57753e324de6b16064aa14119a0"
+  integrity sha512-CddPJUoqzxtPISaj984HQ1lZv8wa9vBwK+TGH+izSVtiX/3Gr4nGd4cu5Y6zxKOHgt9fvep21uOUS2NtX3SCBA==
 
-"@node-llama-cpp/win-x64-cuda@3.0.0-beta.37":
-  version "3.0.0-beta.37"
-  resolved "https://registry.yarnpkg.com/@node-llama-cpp/win-x64-cuda/-/win-x64-cuda-3.0.0-beta.37.tgz#ff38e3644fde6b648005cf2dba3adb78e44a2051"
-  integrity sha512-WEVgMLFWr77teC5wNwOjXGAH537Buw68chPGoEofP5QligLnqbgKJFLMutGrWZ6F4aPkv//8Pcn1Gu9MKUhvtg==
+"@node-llama-cpp/win-x64-cuda@3.0.0-beta.38":
+  version "3.0.0-beta.38"
+  resolved "https://registry.yarnpkg.com/@node-llama-cpp/win-x64-cuda/-/win-x64-cuda-3.0.0-beta.38.tgz#55f35b09c32f059429a7a8bbf0299d7ec92cda94"
+  integrity sha512-dxUfhpOdou28Ecs5WrpQGLpH4bMx/4audrZ6X+fojxXC9JKSV2xPKetYlKokbm6VSV9TLrubEqffXZebX8JQig==
 
 "@nodelib/fs.scandir@2.1.5":
   version "2.1.5"
@@ -6633,10 +6633,10 @@ node-int64@^0.4.0:
   resolved "https://registry.yarnpkg.com/node-int64/-/node-int64-0.4.0.tgz#87a9065cdb355d3182d8f94ce11188b825c68a3b"
   integrity sha512-O5lz91xSOeoXP6DulyHfllpq+Eg00MWitZIbtPfoSEvqIHdl5gfcY6hYzDWnj0qD5tz52PI08u9qUvSVeUBeHw==
 
-node-llama-cpp@^3.0.0-beta.36:
-  version "3.0.0-beta.37"
-  resolved "https://registry.yarnpkg.com/node-llama-cpp/-/node-llama-cpp-3.0.0-beta.37.tgz#c610fb35e3211a825890bc536a02cfa6555b0d00"
-  integrity sha512-AlrcXkLj71Q6ReJ2CRKANPruhV31lHw0qR6u/uHn39RsDWHDxEFMKgXkKEmoKF4rFvgAvfNNjOodWqBmWB6pqA==
+node-llama-cpp@^3.0.0-beta.38:
+  version "3.0.0-beta.38"
+  resolved "https://registry.yarnpkg.com/node-llama-cpp/-/node-llama-cpp-3.0.0-beta.38.tgz#532f5dd7db57be3e940ef952cd3c400abb9f5311"
+  integrity sha512-CUQkPzUcgaKn3ByPhwSr3V/0KyYexPogPBe+qmw/2MJw2U6WjWhXAGLuGi6t1fcQnL5zOzH3ixZspRjk+OKZQQ==
   dependencies:
     "@huggingface/jinja" "^0.2.2"
     async-retry "^1.3.3"
@@ -6669,8 +6669,8 @@ node-llama-cpp@^3.0.0-beta.36:
     which "^4.0.0"
     yargs "^17.7.2"
   optionalDependencies:
-    "@node-llama-cpp/linux-x64-cuda" "3.0.0-beta.37"
-    "@node-llama-cpp/win-x64-cuda" "3.0.0-beta.37"
+    "@node-llama-cpp/linux-x64-cuda" "3.0.0-beta.38"
+    "@node-llama-cpp/win-x64-cuda" "3.0.0-beta.38"
 
 node-releases@^2.0.14:
   version "2.0.14"
