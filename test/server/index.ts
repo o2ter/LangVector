@@ -33,6 +33,7 @@ import './cloud/main';
 
 import { defineChatSessionFunction, LLMDevice, Token } from '../../src';
 import { LlamaContext } from '../../src/llm/context/llama';
+import { ChatModelFunctions, Llama3ChatWrapper } from '../../src/llm/plugins/llama-cpp';
 
 const walkDirAsync = async function* (dir: string): AsyncGenerator<string, void> {
   const files = await fs.readdir(dir, { withFileTypes: true });
@@ -71,6 +72,17 @@ const defaultOptions = {
   }
 };
 
+class ChatWrapper extends Llama3ChatWrapper {
+
+  generateAvailableFunctionsSystemText(
+    availableFunctions: ChatModelFunctions,
+    { documentParams = true }
+  ) {
+    const result = super.generateAvailableFunctionsSystemText(availableFunctions, { documentParams });
+    return result.mapValues(s => _.isString(s) ? s.replace('Note that the || prefix is mandatory', 'Note that the ||call: prefix is mandatory') : s);
+  }
+}
+
 /* eslint-disable no-param-reassign */
 export default async (app: Server, env: Record<string, any>) => {
 
@@ -91,13 +103,14 @@ export default async (app: Server, env: Record<string, any>) => {
 
   const device = await LLMDevice.llama();
   const contexts: Record<string, LlamaContext> = {};
+  const chatOptions = { chatWrapper: new ChatWrapper };
 
   const createSession = async (modelPath: string) => {
-    if (contexts[modelPath]) return contexts[modelPath].createSession();
+    if (contexts[modelPath]) return contexts[modelPath].createSession({ chatOptions });
     const model = await device.loadModel({ modelPath });
     const context = await model.createContext();
     contexts[modelPath] = context;
-    return context.createSession();
+    return context.createSession({ chatOptions });
   }
 
   app.socket().on('connection', async (socket) => {
