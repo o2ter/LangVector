@@ -109,6 +109,8 @@ export default async (app: Server, env: Record<string, any>) => {
 
     console.info('socket connected:', socket.id);
 
+    const abort = new AbortController;
+
     let currentModel = 'meta-llama/Meta-Llama-3-8B-Instruct/ggml-model-q3_k_m.gguf';
     let session = currentModel ? await createSession(currentModel) : null;
 
@@ -162,6 +164,8 @@ export default async (app: Server, env: Record<string, any>) => {
       const { responseText } = await _session.prompt(msg, {
         ...defaultOptions,
         ...options,
+        signal: abort.signal,
+        stopOnAbortSignal: true,
         onToken: (token) => {
           partial.push(...token);
           socket.emit('response', {
@@ -184,6 +188,7 @@ export default async (app: Server, env: Record<string, any>) => {
 
     socket.on('disconnect', () => {
       console.info('socket disconnected:', socket.id);
+      abort.abort();
       if (!session) return;
       session.dispose();
       session = null;
