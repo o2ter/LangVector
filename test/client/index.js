@@ -29,9 +29,7 @@ import { io } from 'socket.io-client';
 import { Button, TextInput } from '@o2ter/react-ui';
 import './css/main.scss';
 
-export default () => {
-
-  const socket = React.useRef(io()).current;
+const ChatBody = ({ socket }) => {
 
   const [input, setInput] = React.useState('');
   const [state, setState] = React.useState({});
@@ -68,5 +66,12 @@ export default () => {
         </div>
       </div>
     </div>
+  );
+};
+
+export default () => {
+  const socket = React.useRef(io()).current;
+  return (
+    <ChatBody socket={socket} />
   );
 };
