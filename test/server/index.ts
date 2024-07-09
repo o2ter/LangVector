@@ -81,10 +81,11 @@ export default async (app: Server, env: Record<string, any>) => {
   }));
 
   let models = [];
+  const modelsDir = path.join(__dirname, '../../models');
   try {
-    for await (const file of walkDirAsync(path.join(__dirname, '../../models'))) {
+    for await (const file of walkDirAsync(modelsDir)) {
       if (file.endsWith('.gguf')) {
-        models.push(file);
+        models.push(file.slice(modelsDir.length + 1));
       }
     }
   } catch { }
@@ -93,17 +94,17 @@ export default async (app: Server, env: Record<string, any>) => {
   const contexts: Record<string, LlamaContext> = {};
   const chatOptions = { chatWrapper: new llamaCpp.Llama3ChatWrapper };
 
-  const createSession = async (modelPath: string) => {
-    if (contexts[modelPath]) return contexts[modelPath].createSession({ chatOptions });
-    const model = await device.loadModel({ modelPath });
+  const createSession = async (name: string) => {
+    if (contexts[name]) return contexts[name].createSession({ chatOptions });
+    const model = await device.loadModel({ modelPath: path.join(modelsDir, name) });
     const context = await model.createContext();
-    contexts[modelPath] = context;
+    contexts[name] = context;
     return context.createSession({ chatOptions });
   }
 
   app.socket().on('connection', async (socket) => {
 
-    let currentModel = models.length ? models[0] : null;
+    let currentModel = 'meta-llama/Meta-Llama-3-8B-Instruct/ggml-model-q3_k_m.gguf';
     let session = currentModel ? await createSession(currentModel) : null;
 
     const options = {
