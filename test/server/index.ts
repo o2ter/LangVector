@@ -112,8 +112,7 @@ export default async (app: Server, env: Record<string, any>) => {
     let currentModel = 'meta-llama/Meta-Llama-3-8B-Instruct/ggml-model-q3_k_m.gguf';
     let session = currentModel ? await createSession(currentModel) : null;
 
-    const options = {
-      minP: 0,
+    const options: any = {
       topK: 40,
       topP: 0.75,
       temperature: 0.8,
