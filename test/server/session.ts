@@ -44,8 +44,8 @@ export const defaultOptions = {
       params: {
         type: 'object',
         properties: {
-          maximum: { type: 'number' },
-          minimum: { type: 'number' },
+          maximum: { type: 'integer' },
+          minimum: { type: 'integer' },
         },
         required: ['maximum', 'minimum'],
       },
