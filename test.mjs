@@ -35,7 +35,7 @@ const defaultOptions = {
   documentFunctionParams: true,
   functions: {
     datetime: defineChatSessionFunction({
-      description: "Get current UTC datetime",
+      description: "Get current ISO datetime in UTC",
       handler() {
         return new Date();
       }
