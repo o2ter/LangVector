@@ -35,7 +35,7 @@ const defaultOptions = {
   documentFunctionParams: true,
   functions: {
     datetime: defineChatSessionFunction({
-      description: "Get current datetime",
+      description: "Get current UTC datetime",
       handler() {
         return new Date();
       }
@@ -131,6 +131,8 @@ const options = {
 const quests = [
   'Hi',
   'Can you pick one item from menu randomly?',
+  'What is the time of Hong Kong now?',
+  'What is time offset in Hong Kong?',
 ];
 
 for (const quest of quests) {
