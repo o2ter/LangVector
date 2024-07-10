@@ -1,5 +1,5 @@
 //
-//  session.ts
+//  test.mjs
 //
 //  The MIT License
 //  Copyright (c) 2021 - 2024 O2ter Limited. All rights reserved.
@@ -25,12 +25,13 @@
 
 import _ from 'lodash';
 import path from 'path';
-import { defineChatSessionFunction, LLMDevice, llamaCpp } from '../../src';
-import { LlamaContext } from '../../src/llm/context/llama';
+import { fileURLToPath } from 'url';
+import { defineChatSessionFunction, llamaCpp, LLMDevice } from './dist/index.mjs';
 
-export const modelsDir = path.join(__dirname, '../../models');
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = path.dirname(__filename);
 
-export const defaultOptions = {
+const defaultOptions = {
   documentFunctionParams: true,
   functions: {
     datetime: defineChatSessionFunction({
@@ -95,7 +96,7 @@ export const defaultOptions = {
 class ChatWrapper extends llamaCpp.Llama3ChatWrapper {
 
   generateAvailableFunctionsSystemText(
-    availableFunctions: llamaCpp.ChatModelFunctions,
+    availableFunctions,
     { documentParams = true },
   ) {
     const result = super.generateAvailableFunctionsSystemText(availableFunctions, { documentParams });
@@ -103,23 +104,48 @@ class ChatWrapper extends llamaCpp.Llama3ChatWrapper {
   }
 }
 
-const _device = LLMDevice.llama();
-const contexts: Record<string, LlamaContext> = {};
-const chatOptions = { chatWrapper: new ChatWrapper };
+const device = await LLMDevice.llama();
 
-export const createContext = async (name: string) => {
-  if (contexts[name]) return contexts[name];
-  const device = await _device;
-  const model = await device.loadModel({
-    modelPath: path.join(modelsDir, name),
-    ignoreMemorySafetyChecks: true,
+const model = await device.loadModel({
+  modelPath: path.join(__dirname, 'models', 'meta-llama/Meta-Llama-3-8B-Instruct/ggml-model-q3_k_m.gguf'),
+  ignoreMemorySafetyChecks: true,
+});
+
+const context = await model.createContext({ ignoreMemorySafetyChecks: true });
+const session = await context.createSession({
+  chatOptions: { chatWrapper: new ChatWrapper }
+});
+
+const options = {
+  minP: 0,
+  topK: 40,
+  topP: 0.75,
+  temperature: 0.8,
+  repeatPenalty: {
+    frequencyPenalty: 0.2,
+    presencePenalty: 0.2,
+  },
+  maxTokens: 100,
+};
+
+const quests = [
+  'Hi',
+];
+
+for (const quest of quests) {
+
+  let partial = [];
+  const { responseText } = await session.prompt(quest, {
+    ...defaultOptions,
+    ...options,
+    onToken: (token) => {
+      partial.push(...token);
+      console.log(model.detokenize(partial, true));
+    }
   });
-  const context = await model.createContext({ ignoreMemorySafetyChecks: true });
-  contexts[name] = context;
-  return context;
+
+  console.log(responseText);
+  console.log('');
 }
 
-export const createSession = async (name: string) => {
-  const context = await createContext(name);
-  return context.createSession({ chatOptions });
-}
+console.log(model.detokenize(session.tokens, true));
