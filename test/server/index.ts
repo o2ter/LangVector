@@ -31,9 +31,9 @@ import ProtoRoute from 'proto.io';
 import { Proto } from './proto';
 import './cloud/main';
 
-import { defineChatSessionFunction, LLMDevice, Token, llamaCpp } from '../../src';
-import { LlamaContext } from '../../src/llm/context/llama';
+import { Token } from '../../src';
 import { LlamaSession } from '../../src/llm/session/llama';
+import { defaultOptions, createSession, modelsDir } from './session';
 
 const walkDirAsync = async function* (dir: string): AsyncGenerator<string, void> {
   const files = await fs.readdir(dir, { withFileTypes: true });
@@ -43,79 +43,6 @@ const walkDirAsync = async function* (dir: string): AsyncGenerator<string, void>
     } else {
       yield path.join(dir, file.name);
     }
-  }
-}
-
-const defaultOptions = {
-  documentFunctionParams: true,
-  functions: {
-    datetime: defineChatSessionFunction({
-      description: "Get current datetime",
-      handler() {
-        return new Date();
-      }
-    }),
-    randomInt: defineChatSessionFunction({
-      description: "Generates a random integer between maximum and minimum inclusively",
-      params: {
-        type: 'object',
-        properties: {
-          maximum: { type: 'number' },
-          minimum: { type: 'number' },
-        },
-        required: ['maximum', 'minimum'],
-      },
-      handler({ maximum, minimum }) {
-        return Math.floor(Math.random() * (maximum - minimum + 1) + minimum);
-      }
-    }),
-    randomFloat: defineChatSessionFunction({
-      description: "Generates a random floating number between maximum and minimum",
-      params: {
-        type: 'object',
-        properties: {
-          maximum: { type: 'number' },
-          minimum: { type: 'number' },
-        },
-        required: ['maximum', 'minimum'],
-      },
-      handler({ maximum, minimum }) {
-        return Math.random() * (maximum - minimum) + minimum;
-      }
-    }),
-    todayMenu: defineChatSessionFunction({
-      description: "A list of today’s special menu",
-      handler() {
-        return {
-          totalCount: 3,
-          menus: [
-            {
-              name: 'Pizza',
-              price: 75,
-            },
-            {
-              name: 'Hamburger',
-              price: 80,
-            },
-            {
-              name: 'Fish And Chips',
-              price: 75,
-            },
-          ],
-        };
-      }
-    }),
-  }
-};
-
-class ChatWrapper extends llamaCpp.Llama3ChatWrapper {
-
-  generateAvailableFunctionsSystemText(
-    availableFunctions: llamaCpp.ChatModelFunctions,
-    { documentParams = true },
-  ) {
-    const result = super.generateAvailableFunctionsSystemText(availableFunctions, { documentParams });
-    return result.mapValues(s => _.isString(s) ? s.replace('Note that the || prefix is mandatory', 'Note that the ||call: prefix is mandatory') : s);
   }
 }
 
@@ -129,7 +56,6 @@ export default async (app: Server, env: Record<string, any>) => {
   }));
 
   let models = [];
-  const modelsDir = path.join(__dirname, '../../models');
   try {
     for await (const file of walkDirAsync(modelsDir)) {
       if (file.endsWith('.gguf')) {
@@ -137,21 +63,6 @@ export default async (app: Server, env: Record<string, any>) => {
       }
     }
   } catch { }
-
-  const device = await LLMDevice.llama();
-  const contexts: Record<string, LlamaContext> = {};
-  const chatOptions = { chatWrapper: new ChatWrapper };
-
-  const createSession = async (name: string) => {
-    if (contexts[name]) return contexts[name].createSession({ chatOptions });
-    const model = await device.loadModel({
-      modelPath: path.join(modelsDir, name),
-      ignoreMemorySafetyChecks: true,
-     });
-    const context = await model.createContext({ ignoreMemorySafetyChecks: true });
-    contexts[name] = context;
-    return context.createSession({ chatOptions });
-  }
 
   app.socket().on('connection', async (socket) => {
 
