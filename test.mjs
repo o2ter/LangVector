@@ -51,7 +51,7 @@ const defaultOptions = {
         required: ['maximum', 'minimum'],
       },
       handler({ maximum, minimum }) {
-        return Math.floor(Math.random() * (maximum - minimum + 1) + minimum);
+        return Math.floor(Math.random() * (maximum - minimum + 1)) + minimum;
       }
     }),
     randomFloat: defineChatSessionFunction({
