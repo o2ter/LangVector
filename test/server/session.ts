@@ -107,8 +107,8 @@ const _device = LLMDevice.llama();
 const contexts: Record<string, LlamaContext> = {};
 const chatOptions = { chatWrapper: new ChatWrapper };
 
-export const createSession = async (name: string) => {
-  if (contexts[name]) return contexts[name].createSession({ chatOptions });
+export const createContext = async (name: string) => {
+  if (contexts[name]) return contexts[name];
   const device = await _device;
   const model = await device.loadModel({
     modelPath: path.join(modelsDir, name),
@@ -116,5 +116,10 @@ export const createSession = async (name: string) => {
   });
   const context = await model.createContext({ ignoreMemorySafetyChecks: true });
   contexts[name] = context;
+  return context;
+}
+
+export const createSession = async (name: string) => {
+  const context = await createContext(name);
   return context.createSession({ chatOptions });
 }
