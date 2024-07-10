@@ -130,6 +130,7 @@ const options = {
 
 const quests = [
   'Hi',
+  'Can you pick one item from menu randomly?',
 ];
 
 for (const quest of quests) {
