@@ -1,4 +1,3 @@
-import * as llamaCpp from 'llama-node';
+import llamaCpp from 'llama-node';
 
-console.log(llamaCpp)
-
+console.log(llamaCpp.systemInfo())
