@@ -21,6 +21,7 @@
     "test": "rm -rf ./test/dist/* && npm-run-all --parallel watch:*"
   },
   "dependencies": {
+    "llama-node": "./packages/llama-node",
     "lodash": "^4.17.21"
   },
   "devDependencies": {
