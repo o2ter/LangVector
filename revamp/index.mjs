@@ -1,4 +1,4 @@
-import llamaCpp from 'llama-node';
+import pkg from 'llama-node';
 
-console.log(llamaCpp.systemInfo())
-console.log(llamaCpp.getGpuType())
+console.log(pkg.systemInfo())
+console.log(pkg.getGpuType())
