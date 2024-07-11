@@ -23,4 +23,4 @@
 //  THE SOFTWARE.
 //
 
-export * from './llm';
+export * as llamaCpp from './plugins/llamaCpp';

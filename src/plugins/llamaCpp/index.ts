@@ -1,5 +1,5 @@
 //
-//  index.ts
+//  index.js
 //
 //  The MIT License
 //  Copyright (c) 2021 - 2024 O2ter Limited. All rights reserved.
@@ -23,38 +23,20 @@
 //  THE SOFTWARE.
 //
 
-import _ from 'lodash';
-import { LLMContext } from '../context/base';
-import { LLMDeviceBase } from '../device/base';
-import { LLMModel } from '../model/base';
-import { llamaCpp } from '../plugins/llama-cpp';
+import pkg from 'llama-node';
 
-export abstract class LLMSession<D extends LLMDeviceBase<any>, M extends LLMModel<D, any>, C extends LLMContext<D, M>> {
+export const systemInfo = (): string => {
+  return pkg.systemInfo();
+};
 
-  protected _context: C;
+export const getGpuVramInfo = (): { total: number; used: number; } => {
+  return pkg.getGpuVramInfo();
+};
 
-  constructor(context: C) {
-    this._context = context;
-  }
+export const getGpuDeviceInfo = (): { deviceNames: string[]; } => {
+  return pkg.getGpuDeviceInfo();
+};
 
-  get device() {
-    return this._context.model.device;
-  }
-
-  get model() {
-    return this._context.model;
-  }
-
-  get context() {
-    return this._context;
-  }
-
-  abstract dispose(): Promise<void>;
-  abstract get disposed(): boolean;
-
-  abstract get nextTokenIndex(): number;
-  abstract get tokens(): llamaCpp.Token[];
-
-  abstract clearHistory(): Promise<void>;
-  abstract eraseContextTokenRanges(ranges: llamaCpp.ContextTokensDeleteRange[]): Promise<void>;
-}
+export const getGpuType = (): string | undefined => {
+  return pkg.getGpuType();
+};
