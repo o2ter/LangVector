@@ -16,6 +16,7 @@ execute_process(COMMAND node -p "require('node-addon-api').include.slice(1,-1)"
 include_directories(${NODE_ADDON_API_DIR} ${CMAKE_JS_INC})
 
 add_subdirectory(${LLAMA_CPP_SOURCE} "llama.cpp")
+include_directories("gpuInfo")
 include_directories(${LLAMA_CPP_SOURCE}/include)
 include_directories(${LLAMA_CPP_SOURCE}/ggml/include)
 include_directories("./llama.cpp/common")
@@ -121,13 +122,17 @@ if (GGML_METAL)
         )
 endif()
 
-file(GLOB SOURCE_FILES "addon.cpp")
+file(GLOB SOURCE_FILES "addon.cpp" ${GPU_INFO_SOURCES})
 
-add_library(${PROJECT_NAME} SHARED ${SOURCE_FILES} ${CMAKE_JS_SRC})
+add_library(${PROJECT_NAME} SHARED ${SOURCE_FILES} ${CMAKE_JS_SRC} ${GPU_INFO_HEADERS})
 set_target_properties(${PROJECT_NAME} PROPERTIES PREFIX "" SUFFIX ".node")
 target_link_libraries(${PROJECT_NAME} ${CMAKE_JS_LIB})
 target_link_libraries(${PROJECT_NAME} "llama")
 target_link_libraries(${PROJECT_NAME} "ggml")
+
+if (DEFINED GPU_INFO_EXTRA_LIBS)
+    target_link_libraries(${PROJECT_NAME} ${GPU_INFO_EXTRA_LIBS})
+endif()
 
 if(MSVC AND CMAKE_JS_NODELIB_DEF AND CMAKE_JS_NODELIB_TARGET)
   # Generate node.lib
