@@ -234,6 +234,14 @@ public:
         model_params.check_tensors = options.Get("checkTensors").As<Napi::Boolean>().Value();
       }
     }
+
+    model = llama_load_model_from_file(modelPath.c_str(), model_params);
+
+    if (model == NULL)
+    {
+      Napi::Error::New(info.Env(), "Failed to load model").ThrowAsJavaScriptException();
+      return;
+    }
   }
 
   ~LlamaModel()
