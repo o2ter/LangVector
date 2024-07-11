@@ -30,7 +30,10 @@ import * as llamaCpp from '../plugins/llamaCpp';
 
 export class LlamaModel extends LLMModel<LlamaDevice> {
 
-  constructor(device: LlamaDevice) {
+  private _model: typeof llamaCpp.LlamaModel;
+
+  constructor(device: LlamaDevice, model: typeof llamaCpp.LlamaModel) {
     super(device);
+    this._model = model;
   }
 }

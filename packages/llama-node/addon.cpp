@@ -190,6 +190,88 @@ Napi::Value getConsts(const Napi::CallbackInfo &info)
   return consts;
 }
 
+class LlamaModel : public Napi::ObjectWrap<LlamaModel>
+{
+public:
+  llama_model_params model_params;
+  llama_model *model;
+
+  std::string modelPath;
+
+  bool disposed = false;
+
+  LlamaModel(const Napi::CallbackInfo &info) : Napi::ObjectWrap<LlamaModel>(info)
+  {
+    model_params = llama_model_default_params();
+    modelPath = info[0].As<Napi::String>().Utf8Value();
+
+    if (info.Length() > 1 && info[1].IsObject())
+    {
+      Napi::Object options = info[1].As<Napi::Object>();
+
+      if (options.Has("gpuLayers"))
+      {
+        model_params.n_gpu_layers = options.Get("gpuLayers").As<Napi::Number>().Int32Value();
+      }
+
+      if (options.Has("vocabOnly"))
+      {
+        model_params.vocab_only = options.Get("vocabOnly").As<Napi::Boolean>().Value();
+      }
+
+      if (options.Has("useMmap"))
+      {
+        model_params.use_mmap = options.Get("useMmap").As<Napi::Boolean>().Value();
+      }
+
+      if (options.Has("useMlock"))
+      {
+        model_params.use_mlock = options.Get("useMlock").As<Napi::Boolean>().Value();
+      }
+
+      if (options.Has("checkTensors"))
+      {
+        model_params.check_tensors = options.Get("checkTensors").As<Napi::Boolean>().Value();
+      }
+    }
+  }
+
+  ~LlamaModel()
+  {
+    dispose();
+  }
+
+  void dispose()
+  {
+    if (disposed)
+    {
+      return;
+    }
+    disposed = true;
+  }
+
+  Napi::Value Dispose(const Napi::CallbackInfo &info)
+  {
+    if (disposed)
+    {
+      return info.Env().Undefined();
+    }
+    dispose();
+  }
+
+  static void init(Napi::Object exports)
+  {
+    exports.Set(
+        "LlamaModel",
+        DefineClass(
+            exports.Env(),
+            "LlamaModel",
+            {
+                InstanceMethod("dispose", &LlamaModel::Dispose),
+            }));
+  }
+};
+
 Napi::Object registerCallback(Napi::Env env, Napi::Object exports)
 {
   llama_backend_init();
@@ -205,6 +287,7 @@ Napi::Object registerCallback(Napi::Env env, Napi::Object exports)
       Napi::PropertyDescriptor::Function("getGpuDeviceInfo", getGpuDeviceInfo),
       Napi::PropertyDescriptor::Function("getGpuType", getGpuType),
   });
+  LlamaModel::init(exports);
   return exports;
 }
 

@@ -25,6 +25,8 @@
 
 import pkg from 'llama-node';
 
+export const LlamaModel = pkg.LlamaModel;
+
 export const systemInfo = (): string => {
   return pkg.systemInfo();
 };
