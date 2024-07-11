@@ -45,7 +45,10 @@ Napi::Value getGpuType(const Napi::CallbackInfo &info)
   return info.Env().Undefined();
 }
 
-Napi::Value systemInfo(const Napi::CallbackInfo &info) { return Napi::String::From(info.Env(), llama_print_system_info()); }
+Napi::Value systemInfo(const Napi::CallbackInfo &info)
+{
+  return Napi::String::From(info.Env(), llama_print_system_info());
+}
 
 Napi::Object registerCallback(Napi::Env env, Napi::Object exports)
 {
