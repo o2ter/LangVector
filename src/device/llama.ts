@@ -24,6 +24,7 @@
 //
 
 import _ from 'lodash';
+import path from 'path';
 import { LLMDevice } from './base';
 import { LlamaModel } from '../model/llama';
 import * as llamaCpp from '../plugins/llamaCpp';
@@ -50,12 +51,15 @@ export class LlamaDevice extends LLMDevice {
     checkTensors?: boolean;
     onLoadProgress?: (progress: number) => boolean;
   }) {
-    const model = new llamaCpp.LlamaModel(modelPath, {
-      ...options,
-      onLoadProgress: onLoadProgress ? (progress: number) => {
-        return !!onLoadProgress(progress);
-      } : null,
-    });
+    const model = new llamaCpp.LlamaModel(
+      path.resolve(process.cwd(), modelPath),
+      {
+        ...options,
+        onLoadProgress: onLoadProgress ? (progress: number) => {
+          return !!onLoadProgress(progress);
+        } : null,
+      }
+    );
     return new LlamaModel(this, model);
   }
 }
