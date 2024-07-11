@@ -1,0 +1,25 @@
+#!/bin/bash
+set -e
+
+SCRIPT_DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )"
+
+cd $SCRIPT_DIR
+cd ../
+
+if [ -f "../llama.cpp/CMakeLists.txt" ]; then
+  export LLAMA_CPP_SOURCE="$( cd "$( dirname ../llama.cpp/CMakeLists.txt )" && pwd )"
+elif [ -f "../../packages/llama.cpp/CMakeLists.txt" ]; then
+  export LLAMA_CPP_SOURCE="$( cd "$( dirname ../../packages/llama.cpp/CMakeLists.txt )" && pwd )"
+else
+  LANG_VECTOR_PATH="$( node -p "require('@o2ter/lang-vector').include.slice(1,-1)" )"
+  if [ -f "${LANG_VECTOR_PATH}/packages/llama.cpp/CMakeLists.txt" ]; then
+    export LLAMA_CPP_SOURCE="$( cd "$( dirname ${LANG_VECTOR_PATH}/packages/llama.cpp/CMakeLists.txt )" && pwd )"
+  fi
+fi
+
+if [[ -z "${LLAMA_CPP_SOURCE}" ]]; then
+  echo "Package llama.cpp not found" 1>&2
+  exit 1
+fi
+
+cmake-js compile --CDLLAMA_CPP_SOURCE=${LLAMA_CPP_SOURCE}
