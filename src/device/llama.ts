@@ -1,5 +1,5 @@
 //
-//  index.js
+//  llama.ts
 //
 //  The MIT License
 //  Copyright (c) 2021 - 2024 O2ter Limited. All rights reserved.
@@ -24,7 +24,14 @@
 //
 
 import _ from 'lodash';
+import { LLMDevice } from './base';
+import * as llamaCpp from '../plugins/llamaCpp';
 
-export class LLMDevice {
-  
+export class LlamaDevice extends LLMDevice {
+
+  static systemInfo() { return llamaCpp.systemInfo(); }
+  static getGpuVramInfo() { return llamaCpp.getGpuVramInfo(); }
+  static getGpuDeviceInfo() { return llamaCpp.getGpuDeviceInfo(); }
+  static getGpuType() { return llamaCpp.getGpuType(); }
+
 }

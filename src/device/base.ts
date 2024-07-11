@@ -23,5 +23,8 @@
 //  THE SOFTWARE.
 //
 
-export * from './device/base';
-export * from './device/llama';
+import _ from 'lodash';
+
+export abstract class LLMDevice {
+
+}

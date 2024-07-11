@@ -1,9 +1,9 @@
 
 import _ from 'lodash';
-import { llamaCpp } from './dist/index.mjs';
+import { LlamaDevice } from './dist/index.mjs';
 
-console.log(llamaCpp.systemInfo());
-console.log(llamaCpp.getGpuType());
-console.log(llamaCpp.getGpuDeviceInfo());
-console.log(llamaCpp.getGpuVramInfo());
+console.log(LlamaDevice.systemInfo());
+console.log(LlamaDevice.getGpuType());
+console.log(LlamaDevice.getGpuDeviceInfo());
+console.log(LlamaDevice.getGpuVramInfo());
 
