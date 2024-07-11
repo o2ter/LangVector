@@ -23,4 +23,4 @@
 //  THE SOFTWARE.
 //
 
-module.exports = require('./build/Release/llama-node.node');
+module.exports = require('../build/Release/llama-node.node');
