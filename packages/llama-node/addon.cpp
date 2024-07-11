@@ -26,6 +26,7 @@
 #include <stddef.h>
 
 #include "llama.h"
+#include "common/common.h"
 #include "napi.h"
 
 #ifdef GPU_INFO_USE_CUDA
