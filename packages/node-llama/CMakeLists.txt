@@ -6,6 +6,7 @@ project ("node-llama" C CXX)
 
 add_definitions(-DNAPI_VERSION=7)
 set(CMAKE_POSITION_INDEPENDENT_CODE ON)
+set(CMAKE_CXX_STANDARD 11)
 
 execute_process(COMMAND node -p "require('node-addon-api').include.slice(1,-1)"
                 WORKING_DIRECTORY ${CMAKE_SOURCE_DIR}
