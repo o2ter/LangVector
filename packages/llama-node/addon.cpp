@@ -198,44 +198,59 @@ public:
 
   std::string modelPath;
 
-  bool disposed = false;
-
   LlamaModel(const Napi::CallbackInfo &info) : Napi::ObjectWrap<LlamaModel>(info)
   {
     model_params = llama_model_default_params();
     modelPath = info[0].As<Napi::String>().Utf8Value();
 
-    if (info.Length() > 1 && info[1].IsObject())
+    Napi::Object options = info[1].As<Napi::Object>();
+    OnLoadProgressUserData *userData = NULL;
+
+    if (options.Has("gpuLayers"))
     {
-      Napi::Object options = info[1].As<Napi::Object>();
+      model_params.n_gpu_layers = options.Get("gpuLayers").As<Napi::Number>().Int32Value();
+    }
 
-      if (options.Has("gpuLayers"))
-      {
-        model_params.n_gpu_layers = options.Get("gpuLayers").As<Napi::Number>().Int32Value();
-      }
+    if (options.Has("vocabOnly"))
+    {
+      model_params.vocab_only = options.Get("vocabOnly").As<Napi::Boolean>().Value();
+    }
 
-      if (options.Has("vocabOnly"))
-      {
-        model_params.vocab_only = options.Get("vocabOnly").As<Napi::Boolean>().Value();
-      }
+    if (options.Has("useMmap"))
+    {
+      model_params.use_mmap = options.Get("useMmap").As<Napi::Boolean>().Value();
+    }
 
-      if (options.Has("useMmap"))
-      {
-        model_params.use_mmap = options.Get("useMmap").As<Napi::Boolean>().Value();
-      }
+    if (options.Has("useMlock"))
+    {
+      model_params.use_mlock = options.Get("useMlock").As<Napi::Boolean>().Value();
+    }
 
-      if (options.Has("useMlock"))
-      {
-        model_params.use_mlock = options.Get("useMlock").As<Napi::Boolean>().Value();
-      }
+    if (options.Has("checkTensors"))
+    {
+      model_params.check_tensors = options.Get("checkTensors").As<Napi::Boolean>().Value();
+    }
 
-      if (options.Has("checkTensors"))
+    if (options.Has("onLoadProgress"))
+    {
+      auto callback = options.Get("onLoadProgress").As<Napi::Function>();
+      if (callback.IsFunction())
       {
-        model_params.check_tensors = options.Get("checkTensors").As<Napi::Boolean>().Value();
+        userData = new OnLoadProgressUserData{
+          env : info.Env(),
+          callback,
+        };
+        model_params.progress_callback_user_data = userData;
+        model_params.progress_callback = OnLoadProgressCallback;
       }
     }
 
     model = llama_load_model_from_file(modelPath.c_str(), model_params);
+
+    if (userData != NULL)
+    {
+      delete userData;
+    }
 
     if (model == NULL)
     {
@@ -251,17 +266,30 @@ public:
 
   void dispose()
   {
-    if (disposed)
+    if (model == NULL)
     {
       return;
     }
-    disposed = true;
     llama_free_model(model);
+    model = NULL;
+  }
+
+  struct OnLoadProgressUserData
+  {
+    Napi::Env env;
+    Napi::Function callback;
+  };
+
+  static bool OnLoadProgressCallback(float progress, void *user_data)
+  {
+    OnLoadProgressUserData *data = (OnLoadProgressUserData *)user_data;
+    auto result = data->callback.Call({Napi::Number::New(data->env, progress)});
+    return result.As<Napi::Boolean>().Value();
   }
 
   Napi::Value Dispose(const Napi::CallbackInfo &info)
   {
-    if (disposed)
+    if (model == NULL)
     {
       return info.Env().Undefined();
     }
