@@ -7,7 +7,9 @@ cd $SCRIPT_DIR
 cd ../
 
 cd packages/llama.cpp
-make
+
+cmake -B .build
+cmake --build .build --config Release
 
 PYTHON=$(which python3)
 if [ -f "${HOMEBREW_PREFIX}/bin/python3" ]; then

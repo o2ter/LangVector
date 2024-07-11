@@ -21,6 +21,9 @@ QUANTITY=(
   # q5_k_m
 )
 
+LLAMA_PREFIX=packages/llama.cpp
+LLAMA_BIN=${LLAMA_PREFIX}/.build/bin
+
 PYTHON=$(which python3)
 if [ -f "${HOMEBREW_PREFIX}/bin/python3" ]; then
   PYTHON="${HOMEBREW_PREFIX}/bin/python3"
@@ -30,12 +33,12 @@ for SOURCE in "${LIST[@]}"; do
 
   if [ ! -f "./models/${SOURCE}/ggml-model-${OUTTYPE}.gguf" ]; then
     mkdir -p ./models/${SOURCE}
-    ${PYTHON} packages/llama.cpp/convert_hf_to_gguf.py ./.cache/models/${SOURCE} --outtype ${OUTTYPE} --outfile ./models/${SOURCE}/ggml-model-${OUTTYPE}.gguf
+    ${PYTHON} ${LLAMA_PREFIX}/convert_hf_to_gguf.py ./.cache/models/${SOURCE} --outtype ${OUTTYPE} --outfile ./models/${SOURCE}/ggml-model-${OUTTYPE}.gguf
   fi
 
   for q in "${QUANTITY[@]}"; do
     if [ ! -f "./models/${SOURCE}/ggml-model-${q}.gguf" ]; then
-      packages/llama.cpp/llama-quantize ./models/${SOURCE}/ggml-model-f16.gguf ./models/${SOURCE}/ggml-model-${q}.gguf ${q}
+      ${LLAMA_BIN}/llama-quantize ./models/${SOURCE}/ggml-model-f16.gguf ./models/${SOURCE}/ggml-model-${q}.gguf ${q}
     fi
   done
 
