@@ -14,8 +14,11 @@ execute_process(COMMAND node -p "require('node-addon-api').include.slice(1,-1)"
 
 include_directories(${NODE_ADDON_API_DIR} ${CMAKE_JS_INC})
 
-add_subdirectory(${LLAMA_CPP_SOURCE})
-include_directories(${LLAMA_CPP_SOURCE})
+add_subdirectory(${LLAMA_CPP_SOURCE} "llama.cpp")
+include_directories(${LLAMA_CPP_SOURCE}/include)
+include_directories(${LLAMA_CPP_SOURCE}/ggml/include)
+include_directories("./llama.cpp/common")
+include_directories("./llama.cpp/ggml")
 
 file(GLOB SOURCE_FILES "addon.cpp")
 
