@@ -1,8 +1,8 @@
 {
   "name": "llama-node",
   "version": "1.0.0",
-  "main": "js/index.cjs",
-  "module": "js/index.mjs",
+  "main": "index.js",
+  "type": "commonjs",
   "binary": {
     "napi_versions": [7]
   },
