@@ -41,15 +41,21 @@ export class LlamaDevice extends LLMDevice {
   static gpuDeviceInfo() { return llamaCpp.getGpuDeviceInfo(); }
   static gpuType() { return llamaCpp.getGpuType(); }
 
-  static async loadModel({ modelPath, ...options }: {
+  static async loadModel({ modelPath, onLoadProgress, ...options }: {
     modelPath: string;
     gpuLayers?: number;
     vocabOnly?: boolean;
     useMmap?: boolean;
     useMlock?: boolean;
     checkTensors?: boolean;
+    onLoadProgress?: (progress: number) => boolean;
   }) {
-    const model = new llamaCpp.LlamaModel(modelPath, options);
+    const model = new llamaCpp.LlamaModel(modelPath, {
+      ...options,
+      onLoadProgress: onLoadProgress ? (progress: number) => {
+        return !!onLoadProgress(progress);
+      } : null,
+    });
     return new LlamaModel(this, model);
   }
 }
