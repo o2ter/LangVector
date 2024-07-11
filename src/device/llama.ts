@@ -25,6 +25,7 @@
 
 import _ from 'lodash';
 import { LLMDevice } from './base';
+import { LlamaModel } from '../model/llama';
 import * as llamaCpp from '../plugins/llamaCpp';
 
 export class LlamaDevice extends LLMDevice {
@@ -34,4 +35,7 @@ export class LlamaDevice extends LLMDevice {
   static getGpuDeviceInfo() { return llamaCpp.getGpuDeviceInfo(); }
   static getGpuType() { return llamaCpp.getGpuType(); }
 
+  static async loadModel() {
+    return new LlamaModel(this);
+  }
 }

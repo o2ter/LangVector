@@ -23,7 +23,14 @@
 //  THE SOFTWARE.
 //
 
-export * from './device/base';
-export * from './device/llama';
-export * from './model/base';
-export * from './model/llama';
+import _ from 'lodash';
+import { LLMDevice } from '../device/base';
+
+export abstract class LLMModel<D extends LLMDevice> {
+
+  device: D;
+
+  constructor(device: D) {
+    this.device = device;
+  }
+}

@@ -1,5 +1,5 @@
 //
-//  index.ts
+//  llama.ts
 //
 //  The MIT License
 //  Copyright (c) 2021 - 2024 O2ter Limited. All rights reserved.
@@ -23,7 +23,14 @@
 //  THE SOFTWARE.
 //
 
-export * from './device/base';
-export * from './device/llama';
-export * from './model/base';
-export * from './model/llama';
+import _ from 'lodash';
+import { LLMModel } from './base';
+import { LlamaDevice } from '../device/llama';
+import * as llamaCpp from '../plugins/llamaCpp';
+
+export class LlamaModel extends LLMModel<LlamaDevice> {
+
+  constructor(device: LlamaDevice) {
+    super(device);
+  }
+}
