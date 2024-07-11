@@ -31,6 +31,12 @@ import * as llamaCpp from '../plugins/llamaCpp';
 export class LlamaDevice extends LLMDevice {
 
   static systemInfo() { return llamaCpp.systemInfo(); }
+  static getSupportsGpuOffloading() { return llamaCpp.getSupportsGpuOffloading(); }
+  static getSupportsMmap() { return llamaCpp.getSupportsMmap(); }
+  static getSupportsMlock() { return llamaCpp.getSupportsMlock(); }
+  static getBlockSizeForGgmlType(type: number) { return llamaCpp.getBlockSizeForGgmlType(type); }
+  static getTypeSizeForGgmlType(type: number) { return llamaCpp.getTypeSizeForGgmlType(type); }
+  static getConsts() { return llamaCpp.getConsts(); }
   static getGpuVramInfo() { return llamaCpp.getGpuVramInfo(); }
   static getGpuDeviceInfo() { return llamaCpp.getGpuDeviceInfo(); }
   static getGpuType() { return llamaCpp.getGpuType(); }

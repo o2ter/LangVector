@@ -40,3 +40,27 @@ export const getGpuDeviceInfo = (): { deviceNames: string[]; } => {
 export const getGpuType = (): string | undefined => {
   return pkg.getGpuType();
 };
+
+export const getSupportsGpuOffloading = (): boolean => {
+  return pkg.getSupportsGpuOffloading();
+};
+
+export const getSupportsMmap = (): boolean => {
+  return pkg.getSupportsMmap();
+};
+
+export const getSupportsMlock = (): boolean => {
+  return pkg.getSupportsMlock();
+};
+
+export const getBlockSizeForGgmlType = (type: number): number => {
+  return pkg.getBlockSizeForGgmlType(type);
+};
+
+export const getTypeSizeForGgmlType = (type: number): number => {
+  return pkg.getTypeSizeForGgmlType(type);
+};
+
+export const getConsts = (): Record<string, number> => {
+  return pkg.getConsts();
+};

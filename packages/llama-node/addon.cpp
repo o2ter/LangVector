@@ -133,11 +133,74 @@ Napi::Value systemInfo(const Napi::CallbackInfo &info)
   return Napi::String::From(info.Env(), llama_print_system_info());
 }
 
+Napi::Value getSupportsGpuOffloading(const Napi::CallbackInfo &info)
+{
+  return Napi::Boolean::New(info.Env(), llama_supports_gpu_offload());
+}
+
+Napi::Value getSupportsMmap(const Napi::CallbackInfo &info)
+{
+  return Napi::Boolean::New(info.Env(), llama_supports_mmap());
+}
+
+Napi::Value getSupportsMlock(const Napi::CallbackInfo &info)
+{
+  return Napi::Boolean::New(info.Env(), llama_supports_mlock());
+}
+
+Napi::Value getBlockSizeForGgmlType(const Napi::CallbackInfo &info)
+{
+  const int ggmlType = info[0].As<Napi::Number>().Int32Value();
+
+  if (ggmlType < 0 || ggmlType > GGML_TYPE_COUNT)
+  {
+    return info.Env().Undefined();
+  }
+
+  const auto blockSize = ggml_blck_size(static_cast<ggml_type>(ggmlType));
+
+  return Napi::Number::New(info.Env(), blockSize);
+}
+
+Napi::Value getTypeSizeForGgmlType(const Napi::CallbackInfo &info)
+{
+  const int ggmlType = info[0].As<Napi::Number>().Int32Value();
+
+  if (ggmlType < 0 || ggmlType > GGML_TYPE_COUNT)
+  {
+    return info.Env().Undefined();
+  }
+
+  const auto typeSize = ggml_type_size(static_cast<ggml_type>(ggmlType));
+
+  return Napi::Number::New(info.Env(), typeSize);
+}
+
+Napi::Value getConsts(const Napi::CallbackInfo &info)
+{
+  Napi::Object consts = Napi::Object::New(info.Env());
+  consts.Set("ggmlMaxDims", Napi::Number::New(info.Env(), GGML_MAX_DIMS));
+  consts.Set("ggmlTypeF16Size", Napi::Number::New(info.Env(), ggml_type_size(GGML_TYPE_F16)));
+  consts.Set("ggmlTypeF32Size", Napi::Number::New(info.Env(), ggml_type_size(GGML_TYPE_F32)));
+  consts.Set("ggmlTensorOverhead", Napi::Number::New(info.Env(), ggml_tensor_overhead()));
+  consts.Set("llamaMaxRngState", Napi::Number::New(info.Env(), LLAMA_MAX_RNG_STATE));
+  consts.Set("llamaPosSize", Napi::Number::New(info.Env(), sizeof(llama_pos)));
+  consts.Set("llamaSeqIdSize", Napi::Number::New(info.Env(), sizeof(llama_seq_id)));
+
+  return consts;
+}
+
 Napi::Object registerCallback(Napi::Env env, Napi::Object exports)
 {
   llama_backend_init();
   exports.DefineProperties({
       Napi::PropertyDescriptor::Function("systemInfo", systemInfo),
+      Napi::PropertyDescriptor::Function("getSupportsGpuOffloading", getSupportsGpuOffloading),
+      Napi::PropertyDescriptor::Function("getSupportsMmap", getSupportsMmap),
+      Napi::PropertyDescriptor::Function("getSupportsMlock", getSupportsMlock),
+      Napi::PropertyDescriptor::Function("getBlockSizeForGgmlType", getBlockSizeForGgmlType),
+      Napi::PropertyDescriptor::Function("getTypeSizeForGgmlType", getTypeSizeForGgmlType),
+      Napi::PropertyDescriptor::Function("getConsts", getConsts),
       Napi::PropertyDescriptor::Function("getGpuVramInfo", getGpuVramInfo),
       Napi::PropertyDescriptor::Function("getGpuDeviceInfo", getGpuDeviceInfo),
       Napi::PropertyDescriptor::Function("getGpuType", getGpuType),

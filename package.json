@@ -22,7 +22,8 @@
   },
   "dependencies": {
     "llama-node": "./packages/llama-node",
-    "lodash": "^4.17.21"
+    "lodash": "^4.17.21",
+    "node-llama-cpp": "^3.0.0-beta.38"
   },
   "devDependencies": {
     "@babel/core": "^7.24.5",
