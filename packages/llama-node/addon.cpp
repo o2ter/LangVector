@@ -256,6 +256,7 @@ public:
       return;
     }
     disposed = true;
+    llama_free_model(model);
   }
 
   Napi::Value Dispose(const Napi::CallbackInfo &info)
