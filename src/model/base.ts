@@ -28,9 +28,13 @@ import { LLMDevice } from '../device/base';
 
 export abstract class LLMModel<D extends LLMDevice> {
 
-  device: D;
+  private _device: D;
 
   constructor(device: D) {
-    this.device = device;
+    this._device = device;
+  }
+
+  get device() {
+    return this._device;
   }
 }
