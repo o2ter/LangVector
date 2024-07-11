@@ -6,9 +6,7 @@ SCRIPT_DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )"
 cd $SCRIPT_DIR
 cd ../
 
-if [ -f "../llama.cpp/CMakeLists.txt" ]; then
-  export LLAMA_CPP_SOURCE="$( cd "$( dirname ../llama.cpp/CMakeLists.txt )" && pwd )"
-elif [ -f "../../packages/llama.cpp/CMakeLists.txt" ]; then
+if [ -f "../../packages/llama.cpp/CMakeLists.txt" ]; then
   export LLAMA_CPP_SOURCE="$( cd "$( dirname ../../packages/llama.cpp/CMakeLists.txt )" && pwd )"
 else
   LANG_VECTOR_PATH="$( node -p "require('@o2ter/lang-vector').include.slice(1,-1)" )"
