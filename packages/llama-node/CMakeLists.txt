@@ -17,10 +17,9 @@ include_directories(${NODE_ADDON_API_DIR} ${CMAKE_JS_INC})
 
 add_subdirectory(${LLAMA_CPP_SOURCE} "llama.cpp")
 include_directories("gpuInfo")
+include_directories(${LLAMA_CPP_SOURCE})
 include_directories(${LLAMA_CPP_SOURCE}/include)
 include_directories(${LLAMA_CPP_SOURCE}/ggml/include)
-include_directories("./llama.cpp/common")
-include_directories("./llama.cpp/ggml")
 
 if (GGML_CUDA)
     cmake_minimum_required(VERSION 3.17)
