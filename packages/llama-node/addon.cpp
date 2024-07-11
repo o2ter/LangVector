@@ -28,6 +28,16 @@
 #include "llama.h"
 #include "napi.h"
 
+#ifdef GPU_INFO_USE_CUDA
+#include "gpuInfo/cuda-gpu-info.h"
+#endif
+#ifdef GPU_INFO_USE_VULKAN
+#include "gpuInfo/vulkan-gpu-info.h"
+#endif
+#ifdef GPU_INFO_USE_METAL
+#include "gpuInfo/metal-gpu-info.h"
+#endif
+
 Napi::Value getGpuType(const Napi::CallbackInfo &info)
 {
 #ifdef GPU_INFO_USE_CUDA
