@@ -27,3 +27,5 @@ const model = await LlamaDevice.loadModel({
 
 console.log(model.description);
 console.log({ ...model.tokens });
+
+console.log(model.tokenize('hello, world'));
