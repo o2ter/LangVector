@@ -30,11 +30,11 @@
 #include "napi.h"
 
 #ifdef GPU_INFO_USE_CUDA
-#include "gpuInfo/cuda-gpu-info.h"
+#include "../gpuInfo/cuda-gpu-info.h"
 #endif
 #ifdef GPU_INFO_USE_VULKAN
-#include "gpuInfo/vulkan-gpu-info.h"
+#include "../gpuInfo/vulkan-gpu-info.h"
 #endif
 #ifdef GPU_INFO_USE_METAL
-#include "gpuInfo/metal-gpu-info.h"
+#include "../gpuInfo/metal-gpu-info.h"
 #endif
