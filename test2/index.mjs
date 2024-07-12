@@ -25,5 +25,5 @@ const model = await LlamaDevice.loadModel({
   },
 });
 
-console.log(model);
-console.log(model.tokens);
+console.log(model.description);
+console.log({ ...model.tokens });
