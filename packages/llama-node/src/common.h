@@ -38,22 +38,3 @@
 #ifdef GPU_INFO_USE_METAL
 #include "../gpuInfo/metal-gpu-info.h"
 #endif
-
-Napi::TypedThreadSafeFunction<Napi::Reference<Napi::Function>> CreateThreadSafeFunction(
-    Napi::Env env,
-    Napi::Function function,
-    const char *resourceName)
-{
-  auto *context = new Napi::Reference<Napi::Function>(Napi::Persistent(function));
-  return Napi::TypedThreadSafeFunction<Napi::Reference<Napi::Function>>::New(
-      env,
-      function,
-      resourceName,
-      0,
-      1,
-      context,
-      [](Napi::Env, Napi::Reference<Napi::Function> *ctx)
-      {
-        delete ctx;
-      });
-}
