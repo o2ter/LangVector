@@ -171,19 +171,6 @@ public:
     model = NULL;
   }
 
-  struct OnLoadProgressUserData
-  {
-    Napi::Env env;
-    Napi::Function callback;
-  };
-
-  static bool OnLoadProgressCallback(float progress, void *user_data)
-  {
-    Napi::TypedThreadSafeFunction<Napi::Reference<Napi::Function>> *callback = (Napi::TypedThreadSafeFunction<Napi::Reference<Napi::Function>> *)user_data;
-
-    return true;
-  }
-
   Napi::Value Dispose(const Napi::CallbackInfo &info)
   {
     if (model == NULL)
