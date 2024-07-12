@@ -120,16 +120,26 @@ public:
 
     auto complete = ThreadSafeCallback(
         info,
-        [this, userData](const Napi::CallbackInfo &info)
+        [this, userData, options](const Napi::CallbackInfo &info)
         {
           if (userData != NULL)
           {
             delete userData;
           }
-          if (model == NULL)
+          if (options.Has("onComplete"))
           {
-            Napi::Error::New(info.Env(), "Failed to load model").ThrowAsJavaScriptException();
-            return;
+            auto callback = options.Get("onComplete").As<Napi::Function>();
+            if (callback.IsFunction())
+            {
+              if (model == NULL)
+              {
+                auto error = Napi::Error::New(info.Env(), "Failed to load model").Value();
+                callback.Call({error});
+              } else
+              {
+                callback.Call({});
+              }
+            }
           }
         });
 

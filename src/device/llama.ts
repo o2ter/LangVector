@@ -52,16 +52,24 @@ export class LlamaDevice extends LLMDevice {
     signal?: AbortSignal;
     onLoadProgress?: (progress: number) => void;
   }) {
-    const model = new llamaCpp.LlamaModel(
-      path.resolve(process.cwd(), modelPath),
-      {
-        ...options,
-        onLoadProgress: onLoadProgress || signal ? (progress: number) => {
-          if (_.isFunction(onLoadProgress)) onLoadProgress(progress);
-          return !signal?.aborted;
-        } : null,
-      }
-    );
-    return new LlamaModel(this, model);
+    return new LlamaModel(this, await new Promise((res, rej) => {
+      const model = new llamaCpp.LlamaModel(
+        path.resolve(process.cwd(), modelPath),
+        {
+          ...options,
+          onLoadProgress: onLoadProgress || signal ? (progress: number) => {
+            if (_.isFunction(onLoadProgress)) onLoadProgress(progress);
+            return !signal?.aborted;
+          } : null,
+          onComplete: (error?: Error) => {
+            if (error) {
+              rej(error);
+            } else {
+              res(model);
+            }
+          },
+        }
+      );
+    }));
   }
 }
