@@ -23,6 +23,8 @@
 //  THE SOFTWARE.
 //
 
+#pragma once
+
 #include "common.h"
 
 static Napi::Value getNapiToken(const Napi::CallbackInfo &info, llama_model *model, llama_token token)

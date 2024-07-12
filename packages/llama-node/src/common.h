@@ -23,6 +23,8 @@
 //  THE SOFTWARE.
 //
 
+#pragma once
+
 #include <stddef.h>
 
 #include "llama.h"
@@ -38,3 +40,5 @@
 #ifdef GPU_INFO_USE_METAL
 #include "../gpuInfo/metal-gpu-info.h"
 #endif
+
+#include "thread.h"

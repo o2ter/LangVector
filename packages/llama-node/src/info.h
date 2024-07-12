@@ -23,6 +23,8 @@
 //  THE SOFTWARE.
 //
 
+#pragma once
+
 #include "common.h"
 
 Napi::Value getGpuVramInfo(const Napi::CallbackInfo &info)
