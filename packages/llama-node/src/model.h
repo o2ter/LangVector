@@ -102,32 +102,41 @@ public:
       model_params.check_tensors = options.Get("checkTensors").As<Napi::Boolean>().Value();
     }
 
-    if (options.Has("onLoadProgress"))
-    {
-      auto callback = options.Get("onLoadProgress").As<Napi::Function>();
-      if (callback.IsFunction())
-      {
-        userData = new OnLoadProgressUserData{
-          env : info.Env(),
-          callback,
-        };
-        model_params.progress_callback_user_data = userData;
-        model_params.progress_callback = OnLoadProgressCallback;
-      }
-    }
+    // if (options.Has("onLoadProgress"))
+    // {
+    //   auto callback = options.Get("onLoadProgress").As<Napi::Function>();
+    //   if (callback.IsFunction())
+    //   {
+    //     userData = new OnLoadProgressUserData{
+    //       env : info.Env(),
+    //       callback,
+    //     };
+    //     model_params.progress_callback_user_data = userData;
+    //     model_params.progress_callback = OnLoadProgressCallback;
+    //   }
+    // }
 
-    model = llama_load_model_from_file(modelPath.c_str(), model_params);
+    auto complete = ThreadSafeCallback(
+        info.Env(),
+        [this, userData](const Napi::CallbackInfo &info)
+        {
+          if (userData != NULL)
+          {
+            delete userData;
+          }
+          if (model == NULL)
+          {
+            Napi::Error::New(info.Env(), "Failed to load model").ThrowAsJavaScriptException();
+            return;
+          }
+        });
 
-    if (userData != NULL)
-    {
-      delete userData;
-    }
-
-    if (model == NULL)
-    {
-      Napi::Error::New(info.Env(), "Failed to load model").ThrowAsJavaScriptException();
-      return;
-    }
+    ThreadPool::excute(
+        [this, complete]()
+        {
+          model = llama_load_model_from_file(modelPath.c_str(), model_params);
+          complete.BlockingCall();
+        });
   }
 
   ~LlamaModel()

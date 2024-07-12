@@ -40,7 +40,21 @@ public:
 
   static void excute(const std::function<void()> &job)
   {
-    shared().excute(job);
+    shared()._excute(job);
+  }
+
+  void release()
+  {
+    {
+      std::unique_lock<std::mutex> lock(queue_mutex);
+      should_terminate = true;
+    }
+    mutex_condition.notify_all();
+    for (std::thread &active_thread : threads)
+    {
+      active_thread.join();
+    }
+    threads.clear();
   }
 
 private:
@@ -55,22 +69,8 @@ private:
     const uint32_t num_threads = std::thread::hardware_concurrency();
     for (uint32_t ii = 0; ii < num_threads; ++ii)
     {
-      threads.emplace_back(std::thread(&loop, this));
+      threads.emplace_back(std::thread(&ThreadPool::loop, this));
     }
-  }
-
-  ~ThreadPool()
-  {
-    {
-      std::unique_lock<std::mutex> lock(queue_mutex);
-      should_terminate = true;
-    }
-    mutex_condition.notify_all();
-    for (std::thread &active_thread : threads)
-    {
-      active_thread.join();
-    }
-    threads.clear();
   }
 
   void loop()
@@ -93,7 +93,7 @@ private:
     }
   }
 
-  void excute(const std::function<void()> &job)
+  void _excute(const std::function<void()> &job)
   {
     {
       std::unique_lock<std::mutex> lock(queue_mutex);
@@ -102,3 +102,15 @@ private:
     mutex_condition.notify_one();
   }
 };
+
+Napi::TypedThreadSafeFunction<Napi::Reference<Napi::Function>> ThreadSafeCallback(
+    Napi::Env env,
+    const std::function<void(const Napi::CallbackInfo &info)> &callback)
+{
+  return Napi::TypedThreadSafeFunction<Napi::Reference<Napi::Function>>::New(
+      env,
+      Napi::Function::New(env, callback),
+      "ThreadSafeCallback",
+      0,
+      1);
+}
