@@ -31,6 +31,18 @@
 
 class ThreadPool
 {
+public:
+  static ThreadPool &shared()
+  {
+    static ThreadPool instance;
+    return instance;
+  }
+
+  static void excute(const std::function<void()> &job)
+  {
+    shared().excute(job);
+  }
+
 private:
   bool should_terminate = false;
   std::mutex queue_mutex;
@@ -80,9 +92,6 @@ private:
       job();
     }
   }
-
-public:
-  static ThreadPool shared();
 
   void excute(const std::function<void()> &job)
   {
