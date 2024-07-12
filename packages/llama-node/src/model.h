@@ -61,6 +61,65 @@ static Napi::Value getNapiControlToken(const Napi::CallbackInfo &info, llama_mod
   return Napi::Number::From(info.Env(), token);
 }
 
+template <typename LlamaModel>
+class LoaderWorker : public Napi::AsyncProgressQueueWorker<float>
+{
+public:
+  LoaderWorker(
+      Napi::Function &okCallback,
+      Napi::Function &progressCallback,
+      LlamaModel *model)
+      : AsyncProgressQueueWorker(okCallback), model(model)
+  {
+    this->progressCallback.Reset(progressCallback, 1);
+  }
+
+  void Execute(const ExecutionProgress &progress)
+  {
+    this->progress = &progress;
+    model->model_params.progress_callback_user_data = this;
+    model->model_params.progress_callback = progress_callback;
+    model->model = llama_load_model_from_file(model->modelPath.c_str(), model->model_params);
+  }
+  void OnOK()
+  {
+    Napi::HandleScope scope(Env());
+    if (model->model == NULL)
+    {
+      auto error = Napi::Error::New(Env(), "Failed to load model").Value();
+      Callback().Call({error});
+    }
+    else
+    {
+      Callback().Call({});
+    }
+  }
+  void OnProgress(const float *data, size_t /* count */)
+  {
+    Napi::HandleScope scope(Env());
+    if (!progressCallback.IsEmpty())
+    {
+      auto result = progressCallback.Call(Receiver().Value(), {Napi::Number::New(Env(), *data)});
+      aborted = !result.ToBoolean();
+    }
+  }
+
+private:
+  LlamaModel *model;
+  Napi::FunctionReference progressCallback;
+  bool aborted = false;
+
+  const ExecutionProgress *progress;
+
+  static bool
+  progress_callback(float progress, void *user_data)
+  {
+    auto worker = (LoaderWorker *)user_data;
+    worker->progress->Send(&progress, 1);
+    return !worker->aborted;
+  }
+};
+
 class LlamaModel : public Napi::ObjectWrap<LlamaModel>
 {
 public:
@@ -101,35 +160,10 @@ public:
       model_params.check_tensors = options.Value().Get("checkTensors").As<Napi::Boolean>().Value();
     }
 
-    auto complete = ThreadSafeCallback(
-        info,
-        [this](const Napi::CallbackInfo &info)
-        {
-          if (options.Value().Has("onComplete"))
-          {
-            auto callback = options.Value().Get("onComplete").As<Napi::Function>();
-            if (callback.IsFunction())
-            {
-              if (model == NULL)
-              {
-                auto error = Napi::Error::New(info.Env(), "Failed to load model").Value();
-                callback.Call({error});
-              }
-              else
-              {
-                callback.Call({});
-              }
-            }
-          }
-        });
-
-    ThreadPool::excute(
-        [this, complete]()
-        {
-          model = llama_load_model_from_file(modelPath.c_str(), model_params);
-          complete.BlockingCall();
-          complete.Release();
-        });
+    auto progress = options.Value().Get("onLoadProgress").As<Napi::Function>();
+    auto complete = options.Value().Get("onComplete").As<Napi::Function>();
+    auto worker = new LoaderWorker<LlamaModel>(complete, progress, this);
+    worker->Queue();
   }
 
   ~LlamaModel()
@@ -188,8 +222,8 @@ public:
 
     Napi::Uint32Array tokens = info[0].As<Napi::Uint32Array>();
     bool decodeSpecial = info.Length() > 0
-                                   ? info[1].As<Napi::Boolean>().Value()
-                                   : false;
+                             ? info[1].As<Napi::Boolean>().Value()
+                             : false;
 
     std::vector<char> result(8, 0);
     const int n_length = llama_detokenize(model, (llama_token *)tokens.Data(), tokens.ElementLength(), result.data(), result.size(), false, decodeSpecial);
