@@ -115,7 +115,7 @@ Napi::TypedThreadSafeFunction<Napi::Reference<Napi::Value>> ThreadSafeCallback(
       0,
       1,
       context,
-      [](Napi::Env, void*, Napi::Reference<Napi::Value> *ctx)
+      [](Napi::Env, void *, Napi::Reference<Napi::Value> *ctx)
       {
         delete ctx;
       });

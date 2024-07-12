@@ -135,7 +135,8 @@ public:
               {
                 auto error = Napi::Error::New(info.Env(), "Failed to load model").Value();
                 callback.Call({error});
-              } else
+              }
+              else
               {
                 callback.Call({});
               }
