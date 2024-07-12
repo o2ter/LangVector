@@ -118,17 +118,19 @@ public:
     //   }
     // }
 
+    Napi::Reference<Napi::Object> *_options = new Napi::Reference<Napi::Object>(Napi::Persistent(options));
+
     auto complete = ThreadSafeCallback(
         info,
-        [this, userData, options](const Napi::CallbackInfo &info)
+        [this, userData, _options](const Napi::CallbackInfo &info)
         {
           if (userData != NULL)
           {
             delete userData;
           }
-          if (options.Has("onComplete"))
+          if (_options->Value().Has("onComplete"))
           {
-            auto callback = options.Get("onComplete").As<Napi::Function>();
+            auto callback = _options->Value().Get("onComplete").As<Napi::Function>();
             if (callback.IsFunction())
             {
               if (model == NULL)
@@ -142,6 +144,7 @@ public:
               }
             }
           }
+          delete _options;
         });
 
     ThreadPool::excute(
