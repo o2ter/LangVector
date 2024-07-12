@@ -100,33 +100,33 @@ export class LlamaModel extends LLMModel<LlamaDevice> {
   }
 
   get description(): string {
-    return this._model.getModelDescription();
+    return this._model.description();
   }
   /** The context size the model was trained on */
   get contextSize(): number {
     if (_.isNil(this._model)) throw new DisposedError();
-    return this._model.getTrainContextSize();
+    return this._model.contextSize();
   }
   /** The size of an embedding vector the model can produce */
   get embeddingSize(): number {
     if (_.isNil(this._model)) throw new DisposedError();
-    return this._model.getEmbeddingVectorSize();
+    return this._model.embeddingSize();
   }
   get totalSize(): number {
     if (_.isNil(this._model)) throw new DisposedError();
-    return this._model.getTotalSize();
+    return this._model.totalSize();
   }
   get totalParameters(): number {
     if (_.isNil(this._model)) throw new DisposedError();
-    return this._model.getTotalParameters();
+    return this._model.totalParameters();
   }
   get vocabularyType() {
     if (_.isNil(this._model)) throw new DisposedError();
-    return this._model.getVocabularyType();
+    return this._model.vocabularyType();
   }
   get modelSize(): number {
     if (_.isNil(this._model)) throw new DisposedError();
-    return this._model.getModelSize();
+    return this._model.modelSize();
   }
 
   tokenString(token: number): string | undefined {
