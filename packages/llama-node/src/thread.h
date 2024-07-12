@@ -103,14 +103,20 @@ private:
   }
 };
 
-Napi::TypedThreadSafeFunction<Napi::Reference<Napi::Function>> ThreadSafeCallback(
-    Napi::Env env,
+Napi::TypedThreadSafeFunction<Napi::Reference<Napi::Value>> ThreadSafeCallback(
+    const Napi::CallbackInfo &info,
     const std::function<void(const Napi::CallbackInfo &info)> &callback)
 {
-  return Napi::TypedThreadSafeFunction<Napi::Reference<Napi::Function>>::New(
-      env,
-      Napi::Function::New(env, callback),
+  Napi::Reference<Napi::Value> *context = new Napi::Reference<Napi::Value>(Napi::Persistent(info.This()));
+  return Napi::TypedThreadSafeFunction<Napi::Reference<Napi::Value>>::New(
+      info.Env(),
+      Napi::Function::New(info.Env(), callback),
       "ThreadSafeCallback",
       0,
-      1);
+      1,
+      context,
+      [](Napi::Env, void*, Napi::Reference<Napi::Value> *ctx)
+      {
+        delete ctx;
+      });
 }

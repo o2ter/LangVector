@@ -75,7 +75,7 @@ public:
     modelPath = info[0].As<Napi::String>().Utf8Value();
 
     Napi::Object options = info[1].As<Napi::Object>();
-    OnLoadProgressUserData *userData = NULL;
+    Napi::TypedThreadSafeFunction<Napi::Reference<Napi::Function>> *userData = NULL;
 
     if (options.Has("gpuLayers"))
     {
@@ -107,17 +107,19 @@ public:
     //   auto callback = options.Get("onLoadProgress").As<Napi::Function>();
     //   if (callback.IsFunction())
     //   {
-    //     userData = new OnLoadProgressUserData{
-    //       env : info.Env(),
-    //       callback,
-    //     };
+    //     userData = ThreadSafeCallback(
+    //         info,
+    //         [callback](const Napi::CallbackInfo &info, float progress)
+    //         {
+    //           callback.Call({Napi::Number::New(info.Env(), progress)});
+    //         });
     //     model_params.progress_callback_user_data = userData;
     //     model_params.progress_callback = OnLoadProgressCallback;
     //   }
     // }
 
     auto complete = ThreadSafeCallback(
-        info.Env(),
+        info,
         [this, userData](const Napi::CallbackInfo &info)
         {
           if (userData != NULL)
@@ -162,9 +164,9 @@ public:
 
   static bool OnLoadProgressCallback(float progress, void *user_data)
   {
-    OnLoadProgressUserData *data = (OnLoadProgressUserData *)user_data;
-    auto result = data->callback.Call({Napi::Number::New(data->env, progress)});
-    return result.As<Napi::Boolean>().Value();
+    Napi::TypedThreadSafeFunction<Napi::Reference<Napi::Function>> *callback = (Napi::TypedThreadSafeFunction<Napi::Reference<Napi::Function>> *)user_data;
+
+    return true;
   }
 
   Napi::Value Dispose(const Napi::CallbackInfo &info)
