@@ -135,6 +135,7 @@ public:
   ~LlamaModel()
   {
     dispose();
+    options.Unref();
   }
 
   void dispose()
