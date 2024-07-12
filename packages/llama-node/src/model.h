@@ -61,74 +61,74 @@ static Napi::Value getNapiControlToken(const Napi::CallbackInfo &info, llama_mod
   return Napi::Number::From(info.Env(), token);
 }
 
-template <typename LlamaModel>
-class LoaderWorker : public Napi::AsyncProgressQueueWorker<float>
-{
-public:
-  LoaderWorker(
-      Napi::Function &okCallback,
-      Napi::Function &progressCallback,
-      LlamaModel *model)
-      : AsyncProgressQueueWorker(okCallback), model(model)
-  {
-    this->progressCallback.Reset(progressCallback, 1);
-  }
-
-  void Execute(const ExecutionProgress &progress)
-  {
-    this->progress = &progress;
-    model->model_params.progress_callback_user_data = this;
-    model->model_params.progress_callback = progress_callback;
-    model->model = llama_load_model_from_file(model->modelPath.c_str(), model->model_params);
-  }
-  void OnOK()
-  {
-    Napi::HandleScope scope(Env());
-    if (model->model == NULL)
-    {
-      auto error = Napi::Error::New(Env(), "Failed to load model").Value();
-      Callback().Call({error});
-    }
-    else
-    {
-      Callback().Call({});
-    }
-  }
-  void OnProgress(const float *data, size_t /* count */)
-  {
-    Napi::HandleScope scope(Env());
-    if (!progressCallback.IsEmpty())
-    {
-      auto result = progressCallback.Call(Receiver().Value(), {Napi::Number::New(Env(), *data)});
-      aborted = !result.ToBoolean();
-    }
-  }
-
-private:
-  LlamaModel *model;
-  Napi::FunctionReference progressCallback;
-  bool aborted = false;
-
-  const ExecutionProgress *progress;
-
-  static bool
-  progress_callback(float progress, void *user_data)
-  {
-    auto worker = (LoaderWorker *)user_data;
-    worker->progress->Send(&progress, 1);
-    return !worker->aborted;
-  }
-};
-
 class LlamaModel : public Napi::ObjectWrap<LlamaModel>
 {
-public:
+private:
   llama_model_params model_params;
   llama_model *model;
 
   std::string modelPath;
   Napi::Reference<Napi::Object> options;
 
+  class LoaderWorker : public Napi::AsyncProgressQueueWorker<float>
+  {
+  public:
+    LoaderWorker(
+        Napi::Function &okCallback,
+        Napi::Function &progressCallback,
+        LlamaModel *model)
+        : AsyncProgressQueueWorker(okCallback), model(model)
+    {
+      this->progressCallback.Reset(progressCallback, 1);
+    }
+
+    void Execute(const ExecutionProgress &progress)
+    {
+      this->progress = &progress;
+      model->model_params.progress_callback_user_data = this;
+      model->model_params.progress_callback = progress_callback;
+      model->model = llama_load_model_from_file(model->modelPath.c_str(), model->model_params);
+    }
+    void OnOK()
+    {
+      Napi::HandleScope scope(Env());
+      if (model->model == NULL)
+      {
+        auto error = Napi::Error::New(Env(), "Failed to load model").Value();
+        Callback().Call({error});
+      }
+      else
+      {
+        Callback().Call({});
+      }
+    }
+    void OnProgress(const float *data, size_t /* count */)
+    {
+      Napi::HandleScope scope(Env());
+      if (!progressCallback.IsEmpty())
+      {
+        auto result = progressCallback.Call(Receiver().Value(), {Napi::Number::New(Env(), *data)});
+        aborted = !result.ToBoolean();
+      }
+    }
+
+  private:
+    LlamaModel *model;
+    Napi::FunctionReference progressCallback;
+    bool aborted = false;
+
+    const ExecutionProgress *progress;
+
+    static bool
+    progress_callback(float progress, void *user_data)
+    {
+      auto worker = (LoaderWorker *)user_data;
+      worker->progress->Send(&progress, 1);
+      return !worker->aborted;
+    }
+  };
+
+public:
   LlamaModel(const Napi::CallbackInfo &info) : Napi::ObjectWrap<LlamaModel>(info)
   {
     model_params = llama_model_default_params();
@@ -162,7 +162,7 @@ public:
 
     auto progress = options.Value().Get("onLoadProgress").As<Napi::Function>();
     auto complete = options.Value().Get("onComplete").As<Napi::Function>();
-    auto worker = new LoaderWorker<LlamaModel>(complete, progress, this);
+    auto worker = new LoaderWorker(complete, progress, this);
     worker->Queue();
   }
 
