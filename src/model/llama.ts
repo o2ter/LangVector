@@ -103,7 +103,7 @@ export class LlamaModel extends LLMModel<LlamaDevice> {
     return this._model.getModelDescription();
   }
   /** The context size the model was trained on */
-  get trainContextSize(): number {
+  get contextSize(): number {
     if (_.isNil(this._model)) throw new DisposedError();
     return this._model.getTrainContextSize();
   }
