@@ -168,9 +168,9 @@ public:
     }
 
     std::string text = info[0].As<Napi::String>().Utf8Value();
-    bool specialTokens = info[1].As<Napi::Boolean>().Value();
+    bool encodeSpecial = info[1].As<Napi::Boolean>().Value();
 
-    std::vector<llama_token> tokens = llama_tokenize(model, text, false, specialTokens);
+    std::vector<llama_token> tokens = llama_tokenize(model, text, false, encodeSpecial);
 
     Napi::Uint32Array result = Napi::Uint32Array::New(info.Env(), tokens.size());
     for (size_t i = 0; i < tokens.size(); ++i)
@@ -189,17 +189,17 @@ public:
     }
 
     Napi::Uint32Array tokens = info[0].As<Napi::Uint32Array>();
-    bool decodeSpecialTokens = info.Length() > 0
+    bool decodeSpecial = info.Length() > 0
                                    ? info[1].As<Napi::Boolean>().Value()
                                    : false;
 
     std::vector<char> result(8, 0);
-    const int n_length = llama_detokenize(model, (llama_token *)tokens.Data(), tokens.ElementLength(), result.data(), result.size(), false, decodeSpecialTokens);
+    const int n_length = llama_detokenize(model, (llama_token *)tokens.Data(), tokens.ElementLength(), result.data(), result.size(), false, decodeSpecial);
 
     if (n_length < 0)
     {
       result.resize(-n_length);
-      int check = llama_detokenize(model, (llama_token *)tokens.Data(), tokens.ElementLength(), result.data(), result.size(), false, decodeSpecialTokens);
+      int check = llama_detokenize(model, (llama_token *)tokens.Data(), tokens.ElementLength(), result.data(), result.size(), false, decodeSpecial);
       GGML_ASSERT(check == -n_length);
     }
     else
