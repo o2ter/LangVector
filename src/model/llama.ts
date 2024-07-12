@@ -55,39 +55,39 @@ export class LlamaModel extends LLMModel<LlamaDevice> {
       /**
        * @returns The BOS (Beginning Of Sequence) token.
        */
-      get bos(): number | null {
+      get bos(): number | undefined {
         const token = _model.tokenBos();
-        return token === -1 ? null : token;
+        return token === -1 ? undefined : token;
       },
       /**
        * @returns The EOS (End Of Sequence) token.
        */
-      get eos(): number | null {
+      get eos(): number | undefined {
         const token = _model.tokenEos();
-        return token === -1 ? null : token;
+        return token === -1 ? undefined : token;
       },
       /**
        * @returns The NL (New Line) token.
        */
-      get nl(): number | null {
+      get nl(): number | undefined {
         const token = _model.tokenNl();
-        return token === -1 ? null : token;
+        return token === -1 ? undefined : token;
       },
-      get prefix(): number | null {
+      get prefix(): number | undefined {
         const token = _model.prefixToken();
-        return token === -1 ? null : token;
+        return token === -1 ? undefined : token;
       },
-      get middle(): number | null {
+      get middle(): number | undefined {
         const token = _model.middleToken();
-        return token === -1 ? null : token;
+        return token === -1 ? undefined : token;
       },
-      get suffix(): number | null {
+      get suffix(): number | undefined {
         const token = _model.suffixToken();
-        return token === -1 ? null : token;
+        return token === -1 ? undefined : token;
       },
-      get eot(): number | null {
+      get eot(): number | undefined {
         const token = _model.eotToken();
-        return token === -1 ? null : token;
+        return token === -1 ? undefined : token;
       },
     };
   }
@@ -96,7 +96,7 @@ export class LlamaModel extends LLMModel<LlamaDevice> {
    */
   get shouldPrependBosToken(): boolean {
     if (_.isNil(this._model)) throw new DisposedError();
-    return this.tokens.bos != null && this._model.shouldPrependBosToken();
+    return !_.isNil(this.tokens.bos) && this._model.shouldPrependBosToken();
   }
 
   get description(): string {
