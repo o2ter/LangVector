@@ -57,10 +57,10 @@ export class LlamaDevice extends LLMDevice {
         path.resolve(process.cwd(), modelPath),
         {
           ...options,
-          onLoadProgress: onLoadProgress || signal ? (progress: number) => {
+          onLoadProgress: (progress: number) => {
             if (_.isFunction(onLoadProgress)) onLoadProgress(progress);
             return !signal?.aborted;
-          } : null,
+          },
           onComplete: (error?: Error) => {
             if (error) {
               rej(error);
