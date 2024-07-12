@@ -42,12 +42,6 @@ Napi::Object registerCallback(Napi::Env env, Napi::Object exports)
       Napi::PropertyDescriptor::Function("getGpuType", getGpuType),
   });
   LlamaModel::init(exports);
-  exports.AddFinalizer(
-      [](Napi::Env env, int *data)
-      {
-        ThreadPool::shared().release();
-      },
-      static_cast<int *>(nullptr));
   return exports;
 }
 
