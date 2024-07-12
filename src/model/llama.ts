@@ -27,6 +27,7 @@ import _ from 'lodash';
 import { LLMModel } from './base';
 import { LlamaDevice } from '../device/llama';
 import * as llamaCpp from '../plugins/llamaCpp';
+import { DisposedError } from '../types';
 
 export class LlamaModel extends LLMModel<LlamaDevice> {
 
@@ -35,5 +36,96 @@ export class LlamaModel extends LLMModel<LlamaDevice> {
   constructor(device: LlamaDevice, model: typeof llamaCpp.LlamaModel) {
     super(device);
     this._model = model;
+  }
+
+  async dispose() {
+    if (_.isNil(this._model)) return;
+    this._model.dispose();
+    this._model = null;
+  }
+
+  get disposed() {
+    return _.isNil(this._model);
+  }
+
+  get tokens() {
+    if (_.isNil(this._model)) throw new DisposedError();
+    const _model = this._model;
+    return {
+      /**
+       * @returns The BOS (Beginning Of Sequence) token.
+       */
+      get bos(): number | null {
+        const token = _model.tokenBos();
+        return token === -1 ? null : token;
+      },
+      /**
+       * @returns The EOS (End Of Sequence) token.
+       */
+      get eos(): number | null {
+        const token = _model.tokenEos();
+        return token === -1 ? null : token;
+      },
+      /**
+       * @returns The NL (New Line) token.
+       */
+      get nl(): number | null {
+        const token = _model.tokenNl();
+        return token === -1 ? null : token;
+      },
+      get prefix(): number | null {
+        const token = _model.prefixToken();
+        return token === -1 ? null : token;
+      },
+      get middle(): number | null {
+        const token = _model.middleToken();
+        return token === -1 ? null : token;
+      },
+      get suffix(): number | null {
+        const token = _model.suffixToken();
+        return token === -1 ? null : token;
+      },
+      get eot(): number | null {
+        const token = _model.eotToken();
+        return token === -1 ? null : token;
+      },
+    };
+  }
+  /**
+   * @returns Whether we should prepend a BOS (Beginning Of Sequence) token for evaluations with this model.
+   */
+  get shouldPrependBosToken(): boolean {
+    if (_.isNil(this._model)) throw new DisposedError();
+    return this.tokens.bos != null && this._model.shouldPrependBosToken();
+  }
+
+  get description(): string {
+    return this._model.getModelDescription();
+  }
+  /** The context size the model was trained on */
+  get trainContextSize(): number {
+    if (_.isNil(this._model)) throw new DisposedError();
+    return this._model.getTrainContextSize();
+  }
+  /** The size of an embedding vector the model can produce */
+  get embeddingVectorSize(): number {
+    if (_.isNil(this._model)) throw new DisposedError();
+    return this._model.getEmbeddingVectorSize();
+  }
+  get totalSize(): number {
+    if (_.isNil(this._model)) throw new DisposedError();
+    return this._model.getTotalSize();
+  }
+  get totalParameters(): number {
+    if (_.isNil(this._model)) throw new DisposedError();
+    return this._model.getTotalParameters();
+  }
+  get vocabularyType() {
+    if (_.isNil(this._model)) throw new DisposedError();
+    return this._model.getVocabularyType();
+  }
+  get modelSize(): number {
+    if (_.isNil(this._model)) throw new DisposedError();
+    return this._model.getModelSize();
   }
 }

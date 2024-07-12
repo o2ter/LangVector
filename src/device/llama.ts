@@ -42,7 +42,7 @@ export class LlamaDevice extends LLMDevice {
   static gpuDeviceInfo() { return llamaCpp.getGpuDeviceInfo(); }
   static gpuType() { return llamaCpp.getGpuType(); }
 
-  static loadModel({ modelPath, onLoadProgress, ...options }: {
+  static async loadModel({ modelPath, onLoadProgress, ...options }: {
     modelPath: string;
     gpuLayers?: number;
     vocabOnly?: boolean;

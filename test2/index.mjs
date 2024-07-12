@@ -18,7 +18,7 @@ console.log(LlamaDevice.gpuType());
 console.log(LlamaDevice.gpuDeviceInfo());
 console.log(LlamaDevice.gpuVramInfo());
 
-console.log(LlamaDevice.loadModel({
+console.log(await LlamaDevice.loadModel({
   modelPath: path.join(__dirname, 'models', 'meta-llama/Meta-Llama-3-8B-Instruct/ggml-model-q3_k_m.gguf'),
   onLoadProgress: progress => console.log({ progress }),
 }));
