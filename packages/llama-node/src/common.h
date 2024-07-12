@@ -1,5 +1,5 @@
 //
-//  addon.cpp
+//  common.h
 //
 //  The MIT License
 //  Copyright (c) 2021 - 2024 O2ter Limited. All rights reserved.
@@ -23,26 +23,18 @@
 //  THE SOFTWARE.
 //
 
-#include "src/info.h"
-#include "src/model.h"
+#include <stddef.h>
 
-Napi::Object registerCallback(Napi::Env env, Napi::Object exports)
-{
-  llama_backend_init();
-  exports.DefineProperties({
-      Napi::PropertyDescriptor::Function("systemInfo", systemInfo),
-      Napi::PropertyDescriptor::Function("getSupportsGpuOffloading", getSupportsGpuOffloading),
-      Napi::PropertyDescriptor::Function("getSupportsMmap", getSupportsMmap),
-      Napi::PropertyDescriptor::Function("getSupportsMlock", getSupportsMlock),
-      Napi::PropertyDescriptor::Function("getBlockSizeForGgmlType", getBlockSizeForGgmlType),
-      Napi::PropertyDescriptor::Function("getTypeSizeForGgmlType", getTypeSizeForGgmlType),
-      Napi::PropertyDescriptor::Function("getConsts", getConsts),
-      Napi::PropertyDescriptor::Function("getGpuVramInfo", getGpuVramInfo),
-      Napi::PropertyDescriptor::Function("getGpuDeviceInfo", getGpuDeviceInfo),
-      Napi::PropertyDescriptor::Function("getGpuType", getGpuType),
-  });
-  LlamaModel::init(exports);
-  return exports;
-}
+#include "llama.h"
+#include "common/common.h"
+#include "napi.h"
 
-NODE_API_MODULE(NODE_GYP_MODULE_NAME, registerCallback)
+#ifdef GPU_INFO_USE_CUDA
+#include "gpuInfo/cuda-gpu-info.h"
+#endif
+#ifdef GPU_INFO_USE_VULKAN
+#include "gpuInfo/vulkan-gpu-info.h"
+#endif
+#ifdef GPU_INFO_USE_METAL
+#include "gpuInfo/metal-gpu-info.h"
+#endif
