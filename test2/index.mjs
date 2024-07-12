@@ -29,3 +29,4 @@ console.log(model.description);
 console.log({ ...model.tokens });
 
 console.log(model.tokenize('hello, world'));
+console.log(model.detokenize(new Uint32Array([15339, 11, 1917])));
