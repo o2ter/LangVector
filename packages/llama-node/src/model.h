@@ -68,48 +68,46 @@ public:
   llama_model *model;
 
   std::string modelPath;
+  Napi::Reference<Napi::Object> options;
 
   LlamaModel(const Napi::CallbackInfo &info) : Napi::ObjectWrap<LlamaModel>(info)
   {
     model_params = llama_model_default_params();
     modelPath = info[0].As<Napi::String>().Utf8Value();
+    options = Napi::Persistent(info[1].As<Napi::Object>());
 
-    Napi::Object options = info[1].As<Napi::Object>();
-
-    if (options.Has("gpuLayers"))
+    if (options.Value().Has("gpuLayers"))
     {
-      model_params.n_gpu_layers = options.Get("gpuLayers").As<Napi::Number>().Int32Value();
+      model_params.n_gpu_layers = options.Value().Get("gpuLayers").As<Napi::Number>().Int32Value();
     }
 
-    if (options.Has("vocabOnly"))
+    if (options.Value().Has("vocabOnly"))
     {
-      model_params.vocab_only = options.Get("vocabOnly").As<Napi::Boolean>().Value();
+      model_params.vocab_only = options.Value().Get("vocabOnly").As<Napi::Boolean>().Value();
     }
 
-    if (options.Has("useMmap"))
+    if (options.Value().Has("useMmap"))
     {
-      model_params.use_mmap = options.Get("useMmap").As<Napi::Boolean>().Value();
+      model_params.use_mmap = options.Value().Get("useMmap").As<Napi::Boolean>().Value();
     }
 
-    if (options.Has("useMlock"))
+    if (options.Value().Has("useMlock"))
     {
-      model_params.use_mlock = options.Get("useMlock").As<Napi::Boolean>().Value();
+      model_params.use_mlock = options.Value().Get("useMlock").As<Napi::Boolean>().Value();
     }
 
-    if (options.Has("checkTensors"))
+    if (options.Value().Has("checkTensors"))
     {
-      model_params.check_tensors = options.Get("checkTensors").As<Napi::Boolean>().Value();
+      model_params.check_tensors = options.Value().Get("checkTensors").As<Napi::Boolean>().Value();
     }
-
-    Napi::Reference<Napi::Object> *_options = new Napi::Reference<Napi::Object>(Napi::Persistent(options));
 
     auto complete = ThreadSafeCallback(
         info,
-        [this, _options](const Napi::CallbackInfo &info)
+        [this](const Napi::CallbackInfo &info)
         {
-          if (_options->Value().Has("onComplete"))
+          if (options.Value().Has("onComplete"))
           {
-            auto callback = _options->Value().Get("onComplete").As<Napi::Function>();
+            auto callback = options.Value().Get("onComplete").As<Napi::Function>();
             if (callback.IsFunction())
             {
               if (model == NULL)
@@ -123,7 +121,6 @@ public:
               }
             }
           }
-          delete _options;
         });
 
     ThreadPool::excute(
