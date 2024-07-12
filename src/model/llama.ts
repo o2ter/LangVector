@@ -108,7 +108,7 @@ export class LlamaModel extends LLMModel<LlamaDevice> {
     return this._model.getTrainContextSize();
   }
   /** The size of an embedding vector the model can produce */
-  get embeddingVectorSize(): number {
+  get embeddingSize(): number {
     if (_.isNil(this._model)) throw new DisposedError();
     return this._model.getEmbeddingVectorSize();
   }
