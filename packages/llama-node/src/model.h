@@ -75,7 +75,6 @@ public:
     modelPath = info[0].As<Napi::String>().Utf8Value();
 
     Napi::Object options = info[1].As<Napi::Object>();
-    Napi::TypedThreadSafeFunction<Napi::Reference<Napi::Function>> *userData = NULL;
 
     if (options.Has("gpuLayers"))
     {
@@ -102,32 +101,12 @@ public:
       model_params.check_tensors = options.Get("checkTensors").As<Napi::Boolean>().Value();
     }
 
-    // if (options.Has("onLoadProgress"))
-    // {
-    //   auto callback = options.Get("onLoadProgress").As<Napi::Function>();
-    //   if (callback.IsFunction())
-    //   {
-    //     userData = ThreadSafeCallback(
-    //         info,
-    //         [callback](const Napi::CallbackInfo &info, float progress)
-    //         {
-    //           callback.Call({Napi::Number::New(info.Env(), progress)});
-    //         });
-    //     model_params.progress_callback_user_data = userData;
-    //     model_params.progress_callback = OnLoadProgressCallback;
-    //   }
-    // }
-
     Napi::Reference<Napi::Object> *_options = new Napi::Reference<Napi::Object>(Napi::Persistent(options));
 
     auto complete = ThreadSafeCallback(
         info,
-        [this, userData, _options](const Napi::CallbackInfo &info)
+        [this, _options](const Napi::CallbackInfo &info)
         {
-          if (userData != NULL)
-          {
-            delete userData;
-          }
           if (_options->Value().Has("onComplete"))
           {
             auto callback = _options->Value().Get("onComplete").As<Napi::Function>();
