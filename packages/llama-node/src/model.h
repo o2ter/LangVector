@@ -147,7 +147,7 @@ public:
         [this, complete]()
         {
           model = llama_load_model_from_file(modelPath.c_str(), model_params);
-          complete.BlockingCall();
+          complete.NonBlockingCall();
         });
   }
 
