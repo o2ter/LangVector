@@ -139,6 +139,11 @@ export class LlamaModel extends LLMModel<LlamaDevice> {
     return this._model.getTokenAttributes(token);
   }
 
+  isEogToken(token: number): boolean {
+    if (_.isNil(this._model)) throw new DisposedError();
+    return this._model.isEogToken(token);
+  }
+
   tokenize(str: string, { encodeSpecial = false } = {}): Uint32Array {
     if (_.isNil(this._model)) throw new DisposedError();
     return this._model.tokenize(str, encodeSpecial);
