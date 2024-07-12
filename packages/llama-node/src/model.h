@@ -429,33 +429,32 @@ public:
 
   static void init(Napi::Object exports)
   {
-    exports.Set(
+    auto def = DefineClass(
+        exports.Env(),
         "LlamaModel",
-        DefineClass(
-            exports.Env(),
-            "LlamaModel",
-            {
-                InstanceMethod("tokenize", &LlamaModel::Tokenize),
-                InstanceMethod("detokenize", &LlamaModel::Detokenize),
-                InstanceMethod("getTrainContextSize", &LlamaModel::GetTrainContextSize),
-                InstanceMethod("getEmbeddingVectorSize", &LlamaModel::GetEmbeddingVectorSize),
-                InstanceMethod("getTotalSize", &LlamaModel::GetTotalSize),
-                InstanceMethod("getTotalParameters", &LlamaModel::GetTotalParameters),
-                InstanceMethod("getModelDescription", &LlamaModel::GetModelDescription),
-                InstanceMethod("tokenBos", &LlamaModel::TokenBos),
-                InstanceMethod("tokenEos", &LlamaModel::TokenEos),
-                InstanceMethod("tokenNl", &LlamaModel::TokenNl),
-                InstanceMethod("prefixToken", &LlamaModel::PrefixToken),
-                InstanceMethod("middleToken", &LlamaModel::MiddleToken),
-                InstanceMethod("suffixToken", &LlamaModel::SuffixToken),
-                InstanceMethod("eotToken", &LlamaModel::EotToken),
-                InstanceMethod("getTokenString", &LlamaModel::GetTokenString),
-                InstanceMethod("getTokenAttributes", &LlamaModel::GetTokenAttributes),
-                InstanceMethod("isEogToken", &LlamaModel::IsEogToken),
-                InstanceMethod("getVocabularyType", &LlamaModel::GetVocabularyType),
-                InstanceMethod("shouldPrependBosToken", &LlamaModel::ShouldPrependBosToken),
-                InstanceMethod("getModelSize", &LlamaModel::GetModelSize),
-                InstanceMethod("dispose", &LlamaModel::Dispose),
-            }));
+        {
+            InstanceMethod("tokenize", &LlamaModel::Tokenize),
+            InstanceMethod("detokenize", &LlamaModel::Detokenize),
+            InstanceMethod("getTrainContextSize", &LlamaModel::GetTrainContextSize),
+            InstanceMethod("getEmbeddingVectorSize", &LlamaModel::GetEmbeddingVectorSize),
+            InstanceMethod("getTotalSize", &LlamaModel::GetTotalSize),
+            InstanceMethod("getTotalParameters", &LlamaModel::GetTotalParameters),
+            InstanceMethod("getModelDescription", &LlamaModel::GetModelDescription),
+            InstanceMethod("tokenBos", &LlamaModel::TokenBos),
+            InstanceMethod("tokenEos", &LlamaModel::TokenEos),
+            InstanceMethod("tokenNl", &LlamaModel::TokenNl),
+            InstanceMethod("prefixToken", &LlamaModel::PrefixToken),
+            InstanceMethod("middleToken", &LlamaModel::MiddleToken),
+            InstanceMethod("suffixToken", &LlamaModel::SuffixToken),
+            InstanceMethod("eotToken", &LlamaModel::EotToken),
+            InstanceMethod("getTokenString", &LlamaModel::GetTokenString),
+            InstanceMethod("getTokenAttributes", &LlamaModel::GetTokenAttributes),
+            InstanceMethod("isEogToken", &LlamaModel::IsEogToken),
+            InstanceMethod("getVocabularyType", &LlamaModel::GetVocabularyType),
+            InstanceMethod("shouldPrependBosToken", &LlamaModel::ShouldPrependBosToken),
+            InstanceMethod("getModelSize", &LlamaModel::GetModelSize),
+            InstanceMethod("dispose", &LlamaModel::Dispose),
+        });
+    exports.Set("LlamaModel", def);
   }
 };
