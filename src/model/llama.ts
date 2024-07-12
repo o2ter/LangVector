@@ -129,6 +129,16 @@ export class LlamaModel extends LLMModel<LlamaDevice> {
     return this._model.getModelSize();
   }
 
+  tokenString(token: number): string | undefined {
+    if (_.isNil(this._model)) throw new DisposedError();
+    return this._model.getTokenString(token);
+  }
+
+  tokenAttributes(token: number): number {
+    if (_.isNil(this._model)) throw new DisposedError();
+    return this._model.getTokenAttributes(token);
+  }
+
   tokenize(str: string, { encodeSpecial = false } = {}): Uint32Array {
     if (_.isNil(this._model)) throw new DisposedError();
     return this._model.tokenize(str, encodeSpecial);
