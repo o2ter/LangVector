@@ -229,6 +229,27 @@ public:
     return result;
   }
 
+  Napi::Value RemoveTokenFromSequence(const Napi::CallbackInfo &info)
+  {
+    int32_t sequenceId = info[0].As<Napi::Number>().Int32Value();
+    int32_t startPos = info[1].As<Napi::Number>().Int32Value();
+    int32_t endPos = info[2].As<Napi::Number>().Int32Value();
+
+    bool result = llama_kv_cache_seq_rm(ctx, sequenceId, startPos, endPos);
+
+    return Napi::Boolean::New(info.Env(), result);
+  }
+  Napi::Value ShiftSequenceToken(const Napi::CallbackInfo &info)
+  {
+    int32_t sequenceId = info[0].As<Napi::Number>().Int32Value();
+    int32_t startPos = info[1].As<Napi::Number>().Int32Value();
+    int32_t endPos = info[2].As<Napi::Number>().Int32Value();
+    int32_t shiftDelta = info[3].As<Napi::Number>().Int32Value();
+
+    llama_kv_cache_seq_add(ctx, sequenceId, startPos, endPos, shiftDelta);
+
+    return info.Env().Undefined();
+  }
   Napi::Value GetStateSize(const Napi::CallbackInfo &info)
   {
     return Napi::Number::From(Env(), llama_state_get_size(ctx));
@@ -245,6 +266,8 @@ public:
             InstanceMethod("stateSize", &LlamaContext::GetStateSize),
             InstanceMethod("disposeSequence", &LlamaContext::DisposeSequence),
             InstanceMethod("sequenceEmbedding", &LlamaContext::GetSequenceEmbedding),
+            InstanceMethod("removeTokenFromSequence", &LlamaContext::RemoveTokenFromSequence),
+            InstanceMethod("shiftSequenceToken", &LlamaContext::ShiftSequenceToken),
             InstanceMethod("dispose", &LlamaContext::Dispose),
         });
     exports.Set("LlamaContext", def);
