@@ -51,7 +51,7 @@ export class _LlamaContext {
     this.ctx = null;
   }
 
-  async _execute<T = void>(callback: () => Awaitable<T>) {
+  async _sync<T = void>(callback: () => Awaitable<T>) {
     return await new Promise<T>(async (res, rej) => {
       this.jobs.push(async () => {
         try {
