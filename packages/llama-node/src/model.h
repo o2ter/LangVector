@@ -64,7 +64,7 @@ static Napi::Value getNapiControlToken(const Napi::CallbackInfo &info, llama_mod
 class LlamaModel : public Napi::ObjectWrap<LlamaModel>
 {
 public:
-  llama_model_params model_params;
+  llama_model_params params;
   llama_model *model;
 
   std::string modelPath;
@@ -108,9 +108,9 @@ public:
       try
       {
         this->progress = &progress;
-        model->model_params.progress_callback_user_data = this;
-        model->model_params.progress_callback = progress_callback;
-        model->model = llama_load_model_from_file(model->modelPath.c_str(), model->model_params);
+        model->params.progress_callback_user_data = this;
+        model->params.progress_callback = progress_callback;
+        model->model = llama_load_model_from_file(model->modelPath.c_str(), model->params);
       }
       catch (const std::exception &e)
       {
@@ -153,33 +153,33 @@ public:
 
   LlamaModel(const Napi::CallbackInfo &info) : Napi::ObjectWrap<LlamaModel>(info)
   {
-    model_params = llama_model_default_params();
+    params = llama_model_default_params();
     modelPath = info[0].As<Napi::String>().Utf8Value();
     options = Napi::Persistent(info[1].As<Napi::Object>());
 
     if (options.Value().Has("gpuLayers"))
     {
-      model_params.n_gpu_layers = options.Value().Get("gpuLayers").As<Napi::Number>().Int32Value();
+      params.n_gpu_layers = options.Value().Get("gpuLayers").As<Napi::Number>().Int32Value();
     }
 
     if (options.Value().Has("vocabOnly"))
     {
-      model_params.vocab_only = options.Value().Get("vocabOnly").As<Napi::Boolean>().Value();
+      params.vocab_only = options.Value().Get("vocabOnly").As<Napi::Boolean>().Value();
     }
 
     if (options.Value().Has("useMmap"))
     {
-      model_params.use_mmap = options.Value().Get("useMmap").As<Napi::Boolean>().Value();
+      params.use_mmap = options.Value().Get("useMmap").As<Napi::Boolean>().Value();
     }
 
     if (options.Value().Has("useMlock"))
     {
-      model_params.use_mlock = options.Value().Get("useMlock").As<Napi::Boolean>().Value();
+      params.use_mlock = options.Value().Get("useMlock").As<Napi::Boolean>().Value();
     }
 
     if (options.Value().Has("checkTensors"))
     {
-      model_params.check_tensors = options.Value().Get("checkTensors").As<Napi::Boolean>().Value();
+      params.check_tensors = options.Value().Get("checkTensors").As<Napi::Boolean>().Value();
     }
 
     auto progress = options.Value().Get("onLoadProgress").As<Napi::Function>();

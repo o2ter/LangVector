@@ -32,7 +32,7 @@ class LlamaContext : public Napi::ObjectWrap<LlamaContext>
 {
 public:
   LlamaModel *model;
-  llama_context_params context_params;
+  llama_context_params params;
   llama_context *ctx;
 
   LlamaContext(const Napi::CallbackInfo &info) : Napi::ObjectWrap<LlamaContext>(info)
@@ -42,54 +42,54 @@ public:
 
     auto hardware_concurrency = std::thread::hardware_concurrency();
 
-    context_params = llama_context_default_params();
-    context_params.seed = -1;
-    context_params.n_ctx = 0;
-    context_params.n_threads = hardware_concurrency;
-    context_params.n_threads_batch = hardware_concurrency;
+    params = llama_context_default_params();
+    params.seed = -1;
+    params.n_ctx = 0;
+    params.n_threads = hardware_concurrency;
+    params.n_threads_batch = hardware_concurrency;
 
     Napi::Object options = info[1].As<Napi::Object>();
 
     if (options.Has("seed"))
     {
-      context_params.seed = options.Get("seed").As<Napi::Number>().Uint32Value();
+      params.seed = options.Get("seed").As<Napi::Number>().Uint32Value();
     }
 
     if (options.Has("contextSize"))
     {
-      context_params.n_ctx = options.Get("contextSize").As<Napi::Number>().Uint32Value();
+      params.n_ctx = options.Get("contextSize").As<Napi::Number>().Uint32Value();
     }
 
     if (options.Has("batchSize"))
     {
-      context_params.n_batch = options.Get("batchSize").As<Napi::Number>().Uint32Value();
-      context_params.n_ubatch = context_params.n_batch;
+      params.n_batch = options.Get("batchSize").As<Napi::Number>().Uint32Value();
+      params.n_ubatch = params.n_batch;
     }
 
     if (options.Has("sequences"))
     {
-      context_params.n_seq_max = options.Get("sequences").As<Napi::Number>().Uint32Value();
+      params.n_seq_max = options.Get("sequences").As<Napi::Number>().Uint32Value();
     }
 
     if (options.Has("embeddings"))
     {
-      context_params.embeddings = options.Get("embeddings").As<Napi::Boolean>().Value();
+      params.embeddings = options.Get("embeddings").As<Napi::Boolean>().Value();
     }
 
     if (options.Has("flashAttention"))
     {
-      context_params.flash_attn = options.Get("flashAttention").As<Napi::Boolean>().Value();
+      params.flash_attn = options.Get("flashAttention").As<Napi::Boolean>().Value();
     }
 
     if (options.Has("threads"))
     {
       const auto n_threads = options.Get("threads").As<Napi::Number>().Uint32Value();
       const auto resolved_n_threads = n_threads > 0 ? n_threads : hardware_concurrency;
-      context_params.n_threads = resolved_n_threads;
-      context_params.n_threads_batch = resolved_n_threads;
+      params.n_threads = resolved_n_threads;
+      params.n_threads_batch = resolved_n_threads;
     }
 
-    ctx = llama_new_context_with_model(model->model, context_params);
+    ctx = llama_new_context_with_model(model->model, params);
     if (ctx == NULL)
     {
       Napi::Error::New(Env(), "Failed to load context").ThrowAsJavaScriptException();
@@ -171,7 +171,7 @@ public:
 
           for (size_t i = 0; i < token_length; ++i)
           {
-            llama_batch_add(batch, tokens[i], i, {seqId}, true);
+            llama_batch_add(batch, tokens[i], i, {seqId}, params.embeddings);
           }
           auto status = llama_decode(ctx, batch);
           if (status < 0)
