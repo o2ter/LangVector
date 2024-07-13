@@ -29,6 +29,17 @@ import { LLMDevice } from './base';
 import { LlamaModel } from '../model/llama';
 import * as llamaCpp from '../plugins/llamaCpp';
 
+export type LlamaModelOptions = {
+  modelPath: string;
+  gpuLayers?: number;
+  vocabOnly?: boolean;
+  useMmap?: boolean;
+  useMlock?: boolean;
+  checkTensors?: boolean;
+  signal?: AbortSignal;
+  onLoadProgress?: (progress: number) => void;
+}
+
 export class LlamaDevice extends LLMDevice {
 
   static systemInfo() { return llamaCpp.systemInfo(); }
@@ -42,16 +53,12 @@ export class LlamaDevice extends LLMDevice {
   static gpuDeviceInfo() { return llamaCpp.getGpuDeviceInfo(); }
   static gpuType() { return llamaCpp.getGpuType(); }
 
-  static async loadModel({ modelPath, signal, onLoadProgress, ...options }: {
-    modelPath: string;
-    gpuLayers?: number;
-    vocabOnly?: boolean;
-    useMmap?: boolean;
-    useMlock?: boolean;
-    checkTensors?: boolean;
-    signal?: AbortSignal;
-    onLoadProgress?: (progress: number) => void;
-  }) {
+  static async loadModel({
+    modelPath,
+    signal,
+    onLoadProgress,
+    ...options
+  }: LlamaModelOptions) {
     return new LlamaModel(this, await new Promise((res, rej) => {
       const model = new llamaCpp.LlamaModel(
         path.resolve(process.cwd(), modelPath),
