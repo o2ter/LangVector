@@ -48,7 +48,10 @@ export class LlamaContext extends LLMContext<LlamaDevice, LlamaModel> {
   get disposed() {
     return _.isNil(this._context);
   }
-  
+
+  /**
+   * The context size of context.
+   */
   get contextSize(): number {
     if (_.isNil(this._context)) throw new DisposedError();
     return this._context.contextSize();
