@@ -28,6 +28,7 @@ import { LLMModel } from './base';
 import { LlamaDevice } from '../device/llama';
 import { DisposedError } from '../types';
 import * as llamaCpp from '../plugins/llamaCpp';
+import { LlamaContext } from '../context/llama';
 
 export class LlamaModel extends LLMModel<LlamaDevice> {
 
@@ -151,5 +152,17 @@ export class LlamaModel extends LLMModel<LlamaDevice> {
   detokenize(tokens: Uint32Array, { decodeSpecial = false } = {}): string {
     if (_.isNil(this._model)) throw new DisposedError();
     return this._model.detokenize(tokens, decodeSpecial);
+  }
+
+  createContext(options: {
+    seed?: number;
+    contextSize?: number;
+    batchSize?: number;
+    sequences?: number;
+    embeddings?: boolean;
+    flashAttention?: boolean;
+    threads?: number;
+  } = {}) {
+    return new LlamaContext(this, llamaCpp.LlamaContext(this._model, options));
   }
 }
