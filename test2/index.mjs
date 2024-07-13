@@ -12,8 +12,6 @@ const model = await LlamaDevice.loadModel({
   useMmap: true,
 });
 
-console.log('====================================')
-
 const context = model.createContext({
   embeddings: true,
 });
