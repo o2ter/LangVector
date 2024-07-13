@@ -86,11 +86,12 @@ public:
     }
 
     ctx = llama_new_context_with_model(model->model, context_params);
-
     if (ctx == NULL)
     {
       Napi::Error::New(Env(), "Failed to load context").ThrowAsJavaScriptException();
     }
+
+    Napi::MemoryManagement::AdjustExternalMemory(Env(), llama_state_get_size(ctx));
   }
 
   ~LlamaContext()
@@ -104,6 +105,7 @@ public:
     {
       return;
     }
+    Napi::MemoryManagement::AdjustExternalMemory(Env(), -(int64_t)llama_state_get_size(ctx));
     llama_free(ctx);
     ctx = NULL;
     model->Unref();
@@ -113,7 +115,7 @@ public:
   {
     if (ctx == NULL)
     {
-      return info.Env().Undefined();
+      return Env().Undefined();
     }
     dispose();
   }
@@ -122,19 +124,19 @@ public:
   {
     if (ctx == NULL)
     {
-      Napi::Error::New(info.Env(), "Context is disposed").ThrowAsJavaScriptException();
-      return info.Env().Undefined();
+      Napi::Error::New(Env(), "Context is disposed").ThrowAsJavaScriptException();
+      return Env().Undefined();
     }
 
-    return Napi::Number::From(info.Env(), llama_n_ctx(ctx));
+    return Napi::Number::From(Env(), llama_n_ctx(ctx));
   }
 
   Napi::Value DisposeSequence(const Napi::CallbackInfo &info)
   {
     if (ctx == NULL)
     {
-      Napi::Error::New(info.Env(), "Context is disposed").ThrowAsJavaScriptException();
-      return info.Env().Undefined();
+      Napi::Error::New(Env(), "Context is disposed").ThrowAsJavaScriptException();
+      return Env().Undefined();
     }
 
     int32_t sequenceId = info[0].As<Napi::Number>().Int32Value();
@@ -143,18 +145,18 @@ public:
 
     if (!result)
     {
-      Napi::Error::New(info.Env(), "Failed to dispose sequence").ThrowAsJavaScriptException();
-      return info.Env().Undefined();
+      Napi::Error::New(Env(), "Failed to dispose sequence").ThrowAsJavaScriptException();
+      return Env().Undefined();
     }
 
-    return info.Env().Undefined();
+    return Env().Undefined();
   }
   Napi::Value GetSequenceEmbedding(const Napi::CallbackInfo &info)
   {
     if (ctx == NULL)
     {
-      Napi::Error::New(info.Env(), "Context is disposed").ThrowAsJavaScriptException();
-      return info.Env().Undefined();
+      Napi::Error::New(Env(), "Context is disposed").ThrowAsJavaScriptException();
+      return Env().Undefined();
     }
 
     int32_t sequenceId = info[0].As<Napi::Number>().Int32Value();
@@ -162,8 +164,8 @@ public:
 
     if (inputTokensLength <= 0)
     {
-      Napi::Error::New(info.Env(), "Invalid input tokens length").ThrowAsJavaScriptException();
-      return info.Env().Undefined();
+      Napi::Error::New(Env(), "Invalid input tokens length").ThrowAsJavaScriptException();
+      return Env().Undefined();
     }
 
     const int n_embd = llama_n_embd(model->model);
@@ -174,12 +176,12 @@ public:
 
       if (embeddings == NULL)
       {
-        Napi::Error::New(info.Env(), std::string("Failed to get embeddings for token ") + std::to_string(inputTokensLength - 1)).ThrowAsJavaScriptException();
-        return info.Env().Undefined();
+        Napi::Error::New(Env(), std::string("Failed to get embeddings for token ") + std::to_string(inputTokensLength - 1)).ThrowAsJavaScriptException();
+        return Env().Undefined();
       }
     }
 
-    Napi::Float64Array result = Napi::Float64Array::New(info.Env(), n_embd);
+    Napi::Float64Array result = Napi::Float64Array::New(Env(), n_embd);
     for (size_t i = 0; i < n_embd; ++i)
     {
       result[i] = embeddings[i];
@@ -192,11 +194,11 @@ public:
   {
     if (ctx == NULL)
     {
-      Napi::Error::New(info.Env(), "Context is disposed").ThrowAsJavaScriptException();
-      return info.Env().Undefined();
+      Napi::Error::New(Env(), "Context is disposed").ThrowAsJavaScriptException();
+      return Env().Undefined();
     }
 
-    return Napi::Number::From(info.Env(), llama_state_get_size(ctx));
+    return Napi::Number::From(Env(), llama_state_get_size(ctx));
   }
 
   static void init(Napi::Object exports)

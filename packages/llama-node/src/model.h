@@ -185,7 +185,7 @@ public:
   {
     if (model == NULL)
     {
-      return info.Env().Undefined();
+      return Env().Undefined();
     }
     dispose();
   }
@@ -194,8 +194,8 @@ public:
   {
     if (model == NULL)
     {
-      Napi::Error::New(info.Env(), "Model is disposed").ThrowAsJavaScriptException();
-      return info.Env().Undefined();
+      Napi::Error::New(Env(), "Model is disposed").ThrowAsJavaScriptException();
+      return Env().Undefined();
     }
 
     std::string text = info[0].As<Napi::String>().Utf8Value();
@@ -203,7 +203,7 @@ public:
 
     std::vector<llama_token> tokens = llama_tokenize(model, text, false, encodeSpecial);
 
-    Napi::Uint32Array result = Napi::Uint32Array::New(info.Env(), tokens.size());
+    Napi::Uint32Array result = Napi::Uint32Array::New(Env(), tokens.size());
     for (size_t i = 0; i < tokens.size(); ++i)
     {
       result[i] = static_cast<uint32_t>(tokens[i]);
@@ -215,8 +215,8 @@ public:
   {
     if (model == NULL)
     {
-      Napi::Error::New(info.Env(), "Model is disposed").ThrowAsJavaScriptException();
-      return info.Env().Undefined();
+      Napi::Error::New(Env(), "Model is disposed").ThrowAsJavaScriptException();
+      return Env().Undefined();
     }
 
     Napi::Uint32Array tokens = info[0].As<Napi::Uint32Array>();
@@ -238,73 +238,73 @@ public:
       result.resize(n_length);
     }
 
-    return Napi::String::New(info.Env(), result.data(), result.size());
+    return Napi::String::New(Env(), result.data(), result.size());
   }
 
   Napi::Value ContextSize(const Napi::CallbackInfo &info)
   {
     if (model == NULL)
     {
-      Napi::Error::New(info.Env(), "Model is disposed").ThrowAsJavaScriptException();
-      return info.Env().Undefined();
+      Napi::Error::New(Env(), "Model is disposed").ThrowAsJavaScriptException();
+      return Env().Undefined();
     }
 
-    return Napi::Number::From(info.Env(), llama_n_ctx_train(model));
+    return Napi::Number::From(Env(), llama_n_ctx_train(model));
   }
 
   Napi::Value EmbeddingSize(const Napi::CallbackInfo &info)
   {
     if (model == NULL)
     {
-      Napi::Error::New(info.Env(), "Model is disposed").ThrowAsJavaScriptException();
-      return info.Env().Undefined();
+      Napi::Error::New(Env(), "Model is disposed").ThrowAsJavaScriptException();
+      return Env().Undefined();
     }
 
-    return Napi::Number::From(info.Env(), llama_n_embd(model));
+    return Napi::Number::From(Env(), llama_n_embd(model));
   }
 
   Napi::Value TotalSize(const Napi::CallbackInfo &info)
   {
     if (model == NULL)
     {
-      Napi::Error::New(info.Env(), "Model is disposed").ThrowAsJavaScriptException();
-      return info.Env().Undefined();
+      Napi::Error::New(Env(), "Model is disposed").ThrowAsJavaScriptException();
+      return Env().Undefined();
     }
 
-    return Napi::Number::From(info.Env(), llama_model_size(model));
+    return Napi::Number::From(Env(), llama_model_size(model));
   }
 
   Napi::Value TotalParameters(const Napi::CallbackInfo &info)
   {
     if (model == NULL)
     {
-      Napi::Error::New(info.Env(), "Model is disposed").ThrowAsJavaScriptException();
-      return info.Env().Undefined();
+      Napi::Error::New(Env(), "Model is disposed").ThrowAsJavaScriptException();
+      return Env().Undefined();
     }
 
-    return Napi::Number::From(info.Env(), llama_model_n_params(model));
+    return Napi::Number::From(Env(), llama_model_n_params(model));
   }
 
   Napi::Value Description(const Napi::CallbackInfo &info)
   {
     if (model == NULL)
     {
-      Napi::Error::New(info.Env(), "Model is disposed").ThrowAsJavaScriptException();
-      return info.Env().Undefined();
+      Napi::Error::New(Env(), "Model is disposed").ThrowAsJavaScriptException();
+      return Env().Undefined();
     }
 
     char model_desc[128];
     int actual_length = llama_model_desc(model, model_desc, sizeof(model_desc));
 
-    return Napi::String::New(info.Env(), model_desc, actual_length);
+    return Napi::String::New(Env(), model_desc, actual_length);
   }
 
   Napi::Value TokenBos(const Napi::CallbackInfo &info)
   {
     if (model == NULL)
     {
-      Napi::Error::New(info.Env(), "Model is disposed").ThrowAsJavaScriptException();
-      return info.Env().Undefined();
+      Napi::Error::New(Env(), "Model is disposed").ThrowAsJavaScriptException();
+      return Env().Undefined();
     }
 
     return getNapiControlToken(info, model, llama_token_bos(model));
@@ -313,8 +313,8 @@ public:
   {
     if (model == NULL)
     {
-      Napi::Error::New(info.Env(), "Model is disposed").ThrowAsJavaScriptException();
-      return info.Env().Undefined();
+      Napi::Error::New(Env(), "Model is disposed").ThrowAsJavaScriptException();
+      return Env().Undefined();
     }
 
     return getNapiControlToken(info, model, llama_token_eos(model));
@@ -323,8 +323,8 @@ public:
   {
     if (model == NULL)
     {
-      Napi::Error::New(info.Env(), "Model is disposed").ThrowAsJavaScriptException();
-      return info.Env().Undefined();
+      Napi::Error::New(Env(), "Model is disposed").ThrowAsJavaScriptException();
+      return Env().Undefined();
     }
 
     return getNapiToken(info, model, llama_token_nl(model));
@@ -333,8 +333,8 @@ public:
   {
     if (model == NULL)
     {
-      Napi::Error::New(info.Env(), "Model is disposed").ThrowAsJavaScriptException();
-      return info.Env().Undefined();
+      Napi::Error::New(Env(), "Model is disposed").ThrowAsJavaScriptException();
+      return Env().Undefined();
     }
 
     return getNapiControlToken(info, model, llama_token_prefix(model));
@@ -343,8 +343,8 @@ public:
   {
     if (model == NULL)
     {
-      Napi::Error::New(info.Env(), "Model is disposed").ThrowAsJavaScriptException();
-      return info.Env().Undefined();
+      Napi::Error::New(Env(), "Model is disposed").ThrowAsJavaScriptException();
+      return Env().Undefined();
     }
 
     return getNapiControlToken(info, model, llama_token_middle(model));
@@ -353,8 +353,8 @@ public:
   {
     if (model == NULL)
     {
-      Napi::Error::New(info.Env(), "Model is disposed").ThrowAsJavaScriptException();
-      return info.Env().Undefined();
+      Napi::Error::New(Env(), "Model is disposed").ThrowAsJavaScriptException();
+      return Env().Undefined();
     }
 
     return getNapiControlToken(info, model, llama_token_suffix(model));
@@ -363,8 +363,8 @@ public:
   {
     if (model == NULL)
     {
-      Napi::Error::New(info.Env(), "Model is disposed").ThrowAsJavaScriptException();
-      return info.Env().Undefined();
+      Napi::Error::New(Env(), "Model is disposed").ThrowAsJavaScriptException();
+      return Env().Undefined();
     }
 
     return getNapiControlToken(info, model, llama_token_eot(model));
@@ -373,8 +373,8 @@ public:
   {
     if (model == NULL)
     {
-      Napi::Error::New(info.Env(), "Model is disposed").ThrowAsJavaScriptException();
-      return info.Env().Undefined();
+      Napi::Error::New(Env(), "Model is disposed").ThrowAsJavaScriptException();
+      return Env().Undefined();
     }
 
     int token = info[0].As<Napi::Number>().Int32Value();
@@ -383,60 +383,60 @@ public:
     const char *str = llama_token_get_text(model, token);
     if (str == nullptr)
     {
-      return info.Env().Undefined();
+      return Env().Undefined();
     }
 
     ss << str;
 
-    return Napi::String::New(info.Env(), ss.str());
+    return Napi::String::New(Env(), ss.str());
   }
 
   Napi::Value TokenAttributes(const Napi::CallbackInfo &info)
   {
     if (model == NULL)
     {
-      Napi::Error::New(info.Env(), "Model is disposed").ThrowAsJavaScriptException();
-      return info.Env().Undefined();
+      Napi::Error::New(Env(), "Model is disposed").ThrowAsJavaScriptException();
+      return Env().Undefined();
     }
 
     if (info[0].IsNumber() == false)
     {
-      return Napi::Number::From(info.Env(), int32_t(LLAMA_TOKEN_ATTR_UNDEFINED));
+      return Napi::Number::From(Env(), int32_t(LLAMA_TOKEN_ATTR_UNDEFINED));
     }
 
     int token = info[0].As<Napi::Number>().Int32Value();
     auto tokenAttributes = llama_token_get_attr(model, token);
 
-    return Napi::Number::From(info.Env(), int32_t(tokenAttributes));
+    return Napi::Number::From(Env(), int32_t(tokenAttributes));
   }
   Napi::Value IsEogToken(const Napi::CallbackInfo &info)
   {
     if (model == NULL)
     {
-      Napi::Error::New(info.Env(), "Model is disposed").ThrowAsJavaScriptException();
-      return info.Env().Undefined();
+      Napi::Error::New(Env(), "Model is disposed").ThrowAsJavaScriptException();
+      return Env().Undefined();
     }
 
     if (info[0].IsNumber() == false)
     {
-      return Napi::Boolean::New(info.Env(), false);
+      return Napi::Boolean::New(Env(), false);
     }
 
     int token = info[0].As<Napi::Number>().Int32Value();
 
-    return Napi::Boolean::New(info.Env(), llama_token_is_eog(model, token));
+    return Napi::Boolean::New(Env(), llama_token_is_eog(model, token));
   }
   Napi::Value VocabularyType(const Napi::CallbackInfo &info)
   {
     if (model == NULL)
     {
-      Napi::Error::New(info.Env(), "Model is disposed").ThrowAsJavaScriptException();
-      return info.Env().Undefined();
+      Napi::Error::New(Env(), "Model is disposed").ThrowAsJavaScriptException();
+      return Env().Undefined();
     }
 
     auto vocabularyType = llama_vocab_type(model);
 
-    return Napi::Number::From(info.Env(), int32_t(vocabularyType));
+    return Napi::Number::From(Env(), int32_t(vocabularyType));
   }
   Napi::Value ShouldPrependBosToken(const Napi::CallbackInfo &info)
   {
@@ -444,12 +444,12 @@ public:
 
     bool shouldPrependBos = addBos != -1 ? bool(addBos) : (llama_vocab_type(model) == LLAMA_VOCAB_TYPE_SPM);
 
-    return Napi::Boolean::New(info.Env(), shouldPrependBos);
+    return Napi::Boolean::New(Env(), shouldPrependBos);
   }
 
   Napi::Value ModelSize(const Napi::CallbackInfo &info)
   {
-    return Napi::Number::From(info.Env(), llama_model_size(model));
+    return Napi::Number::From(Env(), llama_model_size(model));
   }
 
   static void init(Napi::Object exports)
