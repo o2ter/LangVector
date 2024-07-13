@@ -24,11 +24,11 @@
 //
 
 import _ from 'lodash';
-import { LLMModel } from './base';
-import { LlamaDevice } from '../device/llama';
-import { DisposedError } from '../types';
-import * as llamaCpp from '../plugins/llamaCpp';
-import { LlamaContext } from '../context/llama';
+import { LLMModel } from '../base';
+import { LlamaDevice } from '../../device/llama';
+import { DisposedError } from '../../types';
+import * as llamaCpp from '../../plugins/llamaCpp';
+import { LlamaContext } from '../../context/llama';
 
 export class LlamaModel extends LLMModel<LlamaDevice> {
 

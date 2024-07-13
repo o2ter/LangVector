@@ -25,20 +25,10 @@
 
 import _ from 'lodash';
 import path from 'path';
-import { LLMDevice } from './base';
-import { LlamaModel } from '../model/llama';
-import * as llamaCpp from '../plugins/llamaCpp';
-
-export type LlamaModelOptions = {
-  modelPath: string;
-  gpuLayers?: number;
-  vocabOnly?: boolean;
-  useMmap?: boolean;
-  useMlock?: boolean;
-  checkTensors?: boolean;
-  signal?: AbortSignal;
-  onLoadProgress?: (progress: number) => void;
-}
+import { LLMDevice } from '../base';
+import { LlamaModel } from '../../model/llama';
+import { LlamaModelOptions } from '../../model/llama/types';
+import * as llamaCpp from '../../plugins/llamaCpp';
 
 export class LlamaDevice extends LLMDevice {
 
