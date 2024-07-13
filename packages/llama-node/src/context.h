@@ -154,23 +154,25 @@ public:
     int32_t seqId = info[0].As<Napi::Number>().Int32Value();
     Napi::Uint32Array tokens = info[1].As<Napi::Uint32Array>();
 
+    auto token_length = tokens.ElementLength();
+
+    size_t n_batch = llama_n_batch(ctx);
+    llama_batch *batch = new llama_batch(llama_batch_init(std::min(token_length, n_batch), 0, 1));
+
     this->Ref();
 
     auto worker = new _AsyncWorker(
         Env(),
-        [this, seqId, tokens]()
+        [=]()
         {
-          size_t n_batch = llama_n_batch(ctx);
-          llama_batch batch = llama_batch_init(std::min(tokens.ElementLength(), n_batch), 0, 1);
-
-          for (uint32_t pos = 0; pos < tokens.ElementLength(); pos += n_batch)
+          for (uint32_t pos = 0; pos < token_length; pos += n_batch)
           {
-            llama_batch_clear(batch);
-            for (size_t i = 0; i < tokens.ElementLength(); ++i)
+            llama_batch_clear(*batch);
+            for (size_t i = 0; i < token_length; ++i)
             {
-              llama_batch_add(batch, tokens[i], i, {seqId}, false);
+              llama_batch_add(*batch, tokens[i], i, {seqId}, false);
             }
-            auto status = llama_decode(ctx, batch);
+            auto status = llama_decode(ctx, *batch);
             if (status < 0)
             {
               throw std::runtime_error("Eval failed");
@@ -180,12 +182,12 @@ public:
               throw std::runtime_error("Could not find a KV slot for the batch (try reducing the size of the batch or increase the context)");
             }
           }
-
-          llama_batch_free(batch);
         },
-        [this]()
+        [=]()
         {
           this->Unref();
+          llama_batch_free(*batch);
+          delete batch;
         });
 
     worker->Queue();
