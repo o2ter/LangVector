@@ -43,9 +43,6 @@ export class _LlamaContext {
     this.context.dispose();
   }
 
-  /**
-   * The context size of context.
-   */
   get contextSize(): number {
     if (_.isNil(this.context)) throw new DisposedError();
     return this.context.contextSize();
