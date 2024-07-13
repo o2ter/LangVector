@@ -23,47 +23,26 @@
 //  THE SOFTWARE.
 //
 
-import pkg from 'llama-node';
+import _ from 'lodash';
+import { LLMDevice } from '../device/base';
+import { LLMModel } from '../model/base';
 
-export const LlamaModel = pkg.LlamaModel;
-export const LlamaContext = pkg.LlamaContext;
+export abstract class LLMContext<D extends LLMDevice, M extends LLMModel<D>> {
 
-export const systemInfo = (): string => {
-  return pkg.systemInfo();
-};
+  private _model: M;
 
-export const getGpuVramInfo = (): { total: number; used: number; } => {
-  return pkg.getGpuVramInfo();
-};
+  constructor(model: M) {
+    this._model = model;
+  }
 
-export const getGpuDeviceInfo = (): { deviceNames: string[]; } => {
-  return pkg.getGpuDeviceInfo();
-};
+  get model() {
+    return this._model;
+  }
 
-export const getGpuType = (): string | undefined => {
-  return pkg.getGpuType();
-};
+  get device() {
+    return this._model.device;
+  }
 
-export const getSupportsGpuOffloading = (): boolean => {
-  return pkg.getSupportsGpuOffloading();
-};
-
-export const getSupportsMmap = (): boolean => {
-  return pkg.getSupportsMmap();
-};
-
-export const getSupportsMlock = (): boolean => {
-  return pkg.getSupportsMlock();
-};
-
-export const getBlockSizeForGgmlType = (type: number): number => {
-  return pkg.getBlockSizeForGgmlType(type);
-};
-
-export const getTypeSizeForGgmlType = (type: number): number => {
-  return pkg.getTypeSizeForGgmlType(type);
-};
-
-export const getConsts = (): Record<string, number> => {
-  return pkg.getConsts();
-};
+  abstract dispose(): Promise<void>;
+  abstract get disposed(): boolean;
+}

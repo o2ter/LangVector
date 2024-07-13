@@ -1,5 +1,5 @@
 //
-//  index.ts
+//  llama.ts
 //
 //  The MIT License
 //  Copyright (c) 2021 - 2024 O2ter Limited. All rights reserved.
@@ -23,47 +23,28 @@
 //  THE SOFTWARE.
 //
 
-import pkg from 'llama-node';
+import _ from 'lodash';
+import { LLMContext } from './base';
+import { LlamaModel } from '../model/llama';
+import { LlamaDevice } from '../device/llama';
+import * as llamaCpp from '../plugins/llamaCpp';
 
-export const LlamaModel = pkg.LlamaModel;
-export const LlamaContext = pkg.LlamaContext;
+export class LlamaContext extends LLMContext<LlamaDevice, LlamaModel> {
 
-export const systemInfo = (): string => {
-  return pkg.systemInfo();
-};
+  private _context: typeof llamaCpp.LlamaContext;
 
-export const getGpuVramInfo = (): { total: number; used: number; } => {
-  return pkg.getGpuVramInfo();
-};
+  constructor(model: LlamaModel, context: typeof llamaCpp.LlamaContext) {
+    super(model);
+    this._context = context;
+  }
 
-export const getGpuDeviceInfo = (): { deviceNames: string[]; } => {
-  return pkg.getGpuDeviceInfo();
-};
+  async dispose() {
+    if (_.isNil(this._context)) return;
+    this._context.dispose();
+    this._context = null;
+  }
 
-export const getGpuType = (): string | undefined => {
-  return pkg.getGpuType();
-};
-
-export const getSupportsGpuOffloading = (): boolean => {
-  return pkg.getSupportsGpuOffloading();
-};
-
-export const getSupportsMmap = (): boolean => {
-  return pkg.getSupportsMmap();
-};
-
-export const getSupportsMlock = (): boolean => {
-  return pkg.getSupportsMlock();
-};
-
-export const getBlockSizeForGgmlType = (type: number): number => {
-  return pkg.getBlockSizeForGgmlType(type);
-};
-
-export const getTypeSizeForGgmlType = (type: number): number => {
-  return pkg.getTypeSizeForGgmlType(type);
-};
-
-export const getConsts = (): Record<string, number> => {
-  return pkg.getConsts();
-};
+  get disposed() {
+    return _.isNil(this._context);
+  }
+}

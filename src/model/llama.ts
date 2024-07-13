@@ -26,8 +26,8 @@
 import _ from 'lodash';
 import { LLMModel } from './base';
 import { LlamaDevice } from '../device/llama';
-import * as llamaCpp from '../plugins/llamaCpp';
 import { DisposedError } from '../types';
+import * as llamaCpp from '../plugins/llamaCpp';
 
 export class LlamaModel extends LLMModel<LlamaDevice> {
 
