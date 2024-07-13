@@ -51,10 +51,13 @@ export class LlamaContext extends LLMContext<LlamaDevice, LlamaModel> {
     return _.isEmpty(this._pool);
   }
 
-  private get _new_context() {
-    const context = new _LlamaContext(this.model, this._options);
-    this._pool.push(context);
-    return context;
+  private get _new_available_context() {
+    for (const ctx of this._pool) {
+      if (ctx.seq.length < ctx.maxSequence) return ctx;
+    }
+    const ctx = new _LlamaContext(this.model, this._options);
+    this._pool.push(ctx);
+    return ctx;
   }
 
   /**

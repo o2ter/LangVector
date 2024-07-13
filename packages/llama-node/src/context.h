@@ -124,6 +124,17 @@ public:
     dispose();
   }
 
+  Napi::Value GetMaxSequence(const Napi::CallbackInfo &info)
+  {
+    if (ctx == NULL)
+    {
+      Napi::Error::New(Env(), "Context is disposed").ThrowAsJavaScriptException();
+      return Env().Undefined();
+    }
+
+    return Napi::Number::From(Env(), llama_n_seq_max(ctx));
+  }
+
   Napi::Value GetContextSize(const Napi::CallbackInfo &info)
   {
     if (ctx == NULL)
@@ -211,6 +222,7 @@ public:
         exports.Env(),
         "LlamaContext",
         {
+            InstanceMethod("maxSequence", &LlamaContext::GetMaxSequence),
             InstanceMethod("contextSize", &LlamaContext::GetContextSize),
             InstanceMethod("stateSize", &LlamaContext::GetStateSize),
             InstanceMethod("disposeSequence", &LlamaContext::DisposeSequence),

@@ -46,6 +46,11 @@ export class _LlamaContext {
     this.context.dispose();
   }
 
+  get maxSequence(): number {
+    if (_.isNil(this.context)) throw new DisposedError();
+    return this.context.maxSequence();
+  }
+
   get contextSize(): number {
     if (_.isNil(this.context)) throw new DisposedError();
     return this.context.contextSize();
