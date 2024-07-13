@@ -28,39 +28,12 @@
 #include "common.h"
 #include "model.h"
 
-static uint64_t calculateBatchMemorySize(int32_t n_tokens_alloc, int32_t embd, int32_t n_seq_max)
-{
-  uint64_t totalSize = 0;
-
-  if (embd)
-  {
-    totalSize += sizeof(float) * n_tokens_alloc * embd;
-  }
-  else
-  {
-    totalSize += sizeof(llama_token) * n_tokens_alloc;
-  }
-
-  totalSize += sizeof(llama_pos) * n_tokens_alloc;
-  totalSize += sizeof(int32_t) * n_tokens_alloc;
-  totalSize += sizeof(llama_seq_id *) * (n_tokens_alloc + 1);
-
-  totalSize += sizeof(llama_seq_id) * n_seq_max * n_tokens_alloc;
-
-  totalSize += sizeof(int8_t) * n_tokens_alloc;
-
-  return totalSize;
-}
-
 class LlamaContext : public Napi::ObjectWrap<LlamaContext>
 {
 public:
   LlamaModel *model;
   llama_context_params context_params;
   llama_context *ctx;
-
-  llama_batch batch;
-  uint64_t batch_size = 0;
 
   LlamaContext(const Napi::CallbackInfo &info) : Napi::ObjectWrap<LlamaContext>(info)
   {
@@ -136,12 +109,6 @@ public:
     {
       return;
     }
-    if (batch_size > 0)
-    {
-      Napi::MemoryManagement::AdjustExternalMemory(Env(), -(int64_t)batch_size);
-      llama_batch_free(batch);
-      batch_size = 0;
-    }
     Napi::MemoryManagement::AdjustExternalMemory(Env(), -(int64_t)llama_state_get_size(ctx));
     llama_free(ctx);
     ctx = NULL;
@@ -155,21 +122,6 @@ public:
       return Env().Undefined();
     }
     dispose();
-  }
-
-  void batch_init(int32_t n_tokens, int32_t embd, int32_t n_seq_max)
-  {
-    auto old_batch_size = batch_size;
-    auto new_batch_size = calculateBatchMemorySize(n_tokens, embd, n_seq_max);
-    if (batch_size > 0)
-    {
-      llama_batch_free(batch);
-    }
-    batch = llama_batch_init(n_tokens, embd, n_seq_max);
-    if (new_batch_size != old_batch_size)
-    {
-      Napi::MemoryManagement::AdjustExternalMemory(Env(), new_batch_size - old_batch_size);
-    }
   }
 
   Napi::Value GetMaxSequence(const Napi::CallbackInfo &info)
