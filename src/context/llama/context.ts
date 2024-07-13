@@ -36,6 +36,9 @@ export class _LlamaContext {
 
   seq: LlamaSession[] = [];
 
+  lock = false;
+  jobs: (() => Promise<void>)[] = [];
+
   constructor(model: LlamaModel, context: typeof llamaCpp.LlamaContext) {
     this.model = model;
     this.ctx = context;
@@ -44,6 +47,27 @@ export class _LlamaContext {
   async dispose() {
     if (_.isNil(this.ctx)) return;
     this.ctx.dispose();
+    this.ctx = null;
+  }
+
+  async _execute<T = void>(callback: () => Promise<T>) {
+    return await new Promise<T>(async (res, rej) => {
+      this.jobs.push(async () => {
+        try {
+          res(await callback());
+        } catch (e) {
+          rej(e);
+        }
+      });
+
+      if (!this.lock) {
+        this.lock = true;
+        for (const job of this.jobs) {
+          await job();
+        }
+        this.jobs = [];
+      }
+    });
   }
 
   get maxSequence(): number {
