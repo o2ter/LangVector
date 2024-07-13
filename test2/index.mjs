@@ -10,6 +10,7 @@ const __dirname = path.dirname(__filename);
 const model = await LlamaDevice.loadModel({
   modelPath: path.join(__dirname, '../models', 'meta-llama/Meta-Llama-3-8B-Instruct/ggml-model-q3_k_m.gguf'),
   useMmap: true,
+  embeddings: true,
 });
 
 console.log('====================================')
