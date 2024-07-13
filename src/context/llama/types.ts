@@ -30,7 +30,7 @@ export type LlamaContextOptions = {
    */
   contextSize?: number;
   /**
-   * Max number of tokens with multiple sequences in a single batch.
+   * Max number of tokens in a single batch.
    */
   batchSize?: number;
   /**
