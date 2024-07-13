@@ -154,14 +154,13 @@ public:
     int32_t seqId = info[0].As<Napi::Number>().Int32Value();
     Napi::Uint32Array tokens = info[1].As<Napi::Uint32Array>();
 
-    auto token_length = tokens.ElementLength();
-
     this->Ref();
 
     auto worker = new _AsyncWorker(
         Env(),
         [=]()
         {
+          auto token_length = tokens.ElementLength();
           size_t n_batch = llama_n_batch(ctx);
           llama_batch batch = llama_batch_init(std::min(token_length, n_batch), 0, 1);
 
