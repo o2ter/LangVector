@@ -164,9 +164,6 @@ export class LlamaModel extends LLMModel<LlamaDevice> {
      * The context size of context. (default to model's context size)
      */
     contextSize?: number;
-    /**
-     * Max number of tokens that are fed into the model at a time.
-     */
     batchSize?: number;
     /**
      * Max number of concurrent sequences. (default to 1)
