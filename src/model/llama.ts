@@ -54,21 +54,21 @@ export class LlamaModel extends LLMModel<LlamaDevice> {
     const _model = this._model;
     return {
       /**
-       * @returns The BOS (Beginning Of Sequence) token.
+       * The BOS (Beginning Of Sequence) token.
        */
       get bos(): number | undefined {
         const token = _model.tokenBos();
         return token === -1 ? undefined : token;
       },
       /**
-       * @returns The EOS (End Of Sequence) token.
+       * The EOS (End Of Sequence) token.
        */
       get eos(): number | undefined {
         const token = _model.tokenEos();
         return token === -1 ? undefined : token;
       },
       /**
-       * @returns The NL (New Line) token.
+       * The NL (New Line) token.
        */
       get nl(): number | undefined {
         const token = _model.tokenNl();
@@ -93,7 +93,7 @@ export class LlamaModel extends LLMModel<LlamaDevice> {
     };
   }
   /**
-   * @returns Whether we should prepend a BOS (Beginning Of Sequence) token for evaluations with this model.
+   * Whether we should prepend a BOS (Beginning Of Sequence) token for evaluations with this model.
    */
   get shouldPrependBosToken(): boolean {
     if (_.isNil(this._model)) throw new DisposedError();
@@ -103,12 +103,16 @@ export class LlamaModel extends LLMModel<LlamaDevice> {
   get description(): string {
     return this._model.description();
   }
-  /** The context size the model was trained on */
+  /** 
+   * The context size the model was trained on
+   */
   get contextSize(): number {
     if (_.isNil(this._model)) throw new DisposedError();
     return this._model.contextSize();
   }
-  /** The size of an embedding vector the model can produce */
+  /** 
+   * The size of an embedding vector the model can produce
+   */
   get embeddingSize(): number {
     if (_.isNil(this._model)) throw new DisposedError();
     return this._model.embeddingSize();
@@ -157,7 +161,13 @@ export class LlamaModel extends LLMModel<LlamaDevice> {
   createContext(options: {
     seed?: number;
     contextSize?: number;
+    /**
+     * Max number of tokens that are fed into the model at a time.
+     */
     batchSize?: number;
+    /**
+     * Max number of concurrent sequences. (default to 1)
+     */
     sequences?: number;
     flashAttention?: boolean;
     threads?: number;
