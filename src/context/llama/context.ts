@@ -27,11 +27,14 @@ import _ from 'lodash';
 import { LlamaModel } from '../../model/llama';
 import { DisposedError } from '../../types';
 import * as llamaCpp from '../../plugins/llamaCpp';
+import type { LlamaSession } from '../../session/llama';
 
 export class _LlamaContext {
 
   model: LlamaModel;
   context: typeof llamaCpp.LlamaContext;
+
+  seq: LlamaSession[] = [];
 
   constructor(model: LlamaModel, context: typeof llamaCpp.LlamaContext) {
     this.model = model;
