@@ -33,7 +33,7 @@ import { _LlamaContext } from './context';
 export class LlamaContext extends LLMContext<LlamaDevice, LlamaModel> {
 
   private _options: LlamaContextOptions;
-  private _pools: _LlamaContext[] = [];
+  private _pool: _LlamaContext[] = [];
 
   constructor(model: LlamaModel, options: LlamaContextOptions) {
     super(model);
@@ -41,19 +41,19 @@ export class LlamaContext extends LLMContext<LlamaDevice, LlamaModel> {
   }
 
   async dispose() {
-    for (const ctx of this._pools) {
+    for (const ctx of this._pool) {
       ctx.dispose();
     }
-    this._pools = [];
+    this._pool = [];
   }
 
   get disposed() {
-    return _.isEmpty(this._pools);
+    return _.isEmpty(this._pool);
   }
 
   private get _new_context() {
     const context = new _LlamaContext(this.model, this._options);
-    this._pools.push(context);
+    this._pool.push(context);
     return context;
   }
 }
