@@ -152,9 +152,8 @@ public:
   Napi::Value EvalSequence(const Napi::CallbackInfo &info)
   {
     int32_t seqId = info[0].As<Napi::Number>().Int32Value();
-    int32_t startIdx = info[1].As<Napi::Number>().Int32Value();
-    Napi::Uint32Array tokens = info[2].As<Napi::Uint32Array>();
-    bool logitEnd = info[3].As<Napi::Boolean>().Value();
+    Napi::Uint32Array tokens = info[1].As<Napi::Uint32Array>();
+    bool logitEnd = info[2].As<Napi::Boolean>().Value();
 
     this->Ref();
 
@@ -173,7 +172,7 @@ public:
 
           for (size_t i = 0; i < token_length; ++i)
           {
-            llama_batch_add(batch, tokens[i], startIdx + i, {seqId}, false);
+            llama_batch_add(batch, tokens[i], i, {seqId}, false);
           }
           if (logitEnd)
           {
