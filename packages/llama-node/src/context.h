@@ -156,35 +156,35 @@ public:
 
     auto token_length = tokens.ElementLength();
 
-    size_t n_batch = llama_n_batch(ctx);
-    llama_batch *batch = new llama_batch(llama_batch_init(std::min(token_length, n_batch), 0, 1));
-
     this->Ref();
 
     auto worker = new _AsyncWorker(
         Env(),
         [=]()
         {
+          size_t n_batch = llama_n_batch(ctx);
+          llama_batch batch = llama_batch_init(std::min(token_length, n_batch), 0, 1);
+
           for (uint32_t pos = 0; pos < token_length; pos += n_batch)
           {
-            llama_batch_clear(*batch);
+            llama_batch_clear(batch);
             for (size_t i = 0; i + pos < token_length; ++i)
             {
-              llama_batch_add(*batch, tokens[i + pos], i, {seqId}, false);
+              llama_batch_add(batch, tokens[i + pos], i, {seqId}, false);
             }
-            auto status = llama_decode(ctx, *batch);
+            auto status = llama_decode(ctx, batch);
             if (status < 0)
             {
               throw std::runtime_error("Eval failed");
             }
-            llama_synchronize(ctx);
           }
+
+          llama_synchronize(ctx);
+          llama_batch_free(batch);
         },
         [=]()
         {
           this->Unref();
-          llama_batch_free(*batch);
-          delete batch;
         });
 
     worker->Queue();
