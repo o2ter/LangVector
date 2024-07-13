@@ -62,13 +62,6 @@ export class LlamaContext extends LLMContext<LlamaDevice, LlamaModel> {
     return ctx;
   }
 
-  /**
-   * The context size of context.
-   */
-  get contextSize() {
-    return _.first(this._pool)?.contextSize ?? 0;
-  }
-
   createSession(options: LlamaSessionOptions = {}) {
     const ctx = this._available_context;
     const idx = ctx.availableSeqIdx();

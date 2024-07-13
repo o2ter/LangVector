@@ -35,7 +35,6 @@ console.log(model.detokenize(new Uint32Array([15339, 11, 1917])));
 
 const context = model.createContext();
 console.log(context);
-console.log(context.contextSize);
 
 const session = model.createSession();
 console.log(session);
