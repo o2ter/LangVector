@@ -46,6 +46,7 @@ public:
     context_params.n_ctx = 4096;
     context_params.n_threads = 6;
     context_params.n_threads_batch = context_params.n_threads;
+    context_params.embeddings = true;
 
     Napi::Object options = info[1].As<Napi::Object>();
 
@@ -68,11 +69,6 @@ public:
     if (options.Has("sequences"))
     {
       context_params.n_seq_max = options.Get("sequences").As<Napi::Number>().Uint32Value();
-    }
-
-    if (options.Has("embeddings"))
-    {
-      context_params.embeddings = options.Get("embeddings").As<Napi::Boolean>().Value();
     }
 
     if (options.Has("flashAttention"))

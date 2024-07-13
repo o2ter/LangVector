@@ -159,7 +159,6 @@ export class LlamaModel extends LLMModel<LlamaDevice> {
     contextSize?: number;
     batchSize?: number;
     sequences?: number;
-    embeddings?: boolean;
     flashAttention?: boolean;
     threads?: number;
   } = {}) {
