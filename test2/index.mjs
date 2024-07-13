@@ -18,7 +18,6 @@ console.log('====================================')
 
 const context = model.createContext({
   embeddings: true,
-  contextSize: 512,
 });
 
 console.log(await context.embedding('hello, world'))
@@ -27,8 +26,6 @@ const llama = await getLlama();
 const model2 = await llama.loadModel({
   modelPath: path.join(__dirname, '../models', 'meta-llama/Meta-Llama-3-8B-Instruct/ggml-model-q3_k_m.gguf'),
 });
-const context2 = await model2.createEmbeddingContext({
-  contextSize: 512,
-});
+const context2 = await model2.createEmbeddingContext({});
 
 console.log(await context2.getEmbeddingFor('hello, world'))
