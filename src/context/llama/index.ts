@@ -53,6 +53,10 @@ export class LlamaContext extends LLMContext<LlamaDevice, LlamaModel> {
     return _.isEmpty(this._pool);
   }
 
+  get poolSize() {
+    return this._pool.length;
+  }
+
   private get _available_context() {
     for (const ctx of this._pool) {
       if (ctx.seq.length < ctx.maxSequence) return ctx;
