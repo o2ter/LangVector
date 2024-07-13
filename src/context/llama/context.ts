@@ -32,34 +32,34 @@ import * as llamaCpp from '../../plugins/llamaCpp';
 export class _LlamaContext {
 
   model: LlamaModel;
-  context: typeof llamaCpp.LlamaContext;
+  ctx: typeof llamaCpp.LlamaContext;
 
   seq: LlamaSession[] = [];
 
   constructor(model: LlamaModel, context: typeof llamaCpp.LlamaContext) {
     this.model = model;
-    this.context = context;
+    this.ctx = context;
   }
 
   async dispose() {
-    if (_.isNil(this.context)) return;
-    this.context.dispose();
+    if (_.isNil(this.ctx)) return;
+    this.ctx.dispose();
   }
 
   get maxSequence(): number {
-    if (_.isNil(this.context)) throw new DisposedError();
-    return this.context.maxSequence();
+    if (_.isNil(this.ctx)) throw new DisposedError();
+    return this.ctx.maxSequence();
   }
 
   get contextSize(): number {
-    if (_.isNil(this.context)) throw new DisposedError();
-    return this.context.contextSize();
+    if (_.isNil(this.ctx)) throw new DisposedError();
+    return this.ctx.contextSize();
   }
 
   disposeSeq(idx: number) {
-    if (_.isNil(this.context)) return;
+    if (_.isNil(this.ctx)) return;
     this.seq = _.filter(this.seq, s => s._idx !== idx);
-    this.context.disposeSequence(idx);
+    this.ctx.disposeSequence(idx);
   }
 
   availableSeqIdx() {

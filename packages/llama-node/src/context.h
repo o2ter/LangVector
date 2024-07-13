@@ -186,18 +186,19 @@ public:
   Napi::Value GetSequenceEmbedding(const Napi::CallbackInfo &info)
   {
     int32_t seqId = info[0].As<Napi::Number>().Int32Value();
-    int32_t inputTokensLength = info[1].As<Napi::Number>().Int32Value();
-
-    if (inputTokensLength <= 0)
-    {
-      Napi::Error::New(Env(), "Invalid input tokens length").ThrowAsJavaScriptException();
-      return Env().Undefined();
-    }
 
     const int n_embd = llama_n_embd(model->model);
     const auto *embeddings = llama_get_embeddings_seq(ctx, seqId);
     if (embeddings == NULL)
     {
+      int32_t inputTokensLength = info[1].As<Napi::Number>().Int32Value();
+
+      if (inputTokensLength <= 0)
+      {
+        Napi::Error::New(Env(), "Invalid input tokens length").ThrowAsJavaScriptException();
+        return Env().Undefined();
+      }
+
       embeddings = llama_get_embeddings_ith(ctx, inputTokensLength - 1);
 
       if (embeddings == NULL)
@@ -216,33 +217,6 @@ public:
     return result;
   }
 
-  Napi::Value RemoveTokenFromSequence(const Napi::CallbackInfo &info)
-  {
-    int32_t seqId = info[0].As<Napi::Number>().Int32Value();
-    int32_t startPos = info[1].As<Napi::Number>().Int32Value();
-    int32_t endPos = info[2].As<Napi::Number>().Int32Value();
-
-    bool result = llama_kv_cache_seq_rm(ctx, seqId, startPos, endPos);
-
-    return Napi::Boolean::New(info.Env(), result);
-  }
-  Napi::Value ShiftSequenceToken(const Napi::CallbackInfo &info)
-  {
-    int32_t seqId = info[0].As<Napi::Number>().Int32Value();
-    int32_t startPos = info[1].As<Napi::Number>().Int32Value();
-    int32_t endPos = info[2].As<Napi::Number>().Int32Value();
-    int32_t shiftDelta = info[3].As<Napi::Number>().Int32Value();
-
-    llama_kv_cache_seq_add(ctx, seqId, startPos, endPos, shiftDelta);
-
-    return info.Env().Undefined();
-  }
-  Napi::Value GetSequencePos(const Napi::CallbackInfo &info)
-  {
-    int32_t seqId = info[0].As<Napi::Number>().Int32Value();
-    auto pos = llama_kv_cache_seq_pos_max(ctx, seqId);
-    return Napi::Number::New(info.Env(), pos);
-  }
   Napi::Value GetStateSize(const Napi::CallbackInfo &info)
   {
     return Napi::Number::From(Env(), llama_state_get_size(ctx));
@@ -260,9 +234,6 @@ public:
             InstanceMethod("disposeSequence", &LlamaContext::DisposeSequence),
             InstanceMethod("evalSequence", &LlamaContext::EvalSequence),
             InstanceMethod("sequenceEmbedding", &LlamaContext::GetSequenceEmbedding),
-            InstanceMethod("removeTokenFromSequence", &LlamaContext::RemoveTokenFromSequence),
-            InstanceMethod("shiftSequenceToken", &LlamaContext::ShiftSequenceToken),
-            InstanceMethod("sequencePos", &LlamaContext::GetSequencePos),
             InstanceMethod("dispose", &LlamaContext::Dispose),
         });
     exports.Set("LlamaContext", def);

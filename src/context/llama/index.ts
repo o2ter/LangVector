@@ -32,6 +32,7 @@ import { LlamaSessionOptions } from '../../session/llama/types';
 import { LlamaSession } from '../../session/llama';
 import { _LlamaContext } from './context';
 import * as llamaCpp from '../../plugins/llamaCpp';
+import { LLMTextValue } from '../../types';
 
 export class LlamaContext extends LLMContext<LlamaDevice, LlamaModel> {
 
@@ -68,6 +69,12 @@ export class LlamaContext extends LLMContext<LlamaDevice, LlamaModel> {
     const ctx = new _LlamaContext(this.model, new llamaCpp.LlamaContext(this.model._model, this._options));
     this._pool.push(ctx);
     return ctx;
+  }
+
+  async embedding(value: LLMTextValue) {
+    const session = this.createSession();
+    await session.evaluate(value);
+    return session.embedding();
   }
 
   createSession(options: LlamaSessionOptions = {}) {

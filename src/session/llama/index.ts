@@ -30,7 +30,7 @@ import { LlamaDevice } from '../../device/llama';
 import { LlamaModel } from '../../model/llama';
 import { _LlamaContext } from '../../context/llama/context';
 import { LlamaSessionOptions } from './types';
-import { DisposedError } from '../../types';
+import { DisposedError, LLMTextValue } from '../../types';
 
 export class LlamaSession extends LLMSession<LlamaDevice, LlamaModel, LlamaContext> {
 
@@ -73,4 +73,16 @@ export class LlamaSession extends LLMSession<LlamaDevice, LlamaModel, LlamaConte
     return this._ctx.contextSize;
   }
 
+  evaluate(value: LLMTextValue): Promise<void> {
+    if (this._disposed) throw new DisposedError();
+    const tokens = _.isString(value)
+      ? this.model.tokenize(value)
+      : _.isArrayBuffer(value) ? value : new Uint32Array(value);
+    return this._ctx.ctx.evalSequence(this._idx, tokens);
+  }
+
+  embedding(): Float64Array {
+    if (this._disposed) throw new DisposedError();
+    return this._ctx.ctx.sequenceEmbedding(this._idx);
+  }
 }
