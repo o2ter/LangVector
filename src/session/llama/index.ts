@@ -83,9 +83,7 @@ export class LlamaSession extends LLMSession<LlamaDevice, LlamaModel, LlamaConte
   async evaluate(value: LLMTextValue): Promise<void> {
     return await this._ctx._sync(() => {
       if (this._disposed) throw new DisposedError();
-      const tokens = _.isString(value)
-        ? this.model.tokenize(value)
-        : _.isArrayBuffer(value) ? value : new Uint32Array(value);
+      const tokens = this.model.tokenize(value);
       this._tokens.push(...tokens);
       return this._ctx.ctx.evalSequence(this._idx, tokens);
     });

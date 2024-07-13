@@ -26,6 +26,7 @@
 import _ from 'lodash';
 import { LLMDevice } from '../device/base';
 import { Awaitable } from '@o2ter/utils-js';
+import { LLMTextValue } from '../types';
 
 export abstract class LLMModel<D extends LLMDevice> {
 
@@ -44,6 +45,6 @@ export abstract class LLMModel<D extends LLMDevice> {
   abstract dispose(): Promise<void>;
   abstract get disposed(): boolean;
 
-  abstract tokenize(str: string): Awaitable<Uint32Array>;
-  abstract detokenize(tokens: Uint32List): Awaitable<string>;
+  abstract tokenize(value: LLMTextValue): Awaitable<Uint32Array>;
+  abstract detokenize(value: LLMTextValue): Awaitable<string>;
 }

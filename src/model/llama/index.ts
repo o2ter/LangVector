@@ -26,7 +26,7 @@
 import _ from 'lodash';
 import { LLMModel } from '../base';
 import { LlamaDevice } from '../../device/llama';
-import { DisposedError } from '../../types';
+import { DisposedError, LLMTextValue } from '../../types';
 import { LlamaContext } from '../../context/llama';
 import { LlamaContextOptions } from '../../context/llama/types';
 import * as llamaCpp from '../../plugins/llamaCpp';
@@ -162,14 +162,16 @@ export class LlamaModel extends LLMModel<LlamaDevice> {
     return this._model.isEogToken(token);
   }
 
-  tokenize(str: string, { encodeSpecial = false } = {}): Uint32Array {
+  tokenize(value: LLMTextValue, { encodeSpecial = false } = {}): Uint32Array {
     if (_.isNil(this._model)) throw new DisposedError();
-    return this._model.tokenize(str, encodeSpecial);
+    if (!_.isString(value)) return new Uint32Array(value);
+    return this._model.tokenize(value, encodeSpecial);
   }
-  detokenize(tokens: Uint32List, { decodeSpecial = false } = {}): string {
+  detokenize(value: LLMTextValue, { decodeSpecial = false } = {}): string {
     if (_.isNil(this._model)) throw new DisposedError();
-    const _tokens = _.isArrayBuffer(tokens) ? tokens : new Uint32Array(tokens);
-    return this._model.detokenize(_tokens, decodeSpecial);
+    if (_.isString(value)) return value;
+    const tokens = _.isArrayBuffer(value) ? value : new Uint32Array(value);
+    return this._model.detokenize(tokens, decodeSpecial);
   }
 
   createContext(options: LlamaContextOptions = {}) {
