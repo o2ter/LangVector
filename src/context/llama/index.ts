@@ -28,12 +28,12 @@ import { LLMContext } from '../base';
 import { LlamaModel } from '../../model/llama';
 import { LlamaDevice } from '../../device/llama';
 import { LlamaContextOptions } from './types';
-import { LlamaBatch } from './batch';
+import { _LlamaContext } from './context';
 
 export class LlamaContext extends LLMContext<LlamaDevice, LlamaModel> {
 
   private _options: LlamaContextOptions;
-  private _pools: LlamaBatch[] = [];
+  private _pools: _LlamaContext[] = [];
 
   constructor(model: LlamaModel, options: LlamaContextOptions) {
     super(model);
@@ -52,7 +52,7 @@ export class LlamaContext extends LLMContext<LlamaDevice, LlamaModel> {
   }
 
   private get _new_context() {
-    const context = new LlamaBatch(this.model, this._options);
+    const context = new _LlamaContext(this.model, this._options);
     this._pools.push(context);
     return context;
   }
