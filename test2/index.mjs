@@ -31,7 +31,7 @@ console.log(model.contextSize);
 console.log({ ...model.tokens });
 
 console.log(model.tokenize('hello, world'));
-console.log(model.detokenize(new Uint32Array([15339, 11, 1917])));
+console.log(model.detokenize([15339, 11, 1917]));
 
 const context = model.createContext();
 console.log(context);
