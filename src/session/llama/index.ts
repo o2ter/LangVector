@@ -28,8 +28,18 @@ import { LLMSession } from '../base';
 import { LlamaContext } from '../../context/llama';
 import { LlamaDevice } from '../../device/llama';
 import { LlamaModel } from '../../model/llama';
+import { _LlamaContext } from '../../context/llama/context';
 
 export class LlamaSession extends LLMSession<LlamaDevice, LlamaModel, LlamaContext> {
+
+  _idx: number;
+  _ctx: _LlamaContext;
+
+  constructor(pool: LlamaContext, ctx: _LlamaContext, idx: number) {
+    super(pool);
+    this._idx = idx;
+    this._ctx = ctx;
+  }
 
   dispose(): Promise<void> {
     throw new Error('Method not implemented.');
