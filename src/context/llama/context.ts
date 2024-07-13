@@ -24,30 +24,30 @@
 //
 
 import _ from 'lodash';
-import { LLMContext } from '../base';
 import { LlamaModel } from '../../model/llama';
-import { LlamaDevice } from '../../device/llama';
-import { LlamaContextOptions } from './types';
-import { _LlamaContext } from './context';
+import { DisposedError } from '../../types';
+import * as llamaCpp from '../../plugins/llamaCpp';
 
-export class LlamaContext extends LLMContext<LlamaDevice, LlamaModel> {
+export class _LlamaContext {
 
-  private _options: LlamaContextOptions;
-  private _pools: _LlamaContext[] = [];
+  model: LlamaModel;
+  context: typeof llamaCpp.LlamaContext;
 
-  constructor(model: LlamaModel, options: LlamaContextOptions) {
-    super(model);
-    this._options = options;
+  constructor(model: LlamaModel, context: typeof llamaCpp.LlamaContext) {
+    this.model = model;
+    this.context = context;
   }
 
   async dispose() {
-    for (const ctx of this._pools) {
-      ctx.dispose();
-    }
-    this._pools = [];
+    if (_.isNil(this.context)) return;
+    this.context.dispose();
   }
 
-  get disposed() {
-    return _.isEmpty(this._pools);
+  /**
+   * The context size of context.
+   */
+  get contextSize(): number {
+    if (_.isNil(this.context)) throw new DisposedError();
+    return this.context.contextSize();
   }
 }
