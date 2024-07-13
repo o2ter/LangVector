@@ -17,6 +17,7 @@
     "allowSyntheticDefaultImports": true,
     "emitDeclarationOnly": true,
     "downlevelIteration": true,
+    "stripInternal": true
   },
   "exclude":[
     "**/dist/*",

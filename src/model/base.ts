@@ -29,8 +29,10 @@ import { Awaitable } from '@o2ter/utils-js';
 
 export abstract class LLMModel<D extends LLMDevice> {
 
+  /** @internal */
   _device: D;
 
+  /** @internal */
   constructor(device: D) {
     this._device = device;
   }

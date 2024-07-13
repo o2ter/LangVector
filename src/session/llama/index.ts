@@ -33,11 +33,16 @@ import { LlamaSessionOptions } from './types';
 
 export class LlamaSession extends LLMSession<LlamaDevice, LlamaModel, LlamaContext> {
 
+  /** @internal */
   _options: LlamaSessionOptions;
+  /** @internal */
   _idx: number;
+  /** @internal */
   _ctx: _LlamaContext;
+  /** @internal */
   _disposed = false;
 
+  /** @internal */
   constructor(
     pool: LlamaContext,
     ctx: _LlamaContext,

@@ -35,9 +35,12 @@ import * as llamaCpp from '../../plugins/llamaCpp';
 
 export class LlamaContext extends LLMContext<LlamaDevice, LlamaModel> {
 
+  /** @internal */
   _options: LlamaContextOptions;
+  /** @internal */
   _pool: _LlamaContext[] = [];
 
+  /** @internal */
   constructor(model: LlamaModel, options: LlamaContextOptions) {
     super(model);
     this._options = options;
