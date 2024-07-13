@@ -28,6 +28,7 @@ import { LlamaModel } from '../../model/llama';
 import { DisposedError } from '../../types';
 import type { LlamaSession } from '../../session/llama';
 import * as llamaCpp from '../../plugins/llamaCpp';
+import { Awaitable } from '@o2ter/utils-js';
 
 export class _LlamaContext {
 
@@ -50,7 +51,7 @@ export class _LlamaContext {
     this.ctx = null;
   }
 
-  async _execute<T = void>(callback: () => Promise<T>) {
+  async _execute<T = void>(callback: () => Awaitable<T>) {
     return await new Promise<T>(async (res, rej) => {
       this.jobs.push(async () => {
         try {
@@ -66,6 +67,7 @@ export class _LlamaContext {
           await job();
         }
         this.jobs = [];
+        this.lock = false;
       }
     });
   }
