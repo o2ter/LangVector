@@ -170,6 +170,9 @@ export class LlamaModel extends LLMModel<LlamaDevice> {
      */
     sequences?: number;
     flashAttention?: boolean;
+    /**
+     * Max number of threads. (default to hardware)
+     */
     threads?: number;
   } = {}) {
     return new LlamaContext(this, new llamaCpp.LlamaContext(this._model, options));
