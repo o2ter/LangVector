@@ -50,4 +50,10 @@ export class LlamaContext extends LLMContext<LlamaDevice, LlamaModel> {
   get disposed() {
     return _.isEmpty(this._pools);
   }
+
+  private get _new_context() {
+    const context = new _LlamaContext(this.model, this._options);
+    this._pools.push(context);
+    return context;
+  }
 }
