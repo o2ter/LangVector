@@ -80,12 +80,15 @@ export class LlamaSession extends LLMSession<LlamaDevice, LlamaModel, LlamaConte
     return this._ctx.contextSize;
   }
 
+  _tokenize(value: LLMTextValue): Uint32Array {
+    if (_.isString(value)) return this.model.tokenize(value);
+    return _.isArrayBuffer(value) ? value : new Uint32Array(value);
+  }
+
   async evaluate(value: LLMTextValue): Promise<void> {
     return await this._ctx._sync(() => {
       if (this._disposed) throw new DisposedError();
-      const tokens = _.isString(value)
-        ? this.model.tokenize(value)
-        : _.isArrayBuffer(value) ? value : new Uint32Array(value);
+      const tokens = this._tokenize(value);
       this._tokens.push(...tokens);
       return this._ctx.ctx.evalSequence(this._idx, tokens);
     });
