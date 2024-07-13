@@ -2,20 +2,15 @@
 import _ from 'lodash';
 import path from 'path';
 import { fileURLToPath } from 'url';
-import { LlamaDevice } from '../dist/index.mjs';
+import { getLlama } from 'node-llama-cpp';
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
 
-const model = await LlamaDevice.loadModel({
+const llama = await getLlama();
+const model2 = await llama.loadModel({
   modelPath: path.join(__dirname, '../models', 'meta-llama/Meta-Llama-3-8B-Instruct/ggml-model-q3_k_m.gguf'),
-  useMmap: true,
 });
+const context2 = await model2.createEmbeddingContext({});
 
-console.log('====================================')
-
-const context = model.createContext({
-  embeddings: true,
-});
-
-console.log(await context.embedding('hello, world'))
+console.log(await context2.getEmbeddingFor('hello, world'))
