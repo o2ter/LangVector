@@ -170,7 +170,7 @@ public:
             llama_batch_clear(*batch);
             for (size_t i = 0; i < token_length; ++i)
             {
-              llama_batch_add(*batch, tokens[i], i, {seqId}, false);
+              llama_batch_add(*batch, tokens[i + pos], i, {seqId}, false);
             }
             auto status = llama_decode(ctx, *batch);
             if (status < 0)
