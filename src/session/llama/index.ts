@@ -96,7 +96,8 @@ export class LlamaSession extends LLMSession<LlamaDevice, LlamaModel, LlamaConte
     });
   }
 
-  async embedding(): Promise<Float64Array> {
+  /** @internal */
+  async _embedding(): Promise<Float64Array> {
     return await this._ctx._sync(() => {
       if (this._disposed) throw new DisposedError();
       return this._ctx.ctx.sequenceEmbedding(this._idx);
