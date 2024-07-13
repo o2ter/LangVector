@@ -88,6 +88,13 @@ public:
       context_params.n_threads = resolved_n_threads;
       context_params.n_threads_batch = resolved_n_threads;
     }
+
+    ctx = llama_new_context_with_model(model->model, context_params);
+
+    if (ctx == NULL)
+    {
+      Napi::Error::New(Env(), "Failed to load context").ThrowAsJavaScriptException();
+    }
   }
 
   ~LlamaContext()

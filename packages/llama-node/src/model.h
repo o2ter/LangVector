@@ -63,7 +63,7 @@ static Napi::Value getNapiControlToken(const Napi::CallbackInfo &info, llama_mod
 
 class LlamaModel : public Napi::ObjectWrap<LlamaModel>
 {
-private:
+public:
   llama_model_params model_params;
   llama_model *model;
 
@@ -128,7 +128,6 @@ private:
     }
   };
 
-public:
   LlamaModel(const Napi::CallbackInfo &info) : Napi::ObjectWrap<LlamaModel>(info)
   {
     model_params = llama_model_default_params();
