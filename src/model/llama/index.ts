@@ -160,6 +160,6 @@ export class LlamaModel extends LLMModel<LlamaDevice> {
   }
 
   createContext(options: LlamaContextOptions = {}) {
-    return new LlamaContext(this, new llamaCpp.LlamaContext(this._model, options));
+    return new LlamaContext(this, options);
   }
 }
