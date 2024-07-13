@@ -31,11 +31,12 @@ import { LlamaContextOptions } from './types';
 import { LlamaSessionOptions } from '../../session/llama/types';
 import { LlamaSession } from '../../session/llama';
 import { _LlamaContext } from './context';
+import * as llamaCpp from '../../plugins/llamaCpp';
 
 export class LlamaContext extends LLMContext<LlamaDevice, LlamaModel> {
 
-  private _options: LlamaContextOptions;
-  private _pool: _LlamaContext[] = [];
+  _options: LlamaContextOptions;
+  _pool: _LlamaContext[] = [];
 
   constructor(model: LlamaModel, options: LlamaContextOptions) {
     super(model);
@@ -61,7 +62,7 @@ export class LlamaContext extends LLMContext<LlamaDevice, LlamaModel> {
     for (const ctx of this._pool) {
       if (ctx.seq.length < ctx.maxSequence) return ctx;
     }
-    const ctx = new _LlamaContext(this.model, this._options);
+    const ctx = new _LlamaContext(this.model, new llamaCpp.LlamaContext(this.model._model, this._options));
     this._pool.push(ctx);
     return ctx;
   }

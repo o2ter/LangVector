@@ -29,7 +29,7 @@ import { LLMModel } from '../model/base';
 
 export abstract class LLMContext<D extends LLMDevice, M extends LLMModel<D>> {
 
-  private _model: M;
+  _model: M;
 
   constructor(model: M) {
     this._model = model;

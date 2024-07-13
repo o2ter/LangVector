@@ -30,7 +30,7 @@ import { LLMModel } from '../model/base';
 
 export abstract class LLMSession<D extends LLMDevice, M extends LLMModel<D>, C extends LLMContext<D, M>> {
 
-  private _context: C;
+  _context: C;
 
   constructor(context: C) {
     this._context = context;
