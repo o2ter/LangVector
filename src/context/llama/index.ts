@@ -65,7 +65,7 @@ export class LlamaContext extends LLMContext<LlamaDevice, LlamaModel> {
   /**
    * The context size of context.
    */
-  get contextSize(): number {
+  get contextSize() {
     return _.first(this._pool)?.contextSize ?? 0;
   }
 

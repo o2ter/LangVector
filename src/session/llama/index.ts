@@ -58,4 +58,12 @@ export class LlamaSession extends LLMSession<LlamaDevice, LlamaModel, LlamaConte
   get disposed() {
     return this._disposed;
   }
+
+  /**
+   * The context size of context.
+   */
+  get contextSize() {
+    return this._ctx.contextSize;
+  }
+
 }
