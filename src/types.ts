@@ -29,4 +29,4 @@ export class DisposedError extends Error {
   }
 }
 
-export type LLMTextValue = Uint32List | string;
+export type LLMTextValue = string | Uint32List;
