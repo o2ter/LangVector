@@ -40,3 +40,52 @@
 #ifdef GPU_INFO_USE_METAL
 #include "../gpuInfo/metal-gpu-info.h"
 #endif
+
+class _AsyncWorker : public Napi::AsyncWorker
+{
+public:
+  _AsyncWorker(Napi::Env env, std::function<void()> execute, std::function<void()> finalizer = [](){})
+      : AsyncWorker(env), execute(execute), finalizer(finalizer), deferred(Napi::Promise::Deferred::New(env))
+  {
+  }
+  ~_AsyncWorker()
+  {
+    finalizer();
+  }
+
+  Napi::Promise GetPromise()
+  {
+    return deferred.Promise();
+  }
+
+private:
+  std::function<void()> execute;
+  std::function<void()> finalizer;
+  Napi::Promise::Deferred deferred;
+
+  void Execute()
+  {
+    try
+    {
+      execute();
+    }
+    catch (const std::exception &e)
+    {
+      SetError(e.what());
+    }
+    catch (...)
+    {
+      SetError("Unknown error");
+    }
+  }
+
+  void OnOK()
+  {
+    deferred.Resolve(Env().Undefined());
+  }
+
+  void OnError(const Napi::Error &err)
+  {
+    deferred.Reject(err.Value());
+  }
+};

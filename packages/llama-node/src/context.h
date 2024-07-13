@@ -136,9 +136,9 @@ public:
 
   Napi::Value DisposeSequence(const Napi::CallbackInfo &info)
   {
-    int32_t sequenceId = info[0].As<Napi::Number>().Int32Value();
+    int32_t seqId = info[0].As<Napi::Number>().Int32Value();
 
-    bool result = llama_kv_cache_seq_rm(ctx, sequenceId, -1, -1);
+    bool result = llama_kv_cache_seq_rm(ctx, seqId, -1, -1);
 
     if (!result)
     {
@@ -148,9 +148,44 @@ public:
 
     return Env().Undefined();
   }
+
+  Napi::Value EvalSequence(const Napi::CallbackInfo &info)
+  {
+    int32_t seqId = info[0].As<Napi::Number>().Int32Value();
+    Napi::Uint32Array tokens = info[1].As<Napi::Uint32Array>();
+
+    this->Ref();
+
+    auto worker = new _AsyncWorker(
+        Env(),
+        [this, seqId, tokens]()
+        {
+          size_t n_batch = llama_n_batch(ctx);
+          llama_batch batch = llama_batch_init(std::min(tokens.ElementLength(), n_batch), 0, 1);
+
+          for (uint32_t pos = 0; pos < tokens.ElementLength(); pos += n_batch)
+          {
+            llama_batch_clear(batch);
+            for (size_t i = 0; i < tokens.ElementLength(); ++i)
+            {
+              llama_batch_add(batch, tokens[i], i, {seqId}, false);
+            }
+            llama_decode(ctx, batch);
+          }
+
+          llama_batch_free(batch);
+        },
+        [this]()
+        {
+          this->Unref();
+        });
+
+    worker->Queue();
+    return worker->GetPromise();
+  }
   Napi::Value GetSequenceEmbedding(const Napi::CallbackInfo &info)
   {
-    int32_t sequenceId = info[0].As<Napi::Number>().Int32Value();
+    int32_t seqId = info[0].As<Napi::Number>().Int32Value();
     int32_t inputTokensLength = info[1].As<Napi::Number>().Int32Value();
 
     if (inputTokensLength <= 0)
@@ -160,7 +195,7 @@ public:
     }
 
     const int n_embd = llama_n_embd(model->model);
-    const auto *embeddings = llama_get_embeddings_seq(ctx, sequenceId);
+    const auto *embeddings = llama_get_embeddings_seq(ctx, seqId);
     if (embeddings == NULL)
     {
       embeddings = llama_get_embeddings_ith(ctx, inputTokensLength - 1);
@@ -183,29 +218,29 @@ public:
 
   Napi::Value RemoveTokenFromSequence(const Napi::CallbackInfo &info)
   {
-    int32_t sequenceId = info[0].As<Napi::Number>().Int32Value();
+    int32_t seqId = info[0].As<Napi::Number>().Int32Value();
     int32_t startPos = info[1].As<Napi::Number>().Int32Value();
     int32_t endPos = info[2].As<Napi::Number>().Int32Value();
 
-    bool result = llama_kv_cache_seq_rm(ctx, sequenceId, startPos, endPos);
+    bool result = llama_kv_cache_seq_rm(ctx, seqId, startPos, endPos);
 
     return Napi::Boolean::New(info.Env(), result);
   }
   Napi::Value ShiftSequenceToken(const Napi::CallbackInfo &info)
   {
-    int32_t sequenceId = info[0].As<Napi::Number>().Int32Value();
+    int32_t seqId = info[0].As<Napi::Number>().Int32Value();
     int32_t startPos = info[1].As<Napi::Number>().Int32Value();
     int32_t endPos = info[2].As<Napi::Number>().Int32Value();
     int32_t shiftDelta = info[3].As<Napi::Number>().Int32Value();
 
-    llama_kv_cache_seq_add(ctx, sequenceId, startPos, endPos, shiftDelta);
+    llama_kv_cache_seq_add(ctx, seqId, startPos, endPos, shiftDelta);
 
     return info.Env().Undefined();
   }
   Napi::Value GetSequencePos(const Napi::CallbackInfo &info)
   {
-    int32_t sequenceId = info[0].As<Napi::Number>().Int32Value();
-    auto pos = llama_kv_cache_seq_pos_max(ctx, sequenceId);
+    int32_t seqId = info[0].As<Napi::Number>().Int32Value();
+    auto pos = llama_kv_cache_seq_pos_max(ctx, seqId);
     return Napi::Number::New(info.Env(), pos);
   }
   Napi::Value GetStateSize(const Napi::CallbackInfo &info)
@@ -223,6 +258,7 @@ public:
             InstanceMethod("contextSize", &LlamaContext::GetContextSize),
             InstanceMethod("stateSize", &LlamaContext::GetStateSize),
             InstanceMethod("disposeSequence", &LlamaContext::DisposeSequence),
+            InstanceMethod("evalSequence", &LlamaContext::EvalSequence),
             InstanceMethod("sequenceEmbedding", &LlamaContext::GetSequenceEmbedding),
             InstanceMethod("removeTokenFromSequence", &LlamaContext::RemoveTokenFromSequence),
             InstanceMethod("shiftSequenceToken", &LlamaContext::ShiftSequenceToken),

@@ -80,36 +80,12 @@ public:
         : AsyncProgressQueueWorker(okCallback), model(model)
     {
       this->progressCallback.Reset(progressCallback, 1);
+      model->Ref();
     }
 
-    void Execute(const ExecutionProgress &progress)
+    ~LoaderWorker()
     {
-      this->progress = &progress;
-      model->model_params.progress_callback_user_data = this;
-      model->model_params.progress_callback = progress_callback;
-      model->model = llama_load_model_from_file(model->modelPath.c_str(), model->model_params);
-    }
-    void OnOK()
-    {
-      Napi::HandleScope scope(Env());
-      if (model->model == NULL)
-      {
-        auto error = Napi::Error::New(Env(), "Failed to load model").Value();
-        Callback().Call({error});
-      }
-      else
-      {
-        Callback().Call({});
-      }
-    }
-    void OnProgress(const float *data, size_t /* count */)
-    {
-      Napi::HandleScope scope(Env());
-      if (!progressCallback.IsEmpty())
-      {
-        auto result = progressCallback.Call(Receiver().Value(), {Napi::Number::New(Env(), *data)});
-        aborted = !result.ToBoolean();
-      }
+      model->Unref();
     }
 
   private:
@@ -125,6 +101,53 @@ public:
       auto worker = (LoaderWorker *)user_data;
       worker->progress->Send(&progress, 1);
       return !worker->aborted;
+    }
+
+    void Execute(const ExecutionProgress &progress)
+    {
+      try
+      {
+        this->progress = &progress;
+        model->model_params.progress_callback_user_data = this;
+        model->model_params.progress_callback = progress_callback;
+        model->model = llama_load_model_from_file(model->modelPath.c_str(), model->model_params);
+      }
+      catch (const std::exception &e)
+      {
+        SetError(e.what());
+      }
+      catch (...)
+      {
+        SetError("Failed to load model");
+      }
+    }
+    void OnOK()
+    {
+      Napi::HandleScope scope(Env());
+      if (model->model == NULL)
+      {
+        auto error = Napi::Error::New(Env(), "Failed to load model").Value();
+        Callback().Call({error});
+      }
+      else
+      {
+        Callback().Call({});
+      }
+    }
+
+    void OnError(const Napi::Error &err)
+    {
+      Napi::HandleScope scope(Env());
+      Callback().Call({err.Value()});
+    }
+    void OnProgress(const float *data, size_t /* count */)
+    {
+      Napi::HandleScope scope(Env());
+      if (!progressCallback.IsEmpty())
+      {
+        auto result = progressCallback.Call(Receiver().Value(), {Napi::Number::New(Env(), *data)});
+        aborted = !result.ToBoolean();
+      }
     }
   };
 
