@@ -177,10 +177,6 @@ public:
             {
               throw std::runtime_error("Eval failed");
             }
-            else if (status > 0)
-            {
-              throw std::runtime_error("Could not find a KV slot for the batch (try reducing the size of the batch or increase the context)");
-            }
           }
         },
         [=]()
