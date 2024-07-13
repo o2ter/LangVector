@@ -34,6 +34,7 @@ export class LlamaSession extends LLMSession<LlamaDevice, LlamaModel, LlamaConte
 
   _idx: number;
   _ctx: _LlamaContext;
+  _disposed = false;
 
   constructor(pool: LlamaContext, ctx: _LlamaContext, idx: number) {
     super(pool);
@@ -41,10 +42,12 @@ export class LlamaSession extends LLMSession<LlamaDevice, LlamaModel, LlamaConte
     this._ctx = ctx;
   }
 
-  dispose(): Promise<void> {
-    throw new Error('Method not implemented.');
+  async dispose() {
+    if (this._disposed) return;
+    this._ctx.disposeSeq(this._idx);
+    this._disposed = true;
   }
-  get disposed(): boolean {
-    throw new Error('Method not implemented.');
+  get disposed() {
+    return this._disposed;
   }
 }

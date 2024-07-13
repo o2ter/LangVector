@@ -50,4 +50,10 @@ export class _LlamaContext {
     if (_.isNil(this.context)) throw new DisposedError();
     return this.context.contextSize();
   }
+
+  async disposeSeq(idx: number) {
+    if (_.isNil(this.context)) return;
+    this.seq = _.filter(this.seq, s => s._idx !== idx);
+    this.context.disposeSequence(idx);
+  }
 }
