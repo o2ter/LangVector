@@ -28,3 +28,5 @@ export class DisposedError extends Error {
     super("Object is disposed");
   }
 }
+
+export type LLMTextValue = Uint32List | string;
