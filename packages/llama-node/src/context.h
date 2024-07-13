@@ -128,7 +128,7 @@ public:
     return Napi::Number::From(info.Env(), llama_n_ctx(ctx));
   }
 
-  Napi::Value GetEmbedding(const Napi::CallbackInfo &info)
+  Napi::Value DisposeSequence(const Napi::CallbackInfo &info)
   {
     if (ctx == NULL)
     {
@@ -136,7 +136,28 @@ public:
       return info.Env().Undefined();
     }
 
-    int32_t inputTokensLength = info[0].As<Napi::Number>().Int32Value();
+    int32_t sequenceId = info[0].As<Napi::Number>().Int32Value();
+
+    bool result = llama_kv_cache_seq_rm(ctx, sequenceId, -1, -1);
+
+    if (!result)
+    {
+      Napi::Error::New(info.Env(), "Failed to dispose sequence").ThrowAsJavaScriptException();
+      return info.Env().Undefined();
+    }
+
+    return info.Env().Undefined();
+  }
+  Napi::Value GetSequenceEmbedding(const Napi::CallbackInfo &info)
+  {
+    if (ctx == NULL)
+    {
+      Napi::Error::New(info.Env(), "Context is disposed").ThrowAsJavaScriptException();
+      return info.Env().Undefined();
+    }
+
+    int32_t sequenceId = info[0].As<Napi::Number>().Int32Value();
+    int32_t inputTokensLength = info[1].As<Napi::Number>().Int32Value();
 
     if (inputTokensLength <= 0)
     {
@@ -145,7 +166,7 @@ public:
     }
 
     const int n_embd = llama_n_embd(model->model);
-    const auto *embeddings = llama_get_embeddings_seq(ctx, 0);
+    const auto *embeddings = llama_get_embeddings_seq(ctx, sequenceId);
     if (embeddings == NULL)
     {
       embeddings = llama_get_embeddings_ith(ctx, inputTokensLength - 1);
@@ -185,6 +206,8 @@ public:
         {
             InstanceMethod("contextSize", &LlamaContext::GetContextSize),
             InstanceMethod("stateSize", &LlamaContext::GetStateSize),
+            InstanceMethod("disposeSequence", &LlamaContext::DisposeSequence),
+            InstanceMethod("sequenceEmbedding", &LlamaContext::GetSequenceEmbedding),
             InstanceMethod("dispose", &LlamaContext::Dispose),
         });
     exports.Set("LlamaContext", def);
