@@ -61,4 +61,12 @@ export class _LlamaContext {
     this.seq = _.filter(this.seq, s => s._idx !== idx);
     this.context.disposeSequence(idx);
   }
+
+  availableSeqIdx() {
+    const max = this.maxSequence;
+    for (let i = 0; i < max; i++) {
+      if (_.find(this.seq, s => s._idx === i)) continue;
+      return i;
+    }
+  }
 }
