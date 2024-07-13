@@ -126,34 +126,16 @@ public:
 
   Napi::Value GetMaxSequence(const Napi::CallbackInfo &info)
   {
-    if (ctx == NULL)
-    {
-      Napi::Error::New(Env(), "Context is disposed").ThrowAsJavaScriptException();
-      return Env().Undefined();
-    }
-
     return Napi::Number::From(Env(), llama_n_seq_max(ctx));
   }
 
   Napi::Value GetContextSize(const Napi::CallbackInfo &info)
   {
-    if (ctx == NULL)
-    {
-      Napi::Error::New(Env(), "Context is disposed").ThrowAsJavaScriptException();
-      return Env().Undefined();
-    }
-
     return Napi::Number::From(Env(), llama_n_ctx(ctx));
   }
 
   Napi::Value DisposeSequence(const Napi::CallbackInfo &info)
   {
-    if (ctx == NULL)
-    {
-      Napi::Error::New(Env(), "Context is disposed").ThrowAsJavaScriptException();
-      return Env().Undefined();
-    }
-
     int32_t sequenceId = info[0].As<Napi::Number>().Int32Value();
 
     bool result = llama_kv_cache_seq_rm(ctx, sequenceId, -1, -1);
@@ -168,12 +150,6 @@ public:
   }
   Napi::Value GetSequenceEmbedding(const Napi::CallbackInfo &info)
   {
-    if (ctx == NULL)
-    {
-      Napi::Error::New(Env(), "Context is disposed").ThrowAsJavaScriptException();
-      return Env().Undefined();
-    }
-
     int32_t sequenceId = info[0].As<Napi::Number>().Int32Value();
     int32_t inputTokensLength = info[1].As<Napi::Number>().Int32Value();
 
@@ -207,12 +183,6 @@ public:
 
   Napi::Value GetStateSize(const Napi::CallbackInfo &info)
   {
-    if (ctx == NULL)
-    {
-      Napi::Error::New(Env(), "Context is disposed").ThrowAsJavaScriptException();
-      return Env().Undefined();
-    }
-
     return Napi::Number::From(Env(), llama_state_get_size(ctx));
   }
 

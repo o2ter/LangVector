@@ -137,6 +137,16 @@ export class LlamaModel extends LLMModel<LlamaDevice> {
     return this._model.modelSize();
   }
 
+  get meta() {
+    if (_.isNil(this._model)) throw new DisposedError();
+    const length = this._model.metaLength();
+    const result: Record<string, string> = {};
+    for (let i = 0; i < length; i++) {
+      result[this._model.metaKey(i)] = this._model.metaValue(i);
+    }
+    return result;
+  }
+
   tokenString(token: number): string | undefined {
     if (_.isNil(this._model)) throw new DisposedError();
     return this._model.getTokenString(token);
