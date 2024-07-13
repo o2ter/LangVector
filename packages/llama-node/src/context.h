@@ -177,6 +177,7 @@ public:
             {
               throw std::runtime_error("Eval failed");
             }
+            llama_synchronize(ctx);
           }
         },
         [=]()
