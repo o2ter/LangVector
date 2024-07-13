@@ -27,6 +27,7 @@ import _ from 'lodash';
 import { LLMContext } from './base';
 import { LlamaModel } from '../model/llama';
 import { LlamaDevice } from '../device/llama';
+import { DisposedError } from '../types';
 import * as llamaCpp from '../plugins/llamaCpp';
 
 export class LlamaContext extends LLMContext<LlamaDevice, LlamaModel> {
@@ -46,5 +47,10 @@ export class LlamaContext extends LLMContext<LlamaDevice, LlamaModel> {
 
   get disposed() {
     return _.isNil(this._context);
+  }
+  
+  get contextSize(): number {
+    if (_.isNil(this._context)) throw new DisposedError();
+    return this._context.contextSize();
   }
 }

@@ -132,6 +132,7 @@ public:
         exports.Env(),
         "LlamaContext",
         {
+            InstanceMethod("contextSize", &LlamaContext::GetContextSize),
             InstanceMethod("dispose", &LlamaContext::Dispose),
         });
     exports.Set("LlamaContext", def);
