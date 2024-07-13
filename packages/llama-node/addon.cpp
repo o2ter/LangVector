@@ -25,6 +25,7 @@
 
 #include "src/info.h"
 #include "src/model.h"
+#include "src/context.h"
 
 Napi::Object registerCallback(Napi::Env env, Napi::Object exports)
 {
@@ -42,6 +43,7 @@ Napi::Object registerCallback(Napi::Env env, Napi::Object exports)
       Napi::PropertyDescriptor::Function("getGpuType", getGpuType),
   });
   LlamaModel::init(exports);
+  LlamaContext::init(exports);
   return exports;
 }
 
