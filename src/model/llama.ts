@@ -166,6 +166,7 @@ export class LlamaModel extends LLMModel<LlamaDevice> {
     contextSize?: number;
     /**
      * Max number of tokens with all concurrent sequences that are fed into the model at a time.
+     * llama can process multiple sequences in a single batch.
      */
     batchSize?: number;
     /**
