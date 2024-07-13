@@ -41,11 +41,13 @@ public:
     model = Napi::ObjectWrap<LlamaModel>::Unwrap(info[0].As<Napi::Object>());
     model->Ref();
 
+    auto hardware_concurrency = std::thread::hardware_concurrency();
+
     context_params = llama_context_default_params();
     context_params.seed = -1;
     context_params.n_ctx = 4096;
-    context_params.n_threads = 6;
-    context_params.n_threads_batch = context_params.n_threads;
+    context_params.n_threads = hardware_concurrency;
+    context_params.n_threads_batch = hardware_concurrency;
     context_params.embeddings = true;
 
     Napi::Object options = info[1].As<Napi::Object>();
@@ -79,7 +81,7 @@ public:
     if (options.Has("threads"))
     {
       const auto n_threads = options.Get("threads").As<Napi::Number>().Uint32Value();
-      const auto resolved_n_threads = n_threads == 0 ? std::thread::hardware_concurrency() : n_threads;
+      const auto resolved_n_threads = n_threads > 0 ? n_threads : hardware_concurrency;
       context_params.n_threads = resolved_n_threads;
       context_params.n_threads_batch = resolved_n_threads;
     }
