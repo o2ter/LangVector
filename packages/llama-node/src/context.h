@@ -132,6 +132,55 @@ public:
     return Napi::Number::From(info.Env(), llama_n_ctx(ctx));
   }
 
+  Napi::Value GetEmbedding(const Napi::CallbackInfo &info)
+  {
+    if (ctx == NULL)
+    {
+      Napi::Error::New(info.Env(), "Context is disposed").ThrowAsJavaScriptException();
+      return info.Env().Undefined();
+    }
+
+    int32_t inputTokensLength = info[0].As<Napi::Number>().Int32Value();
+
+    if (inputTokensLength <= 0)
+    {
+      Napi::Error::New(info.Env(), "Invalid input tokens length").ThrowAsJavaScriptException();
+      return info.Env().Undefined();
+    }
+
+    const int n_embd = llama_n_embd(model->model);
+    const auto *embeddings = llama_get_embeddings_seq(ctx, 0);
+    if (embeddings == NULL)
+    {
+      embeddings = llama_get_embeddings_ith(ctx, inputTokensLength - 1);
+
+      if (embeddings == NULL)
+      {
+        Napi::Error::New(info.Env(), std::string("Failed to get embeddings for token ") + std::to_string(inputTokensLength - 1)).ThrowAsJavaScriptException();
+        return info.Env().Undefined();
+      }
+    }
+
+    Napi::Float64Array result = Napi::Float64Array::New(info.Env(), n_embd);
+    for (size_t i = 0; i < n_embd; ++i)
+    {
+      result[i] = embeddings[i];
+    }
+
+    return result;
+  }
+
+  Napi::Value GetStateSize(const Napi::CallbackInfo &info)
+  {
+    if (ctx == NULL)
+    {
+      Napi::Error::New(info.Env(), "Context is disposed").ThrowAsJavaScriptException();
+      return info.Env().Undefined();
+    }
+
+    return Napi::Number::From(info.Env(), llama_state_get_size(ctx));
+  }
+
   static void init(Napi::Object exports)
   {
     auto def = DefineClass(
@@ -139,6 +188,7 @@ public:
         "LlamaContext",
         {
             InstanceMethod("contextSize", &LlamaContext::GetContextSize),
+            InstanceMethod("stateSize", &LlamaContext::GetStateSize),
             InstanceMethod("dispose", &LlamaContext::Dispose),
         });
     exports.Set("LlamaContext", def);
