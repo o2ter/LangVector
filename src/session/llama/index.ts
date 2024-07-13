@@ -80,6 +80,7 @@ export class LlamaSession extends LLMSession<LlamaDevice, LlamaModel, LlamaConte
     return this._ctx.contextSize;
   }
 
+  /** @internal */
   _tokenize(value: LLMTextValue): Uint32Array {
     if (_.isString(value)) return this.model.tokenize(value);
     return _.isArrayBuffer(value) ? value : new Uint32Array(value);
