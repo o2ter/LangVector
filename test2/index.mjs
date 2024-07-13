@@ -2,7 +2,7 @@
 import _ from 'lodash';
 import path from 'path';
 import { fileURLToPath } from 'url';
-import { LlamaDevice } from '../dist/index.mjs';
+import { LlamaDevice } from '../';
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
