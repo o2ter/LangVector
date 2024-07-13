@@ -23,6 +23,8 @@
 //  THE SOFTWARE.
 //
 
+export * from './types';
+
 export * from './device/base';
 export * from './model/base';
 export * from './context/base';
