@@ -345,7 +345,7 @@ public:
 
     llama_model_meta_key_by_index(model, idx, result.data(), result.size());
 
-    return Napi::String::New(Env(), result.data(), result.size());
+    return Napi::String::New(Env(), result.data(), result.size() - 1);
   }
 
   Napi::Value MetaValue(const Napi::CallbackInfo &info)
@@ -356,7 +356,7 @@ public:
 
     llama_model_meta_val_str_by_index(model, idx, result.data(), result.size());
 
-    return Napi::String::New(Env(), result.data(), result.size());
+    return Napi::String::New(Env(), result.data(), result.size() - 1);
   }
 
   static void init(Napi::Object exports)
