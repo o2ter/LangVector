@@ -17,6 +17,4 @@ console.log('====================================')
 
 const context = model.createContext();
 
-console.log('====================================')
-
 console.log(await context.embedding('hello, world'))
