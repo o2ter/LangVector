@@ -163,6 +163,6 @@ export class LlamaModel extends LLMModel<LlamaDevice> {
     flashAttention?: boolean;
     threads?: number;
   } = {}) {
-    return new LlamaContext(this, llamaCpp.LlamaContext(this._model, options));
+    return new LlamaContext(this, new llamaCpp.LlamaContext(this._model, options));
   }
 }
