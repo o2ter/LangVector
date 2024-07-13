@@ -13,6 +13,10 @@ const model = await LlamaDevice.loadModel({
   embeddings: true,
 });
 
+console.log('====================================')
+
 const context = model.createContext();
+
+console.log('====================================')
 
 console.log(await context.embedding('hello, world'))
