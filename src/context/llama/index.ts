@@ -28,6 +28,8 @@ import { LLMContext } from '../base';
 import { LlamaModel } from '../../model/llama';
 import { LlamaDevice } from '../../device/llama';
 import { LlamaContextOptions } from './types';
+import { LlamaSessionOptions } from '../../session/llama/types';
+import { LlamaSession } from '../../session/llama';
 import { _LlamaContext } from './context';
 
 export class LlamaContext extends LLMContext<LlamaDevice, LlamaModel> {
@@ -65,5 +67,12 @@ export class LlamaContext extends LLMContext<LlamaDevice, LlamaModel> {
    */
   get contextSize(): number {
     return _.first(this._pool)?.contextSize ?? 0;
+  }
+
+  createSession(options: LlamaSessionOptions = {}) {
+    const ctx = this._available_context;
+    const idx = ctx.availableSeqIdx();
+    if (_.isNil(idx)) throw Error('Unknown error');
+    return new LlamaSession(this, ctx, idx, options);
   }
 }

@@ -1,5 +1,5 @@
 //
-//  index.ts
+//  types.ts
 //
 //  The MIT License
 //  Copyright (c) 2021 - 2024 O2ter Limited. All rights reserved.
@@ -23,39 +23,5 @@
 //  THE SOFTWARE.
 //
 
-import _ from 'lodash';
-import { LLMSession } from '../base';
-import { LlamaContext } from '../../context/llama';
-import { LlamaDevice } from '../../device/llama';
-import { LlamaModel } from '../../model/llama';
-import { _LlamaContext } from '../../context/llama/context';
-import { LlamaSessionOptions } from './types';
-
-export class LlamaSession extends LLMSession<LlamaDevice, LlamaModel, LlamaContext> {
-
-  _options: LlamaSessionOptions;
-  _idx: number;
-  _ctx: _LlamaContext;
-  _disposed = false;
-
-  constructor(
-    pool: LlamaContext,
-    ctx: _LlamaContext,
-    idx: number,
-    options: LlamaSessionOptions
-  ) {
-    super(pool);
-    this._options = options;
-    this._idx = idx;
-    this._ctx = ctx;
-  }
-
-  async dispose() {
-    if (this._disposed) return;
-    this._ctx.disposeSeq(this._idx);
-    this._disposed = true;
-  }
-  get disposed() {
-    return this._disposed;
-  }
-}
+export type LlamaSessionOptions = {
+};
