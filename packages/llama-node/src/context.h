@@ -168,7 +168,7 @@ public:
           for (uint32_t pos = 0; pos < token_length; pos += n_batch)
           {
             llama_batch_clear(*batch);
-            for (size_t i = 0; i < token_length; ++i)
+            for (size_t i = 0; i + pos < token_length; ++i)
             {
               llama_batch_add(*batch, tokens[i + pos], i, {seqId}, false);
             }
