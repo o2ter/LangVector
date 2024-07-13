@@ -30,13 +30,12 @@
 
 class LlamaContext : public Napi::ObjectWrap<LlamaContext>
 {
-private:
+public:
   LlamaModel *model;
   llama_context_params context_params;
   llama_context *ctx;
   llama_batch batch;
 
-public:
   LlamaContext(const Napi::CallbackInfo &info) : Napi::ObjectWrap<LlamaContext>(info)
   {
     model = Napi::ObjectWrap<LlamaModel>::Unwrap(info[0].As<Napi::Object>());
