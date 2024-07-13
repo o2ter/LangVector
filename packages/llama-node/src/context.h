@@ -170,7 +170,15 @@ public:
             {
               llama_batch_add(batch, tokens[i], i, {seqId}, false);
             }
-            llama_decode(ctx, batch);
+            auto status = llama_decode(ctx, batch);
+            if (status < 0)
+            {
+              throw std::runtime_error("Eval failed");
+            }
+            else if (status > 0)
+            {
+              throw std::runtime_error("Could not find a KV slot for the batch (try reducing the size of the batch or increase the context)");
+            }
           }
 
           llama_batch_free(batch);
