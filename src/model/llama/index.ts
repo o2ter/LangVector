@@ -147,6 +147,10 @@ export class LlamaModel extends LLMModel<LlamaDevice> {
     return result;
   }
 
+  get chatTemplate(): string | undefined {
+    return this.meta['tokenizer.chat_template'];
+  }
+
   tokenString(token: number): string | undefined {
     if (_.isNil(this._model)) throw new DisposedError();
     return this._model.getTokenString(token);
