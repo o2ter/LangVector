@@ -140,15 +140,11 @@ export class LlamaModel extends LLMModel<LlamaDevice> {
   get meta() {
     if (_.isNil(this._model)) throw new DisposedError();
     const length = this._model.metaLength();
-    const result: Record<string, string> = {};
+    const result: Record<string, string | undefined> = {};
     for (let i = 0; i < length; i++) {
       result[this._model.metaKey(i)] = this._model.metaValue(i);
     }
     return result;
-  }
-
-  get chatTemplate(): string | undefined {
-    return this.meta['tokenizer.chat_template'];
   }
 
   tokenString(token: number): string | undefined {
