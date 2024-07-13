@@ -45,7 +45,7 @@ public:
 
     context_params = llama_context_default_params();
     context_params.seed = -1;
-    context_params.n_ctx = 4096;
+    context_params.n_ctx = 0;
     context_params.n_threads = hardware_concurrency;
     context_params.n_threads_batch = hardware_concurrency;
     context_params.embeddings = true;
