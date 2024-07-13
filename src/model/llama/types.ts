@@ -32,4 +32,4 @@ export type LlamaModelOptions = {
   checkTensors?: boolean;
   signal?: AbortSignal;
   onLoadProgress?: (progress: number) => void;
-}
+};

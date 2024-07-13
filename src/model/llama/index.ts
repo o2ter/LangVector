@@ -27,8 +27,9 @@ import _ from 'lodash';
 import { LLMModel } from '../base';
 import { LlamaDevice } from '../../device/llama';
 import { DisposedError } from '../../types';
-import * as llamaCpp from '../../plugins/llamaCpp';
 import { LlamaContext } from '../../context/llama';
+import { LlamaContextOptions } from '../../context/llama/types';
+import * as llamaCpp from '../../plugins/llamaCpp';
 
 export class LlamaModel extends LLMModel<LlamaDevice> {
 
@@ -158,26 +159,7 @@ export class LlamaModel extends LLMModel<LlamaDevice> {
     return this._model.detokenize(tokens, decodeSpecial);
   }
 
-  createContext(options: {
-    seed?: number;
-    /**
-     * The context size of context. (default to model's context size)
-     */
-    contextSize?: number;
-    /**
-     * Max number of tokens with multiple sequences in a single batch.
-     */
-    batchSize?: number;
-    /**
-     * Max number of concurrent sequences. (default to 1)
-     */
-    sequences?: number;
-    flashAttention?: boolean;
-    /**
-     * Max number of threads. (default to hardware)
-     */
-    threads?: number;
-  } = {}) {
+  createContext(options: LlamaContextOptions = {}) {
     return new LlamaContext(this, new llamaCpp.LlamaContext(this._model, options));
   }
 }

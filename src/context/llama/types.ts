@@ -22,3 +22,24 @@
 //  OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 //  THE SOFTWARE.
 //
+
+export type LlamaContextOptions = {
+  seed?: number;
+  /**
+   * The context size of context. (default to model's context size)
+   */
+  contextSize?: number;
+  /**
+   * Max number of tokens with multiple sequences in a single batch.
+   */
+  batchSize?: number;
+  /**
+   * Max number of concurrent sequences. (default to 1)
+   */
+  sequences?: number;
+  flashAttention?: boolean;
+  /**
+   * Max number of threads. (default to hardware)
+   */
+  threads?: number;
+};
