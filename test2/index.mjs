@@ -38,6 +38,8 @@ console.log(model.detokenize([15339, 11, 1917]));
 const context = model.createContext();
 console.log(context);
 
+console.log(await context.embedding('hello, world'))
+
 const session = context.createSession();
 console.log(session);
 console.log(session.contextSize);
