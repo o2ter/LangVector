@@ -191,19 +191,11 @@ public:
     const auto *embeddings = llama_get_embeddings_seq(ctx, seqId);
     if (embeddings == NULL)
     {
-      int32_t inputTokensLength = info[1].As<Napi::Number>().Int32Value();
-
-      if (inputTokensLength <= 0)
-      {
-        Napi::Error::New(Env(), "Invalid input tokens length").ThrowAsJavaScriptException();
-        return Env().Undefined();
-      }
-
-      embeddings = llama_get_embeddings_ith(ctx, inputTokensLength - 1);
+      embeddings = llama_get_embeddings_ith(ctx, -1);
 
       if (embeddings == NULL)
       {
-        Napi::Error::New(Env(), std::string("Failed to get embeddings for token ") + std::to_string(inputTokensLength - 1)).ThrowAsJavaScriptException();
+        Napi::Error::New(Env(), "Failed to get embeddings").ThrowAsJavaScriptException();
         return Env().Undefined();
       }
     }
