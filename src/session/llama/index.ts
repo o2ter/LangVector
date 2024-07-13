@@ -44,6 +44,9 @@ export class LlamaSession extends LLMSession<LlamaDevice, LlamaModel, LlamaConte
   _disposed = false;
 
   /** @internal */
+  _tokens: number[] = [];
+
+  /** @internal */
   constructor(
     pool: LlamaContext,
     ctx: _LlamaContext,
@@ -65,6 +68,10 @@ export class LlamaSession extends LLMSession<LlamaDevice, LlamaModel, LlamaConte
     return this._disposed;
   }
 
+  get tokens() {
+    return this._tokens;
+  }
+
   /**
    * The context size of context.
    */
@@ -79,6 +86,7 @@ export class LlamaSession extends LLMSession<LlamaDevice, LlamaModel, LlamaConte
       const tokens = _.isString(value)
         ? this.model.tokenize(value)
         : _.isArrayBuffer(value) ? value : new Uint32Array(value);
+      this._tokens.push(...tokens);
       return this._ctx.ctx.evalSequence(this._idx, tokens);
     });
   }
