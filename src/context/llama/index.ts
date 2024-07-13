@@ -73,7 +73,7 @@ export class LlamaContext extends LLMContext<LlamaDevice, LlamaModel> {
 
   async embedding(value: LLMTextValue) {
     const session = this.createSession();
-    await session.evaluate(value);
+    await session._evaluate(value, { logitEnd: true });
     const result = session.embedding();
     session.dispose();
     return result;
