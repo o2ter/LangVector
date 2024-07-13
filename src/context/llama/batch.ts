@@ -28,7 +28,7 @@ import { LlamaModel } from '../../model/llama';
 import { DisposedError } from '../../types';
 import * as llamaCpp from '../../plugins/llamaCpp';
 
-export class _LlamaContext {
+export class LlamaBatch {
 
   model: LlamaModel;
   context: typeof llamaCpp.LlamaContext;
