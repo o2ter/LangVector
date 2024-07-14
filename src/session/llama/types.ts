@@ -39,9 +39,9 @@ export type LlamaContextShiftOptions = {
    */
   strategy?: (options: {
     chatHistory: ChatHistoryItem[];
+    chatWrapper: ChatWrapper;
     maxTokensCount: number;
     tokenizer(text: string, specialTokens?: boolean): Uint32List;
-    chatWrapper: ChatWrapper;
   }) => Awaitable<{
     chatHistory: ChatHistoryItem[];
   }>;
