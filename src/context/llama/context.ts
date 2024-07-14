@@ -52,6 +52,9 @@ export class _LlamaContext {
       this.ctx = null;
     });
   }
+  get disposed() {
+    return _.isNil(this.ctx);
+  }
 
   async _sync<T = void>(callback: () => Awaitable<T>) {
     return await new Promise<T>(async (res, rej) => {

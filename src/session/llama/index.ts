@@ -76,7 +76,7 @@ export class LlamaSession extends LLMSession<LlamaDevice, LlamaModel, LlamaConte
    * The context size of context.
    */
   get contextSize() {
-    if (this._disposed) throw new DisposedError();
+    if (this._disposed || this._ctx.disposed) throw new DisposedError();
     return this._ctx.contextSize;
   }
 
@@ -90,7 +90,7 @@ export class LlamaSession extends LLMSession<LlamaDevice, LlamaModel, LlamaConte
   async _evaluate(value: LLMTextValue, { logitEnd = false } = {}): Promise<void> {
     const tokens = this._tokenize(value);
     return await this._ctx._sync(async () => {
-      if (this._disposed) throw new DisposedError();
+      if (this._disposed || this._ctx.disposed) throw new DisposedError();
       this._tokens.push(...tokens);
       return this._ctx.ctx.evalSequence(this._idx, tokens, logitEnd);
     });
@@ -99,7 +99,7 @@ export class LlamaSession extends LLMSession<LlamaDevice, LlamaModel, LlamaConte
   /** @internal */
   async _embedding(): Promise<Float64Array> {
     return await this._ctx._sync(async () => {
-      if (this._disposed) throw new DisposedError();
+      if (this._disposed || this._ctx.disposed) throw new DisposedError();
       return this._ctx.ctx.sequenceEmbedding(this._idx);
     });
   }
