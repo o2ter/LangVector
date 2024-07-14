@@ -27,11 +27,11 @@ import _ from 'lodash';
 import { LLMContext } from '../base';
 import { LlamaModel } from '../../model/llama';
 import { LlamaDevice } from '../../device/llama';
-import { LlamaContextOptions } from './types';
+import { LLamaChatPromptOptions, LlamaContextOptions } from './types';
 import { DisposedError, LLMTextValue } from '../../types';
 import { Worker } from './worker';
-import * as llamaCpp from '../../plugins/llamaCpp';
 import { clock } from '../../utils';
+import * as llamaCpp from '../../plugins/llamaCpp';
 
 export class LlamaContext extends LLMContext<LlamaDevice, LlamaModel> {
 
@@ -82,16 +82,20 @@ export class LlamaContext extends LLMContext<LlamaDevice, LlamaModel> {
     return this._ctx.contextSize;
   }
 
-  /** @internal */
-  async _evaluate(value: LLMTextValue): Promise<number> {
+  private async _evaluate(value: LLMTextValue): Promise<number> {
     const tokens = this.model._tokenize(value);
-    return await this._worker.sync(async () => {
-      if (_.isNil(this._ctx)) throw new DisposedError();
-      this._tokens.push(...tokens);
-      const time = clock();
-      await this._ctx.ctx.eval(tokens);
-      return clock() - time;
-    });
+    if (_.isNil(this._ctx)) throw new DisposedError();
+    this._tokens.push(...tokens);
+    const time = clock();
+    await this._ctx.ctx.eval(tokens);
+    return clock() - time;
   }
 
+  async prompt(value: LLMTextValue, options: LLamaChatPromptOptions = {}) {
+
+    return await this._worker.sync(async () => {
+      
+
+    });
+  }
 }
