@@ -37,17 +37,16 @@ export type LlamaContextShiftOptions = {
    * The strategy to use when deleting tokens from the context window.
    * Defaults to `"eraseFirstResponseAndKeepFirstSystem"`.
    */
-  strategy?: (session: LlamaSession, options: {
-    chatHistory?: ChatHistoryItem[];
-    chatWrapper?: ChatWrapper;
-    maxTokensCount: number;
-  }) => Awaitable<{
+  strategy?: (session: LlamaSession) => Awaitable<{
     chatHistory: ChatHistoryItem[];
   }>;
 };
 
 export type LlamaSessionOptions = {
+
   contextShift?: LlamaContextShiftOptions;
+
+  chatWrapper?: ChatWrapper;
 };
 
 export type LlamaSequenceRepeatPenalty = {

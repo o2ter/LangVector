@@ -77,6 +77,10 @@ export class LlamaSession extends LLMSession<LlamaDevice, LlamaModel, LlamaConte
     return this._tokens;
   }
 
+  get chatWrapper() {
+    return this._options.chatWrapper;
+  }
+
   /**
    * The context size of context.
    */
