@@ -54,7 +54,6 @@ export type LlamaContextOptions = {
     chatWrapper?: ChatWrapper;
     functions?: Record<string, ChatModelFunctionOptions>;
     documentFunctionParams?: boolean;
-    maxParallelFunctionCalls?: number;
   };
 };
 
