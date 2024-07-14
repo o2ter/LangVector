@@ -83,5 +83,6 @@ export type ChatWrapper = {
 export type ChatModelFunctionOptions = {
   description?: string;
   params?: any;
+  resultType?: any;
   handler: (params: any) => any;
 };
