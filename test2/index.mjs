@@ -12,9 +12,15 @@ const model = await LlamaDevice.loadModel({
   useMmap: true,
 });
 
+let t = Date.now()
+
 const context = model.createContext({
   embeddings: true,
   contextSize: 4096,
 });
 
-console.log(await context.embedding('hello, world'))
+const result = await context.embedding('hello, world')
+
+const t2 = Date.now() - t;
+
+console.log(result, t2 / 1000)

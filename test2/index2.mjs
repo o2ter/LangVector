@@ -12,7 +12,7 @@ const model = await llama.loadModel({
   modelPath: path.join(__dirname, '../models', 'meta-llama/Meta-Llama-3-8B-Instruct/ggml-model-q3_k_m.gguf'),
 });
 const context = await model.createContext({});
-const session = new LlamaChatSession({ context });
+const session = new LlamaChatSession({ contextSequence: context.getSequence() });
 
 const context2 = await model.createEmbeddingContext({});
 
