@@ -31,6 +31,7 @@ import { LLamaChatPromptOptions, LlamaContextOptions } from './types';
 import { DisposedError, LLMTextValue } from '../../types';
 import { Worker } from './worker';
 import { clock } from '../../utils';
+import { ChatHistoryItem } from '../../chat/types';
 import * as llamaCpp from '../../plugins/llamaCpp';
 
 export class LlamaContext extends LLMContext<LlamaDevice, LlamaModel> {
@@ -46,7 +47,9 @@ export class LlamaContext extends LLMContext<LlamaDevice, LlamaModel> {
   /** @internal */
   _tokens: number[] = [];
   /** @internal */
-  _ctx_state: number[] = [];
+  _chat_history?: ChatHistoryItem[];
+  /** @internal */
+  _ctx_state?: number[];
 
   /** @internal */
   constructor(model: LlamaModel, ctx: typeof llamaCpp.LlamaContext, options: LlamaContextOptions) {
@@ -84,6 +87,23 @@ export class LlamaContext extends LLMContext<LlamaDevice, LlamaModel> {
 
   get tokens() {
     return new Uint32Array(this._tokens);
+  }
+
+  get chatWrapper() {
+    return this._options.chatOptions?.chatWrapper;
+  }
+
+  get chatOptions() {
+    return this._options.chatOptions;
+  }
+
+  get chatHistory() {
+    if (!_.isNil(this._chat_history)) return this._chat_history;
+    const chatWrapper = this.chatWrapper;
+    if (_.isNil(chatWrapper)) return;
+    const history = chatWrapper.generateChatHistory(this, this.tokens);
+    this._chat_history = history;
+    return history;
   }
 
   private async _evaluate(

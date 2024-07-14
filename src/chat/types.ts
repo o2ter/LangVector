@@ -79,19 +79,11 @@ export type ChatWrapper = {
   setting: ChatWrapperSettings;
   generateContextState(
     session: LlamaContext,
-    options: {
-      chatHistory: ChatHistoryItem[];
-      functions?: Record<string, ChatModelFunctionOptions>;
-      documentFunctionParams?: boolean;
-    },
+    chatHistory: ChatHistoryItem[],
   ): Uint32List;
   generateChatHistory(
     session: LlamaContext,
-    options: {
-      tokens: Uint32Array;
-      functions?: Record<string, ChatModelFunctionOptions>;
-      documentFunctionParams?: boolean;
-    },
+    tokens: Uint32Array,
   ): ChatHistoryItem[];
 };
 
