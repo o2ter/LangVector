@@ -27,22 +27,9 @@ import { Awaitable } from '@o2ter/utils-js';
 import { ChatWrapper } from '../../chat/types';
 import type { LlamaSession } from './index';
 
-export type LlamaContextShiftOptions = {
-  /**
-   * The number of tokens to delete from the context window to make space for new ones.
-   * Defaults to 10% of the context size.
-   */
-  size?: (session: LlamaSession) => Awaitable<number>;
-  /**
-   * The strategy to use when deleting tokens from the context window.
-   * Defaults to `"eraseFirstResponseAndKeepFirstSystem"`.
-   */
-  strategy?: (session: LlamaSession) => Awaitable<Uint32List>;
-};
-
 export type LlamaSessionOptions = {
 
-  contextShift?: LlamaContextShiftOptions;
+  tokenCompression?: (session: LlamaSession) => Awaitable<Uint32List>;
 
   chatWrapper?: ChatWrapper;
 };
