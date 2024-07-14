@@ -25,7 +25,13 @@
 
 import { Awaitable } from "@o2ter/utils-js";
 import { ChatWrapper } from "../../chat/types";
+import { LLMTextValue } from "../../types";
 import type { LlamaContext } from "./index";
+
+type TokenBias = {
+  tokens: LLMTextValue;
+  bias: 'never' | number;
+}[];
 
 export type LlamaContextOptions = {
   seed?: number;
@@ -70,4 +76,69 @@ export type LlamaSequenceRepeatPenalty = {
    * Set to a value between `0` and `1` to enable.
    */
   presencePenalty?: number;
+};
+
+export type LLamaChatPromptOptions = {
+
+  onToken?: (tokens: Uint32Array) => void;
+
+  signal?: AbortSignal;
+
+  maxTokens?: number;
+  /**
+   * Temperature is a hyperparameter that controls the randomness of the generated text.
+   * It affects the probability distribution of the model's output tokens.
+   * A higher temperature (e.g., 1.5) makes the output more random and creative,
+   * while a lower temperature (e.g., 0.5) makes the output more focused, deterministic, and conservative.
+   * The suggested temperature is 0.8, which provides a balance between randomness and determinism.
+   * At the extreme, a temperature of 0 will always pick the most likely next token, leading to identical outputs in each run.
+   *
+   * Set to `0` to disable.
+   * Disabled by default (set to `0`).
+   */
+  temperature?: number;
+  /**
+   * From the next token candidates, discard the percentage of tokens with the lowest probability.
+   * For example, if set to `0.05`, 5% of the lowest probability tokens will be discarded.
+   * This is useful for generating more high-quality results when using a high temperature.
+   * Set to a value between `0` and `1` to enable.
+   *
+   * Only relevant when `temperature` is set to a value greater than `0`.
+   * Disabled by default.
+   */
+  minP?: number;
+  /**
+   * Limits the model to consider only the K most likely next tokens for sampling at each step of sequence generation.
+   * An integer number between `1` and the size of the vocabulary.
+   * Set to `0` to disable (which uses the full vocabulary).
+   *
+   * Only relevant when `temperature` is set to a value greater than 0.
+   */
+  topK?: number;
+  /**
+   * Dynamically selects the smallest set of tokens whose cumulative probability exceeds the threshold P,
+   * and samples the next token only from this set.
+   * A float number between `0` and `1`.
+   * Set to `1` to disable.
+   *
+   * Only relevant when `temperature` is set to a value greater than `0`.
+   */
+  topP?: number;
+  /**
+   * Trim whitespace from the end of the generated text
+   * Disabled by default.
+   */
+  trimWhitespaceSuffix?: boolean;
+
+  repeatPenalty?: false | LlamaSequenceRepeatPenalty;
+  /**
+   * Adjust the probability of tokens being generated.
+   * Can be used to bias the model to generate tokens that you want it to lean towards,
+   * or to avoid generating tokens that you want it to avoid.
+   */
+  tokenBias?: () => TokenBias;
+  /**
+   * Custom stop triggers to stop the generation of the response when any of the provided triggers are found.
+   */
+  stopTriggers?: LLMTextValue[];
 };
