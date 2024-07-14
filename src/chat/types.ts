@@ -24,6 +24,7 @@
 //
 
 import { LLMTextValue } from '../types';
+import type { LlamaContext } from '../context/llama';
 
 export type ChatHistoryItem = ChatSystemMessage | ChatUserMessage | ChatModelResponse;
 export type ChatSystemMessage = {
@@ -76,16 +77,22 @@ export type ChatWrapperSettings = {
 
 export type ChatWrapper = {
   setting: ChatWrapperSettings;
-  generateContextState(options: {
-    chatHistory: ChatHistoryItem[];
-    functions?: Record<string, ChatModelFunctionOptions>;
-    documentFunctionParams?: boolean;
-  }): Uint32List;
-  generateChatHistory(options: {
-    tokens: Uint32Array;
-    functions?: Record<string, ChatModelFunctionOptions>;
-    documentFunctionParams?: boolean;
-  }): ChatHistoryItem[];
+  generateContextState(
+    session: LlamaContext,
+    options: {
+      chatHistory: ChatHistoryItem[];
+      functions?: Record<string, ChatModelFunctionOptions>;
+      documentFunctionParams?: boolean;
+    },
+  ): Uint32List;
+  generateChatHistory(
+    session: LlamaContext,
+    options: {
+      tokens: Uint32Array;
+      functions?: Record<string, ChatModelFunctionOptions>;
+      documentFunctionParams?: boolean;
+    },
+  ): ChatHistoryItem[];
 };
 
 export type ChatModelFunctionOptions = {
