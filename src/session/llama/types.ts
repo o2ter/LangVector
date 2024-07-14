@@ -38,8 +38,8 @@ export type LlamaContextShiftOptions = {
    * Defaults to `"eraseFirstResponseAndKeepFirstSystem"`.
    */
   strategy?: (session: LlamaSession, options: {
-    chatHistory: ChatHistoryItem[];
-    chatWrapper: ChatWrapper;
+    chatHistory?: ChatHistoryItem[];
+    chatWrapper?: ChatWrapper;
     maxTokensCount: number;
   }) => Awaitable<{
     chatHistory: ChatHistoryItem[];
