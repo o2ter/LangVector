@@ -24,7 +24,7 @@
 //
 
 import { Awaitable } from "@o2ter/utils-js";
-import { ChatWrapper } from "../../chat/types";
+import { ChatModelFunctionOptions, ChatWrapper } from "../../chat/types";
 import { LLMTextValue } from "../../types";
 import type { LlamaContext } from "./index";
 
@@ -52,11 +52,7 @@ export type LlamaContextOptions = {
   chatOptions?: {
     contextCompression?: (session: LlamaContext) => Awaitable<Uint32List>;
     chatWrapper?: ChatWrapper;
-    functions?: Record<string, {
-      description?: string;
-      params?: any;
-      handler: (params: any) => any;
-    }>;
+    functions?: Record<string, ChatModelFunctionOptions>;
     documentFunctionParams?: boolean;
     maxParallelFunctionCalls?: number;
   };

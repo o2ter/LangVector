@@ -49,3 +49,9 @@ export type ChatModelFunctionCall = {
   params: any;
   result: any;
 };
+
+export type ChatModelFunctionOptions = {
+  description?: string;
+  params?: any;
+  handler: (params: any) => any;
+};
