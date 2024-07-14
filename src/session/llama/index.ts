@@ -61,7 +61,7 @@ export class LlamaSession extends LLMSession<LlamaDevice, LlamaModel, LlamaConte
 
   async dispose() {
     if (this._disposed) return;
-    this._ctx.disposeSeq(this._idx);
+    await this._ctx.disposeSeq(this._idx);
     this._disposed = true;
   }
   get disposed() {
@@ -89,7 +89,7 @@ export class LlamaSession extends LLMSession<LlamaDevice, LlamaModel, LlamaConte
   /** @internal */
   async _evaluate(value: LLMTextValue, { logitEnd = false } = {}): Promise<void> {
     const tokens = this._tokenize(value);
-    return await this._ctx._sync(() => {
+    return await this._ctx._sync(async () => {
       if (this._disposed) throw new DisposedError();
       this._tokens.push(...tokens);
       return this._ctx.ctx.evalSequence(this._idx, tokens, logitEnd);
@@ -98,7 +98,7 @@ export class LlamaSession extends LLMSession<LlamaDevice, LlamaModel, LlamaConte
 
   /** @internal */
   async _embedding(): Promise<Float64Array> {
-    return await this._ctx._sync(() => {
+    return await this._ctx._sync(async () => {
       if (this._disposed) throw new DisposedError();
       return this._ctx.ctx.sequenceEmbedding(this._idx);
     });

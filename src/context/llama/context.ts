@@ -46,9 +46,11 @@ export class _LlamaContext {
   }
 
   async dispose() {
-    if (_.isNil(this.ctx)) return;
-    this.ctx.dispose();
-    this.ctx = null;
+    return await this._sync(async () => {
+      if (_.isNil(this.ctx)) return;
+      this.ctx.dispose();
+      this.ctx = null;
+    });
   }
 
   async _sync<T = void>(callback: () => Awaitable<T>) {
@@ -82,10 +84,12 @@ export class _LlamaContext {
     return this.ctx.contextSize();
   }
 
-  disposeSeq(idx: number) {
-    if (_.isNil(this.ctx)) return;
-    this.seq = _.filter(this.seq, s => s._idx !== idx);
-    this.ctx.disposeSequence(idx);
+  async disposeSeq(idx: number) {
+    return await this._sync(async () => {
+      if (_.isNil(this.ctx)) return;
+      this.seq = _.filter(this.seq, s => s._idx !== idx);
+      this.ctx.disposeSequence(idx);
+    });
   }
 
   availableSeqIdx() {
