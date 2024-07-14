@@ -76,11 +76,7 @@ export class LlamaContext extends LLMContext<LlamaDevice, LlamaModel> {
     const time = await session._evaluate(value, { logitEnd: true });
     const vector = await session._embedding();
     session.dispose();
-    return {
-      type: 'embedding',
-      vector,
-      time: time / 1000,
-    };
+    return { type: 'embedding', vector, time };
   }
 
   createSession(options: LlamaSessionOptions = {}) {

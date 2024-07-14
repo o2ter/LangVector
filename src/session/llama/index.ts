@@ -32,6 +32,11 @@ import { _LlamaContext } from '../../context/llama/context';
 import { LlamaSessionOptions } from './types';
 import { DisposedError, LLMTextValue } from '../../types';
 
+const clock = () => {
+  const [seconds, nanoseconds] = process.hrtime();
+  return seconds + nanoseconds / 1_000_000_000;
+};
+
 export class LlamaSession extends LLMSession<LlamaDevice, LlamaModel, LlamaContext> {
 
   /** @internal */
@@ -92,9 +97,9 @@ export class LlamaSession extends LLMSession<LlamaDevice, LlamaModel, LlamaConte
     return await this._ctx._sync(async () => {
       if (this._disposed || this._ctx.disposed) throw new DisposedError();
       this._tokens.push(...tokens);
-      const time = Date.now();
+      const time = clock();
       await this._ctx.ctx.evalSequence(this._idx, tokens, logitEnd);
-      return Date.now() - time;
+      return clock() - time;
     });
   }
 
