@@ -42,13 +42,9 @@ export type LlamaContextShiftOptions = {
     maxTokensCount: number;
     tokenizer(text: string, specialTokens?: boolean): Uint32List;
     chatWrapper: ChatWrapper;
-    lastShiftMetadata?: object | null;
   }) => Awaitable<{
     chatHistory: ChatHistoryItem[];
-    metadata?: object | null;
   }>;
-
-  lastShiftMetadata?: object | null;
 };
 
 export type LlamaSessionOptions = {
