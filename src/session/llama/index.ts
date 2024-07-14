@@ -50,6 +50,8 @@ export class LlamaSession extends LLMSession<LlamaDevice, LlamaModel, LlamaConte
 
   /** @internal */
   _tokens: number[] = [];
+  /** @internal */
+  _compressed_tokens: Uint32List = [];
 
   /** @internal */
   constructor(
@@ -74,7 +76,7 @@ export class LlamaSession extends LLMSession<LlamaDevice, LlamaModel, LlamaConte
   }
 
   get tokens() {
-    return this._tokens;
+    return new Uint32Array(this._tokens);
   }
 
   get chatWrapper() {
