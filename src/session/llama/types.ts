@@ -32,16 +32,16 @@ export type LlamaContextShiftOptions = {
    * The number of tokens to delete from the context window to make space for new ones.
    * Defaults to 10% of the context size.
    */
-  size?: (sequence: LlamaSession) => Awaitable<number>;
+  size?: (session: LlamaSession) => Awaitable<number>;
   /**
    * The strategy to use when deleting tokens from the context window.
    * Defaults to `"eraseFirstResponseAndKeepFirstSystem"`.
    */
   strategy?: (options: {
+    session: LlamaSession;
     chatHistory: ChatHistoryItem[];
     chatWrapper: ChatWrapper;
     maxTokensCount: number;
-    tokenizer(text: string, specialTokens?: boolean): Uint32List;
   }) => Awaitable<{
     chatHistory: ChatHistoryItem[];
   }>;
