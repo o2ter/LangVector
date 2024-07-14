@@ -29,7 +29,7 @@ import type { LlamaSession } from './index';
 
 export type LlamaSessionOptions = {
 
-  tokenCompression?: (session: LlamaSession) => Awaitable<Uint32List>;
+  contextCompression?: (session: LlamaSession) => Awaitable<Uint32List>;
 
   chatWrapper?: ChatWrapper;
 };
