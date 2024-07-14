@@ -128,7 +128,7 @@ export class LlamaContext extends LLMContext<LlamaDevice, LlamaModel> {
   }
 
   evaluate(value: LLMTextValue) {
-    return this._evaluate(value);
+    return this._evaluate(value, { maxTokens: 0 });
   }
 
   prompt(value: LLMTextValue, options: LLamaChatPromptOptions = {}) {
