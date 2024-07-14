@@ -52,6 +52,9 @@ export class LlamaSession extends LLMSession<LlamaDevice, LlamaModel, LlamaConte
   _tokens: number[] = [];
 
   /** @internal */
+  _shift_tokens: number[] = [];
+
+  /** @internal */
   constructor(
     pool: LlamaContext,
     ctx: _LlamaContext,
