@@ -87,12 +87,14 @@ export class LlamaSession extends LLMSession<LlamaDevice, LlamaModel, LlamaConte
   }
 
   /** @internal */
-  async _evaluate(value: LLMTextValue, { logitEnd = false } = {}): Promise<void> {
+  async _evaluate(value: LLMTextValue, { logitEnd = false } = {}): Promise<number> {
     const tokens = this._tokenize(value);
     return await this._ctx._sync(async () => {
       if (this._disposed || this._ctx.disposed) throw new DisposedError();
       this._tokens.push(...tokens);
-      return this._ctx.ctx.evalSequence(this._idx, tokens, logitEnd);
+      const time = Date.now();
+      await this._ctx.ctx.evalSequence(this._idx, tokens, logitEnd);
+      return Date.now() - time;
     });
   }
 
