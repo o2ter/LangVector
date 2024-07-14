@@ -53,7 +53,7 @@ public:
     finalizer();
   }
 
-  Napi::Promise GetPromise()
+  Napi::Promise Promise()
   {
     return deferred.Promise();
   }

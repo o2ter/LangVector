@@ -193,7 +193,7 @@ public:
         });
 
     worker->Queue();
-    return worker->GetPromise();
+    return worker->Promise();
   }
   Napi::Value GetSequenceEmbedding(const Napi::CallbackInfo &info)
   {
