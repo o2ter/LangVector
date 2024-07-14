@@ -191,7 +191,7 @@ export class LlamaModel extends LLMModel<LlamaDevice> {
     const tokens = this._tokenize(value);
     const ctx = new llamaCpp.LlamaEmbeddingContext(this._model, { batchSize: tokens.length, threads });
     await ctx.eval(tokens);
-    const vector = ctx.embedding();
+    const vector = ctx.embedding() as Float64Array;
     ctx.dispose();
     return { type: 'embedding', vector, time: clock() - time };
   }
