@@ -91,11 +91,15 @@ export class LlamaContext extends LLMContext<LlamaDevice, LlamaModel> {
     return clock() - time;
   }
 
-  async prompt(value: LLMTextValue, options: LLamaChatPromptOptions = {}) {
+  async evaluate(value: LLMTextValue, options: LLamaChatPromptOptions = {}) {
 
     return await this._worker.sync(async () => {
-      
+
 
     });
+  }
+
+  async prompt(value: LLMTextValue, options: LLamaChatPromptOptions = {}) {
+
   }
 }
