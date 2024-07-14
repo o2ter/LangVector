@@ -46,7 +46,7 @@ export class LlamaContext extends LLMContext<LlamaDevice, LlamaModel> {
   /** @internal */
   _tokens: number[] = [];
   /** @internal */
-  _compressed_tokens: number[] = [];
+  _ctx_state: number[] = [];
 
   /** @internal */
   constructor(model: LlamaModel, ctx: typeof llamaCpp.LlamaContext, options: LlamaContextOptions) {
