@@ -193,7 +193,7 @@ export class LlamaModel extends LLMModel<LlamaDevice> {
     await ctx.eval(tokens);
     const vector = ctx.embedding() as Float64Array;
     ctx.dispose();
-    return { type: 'embedding', vector, time: clock() - time };
+    return { type: 'embedding', vector, time: clock() - time } as const;
   }
 
 }
