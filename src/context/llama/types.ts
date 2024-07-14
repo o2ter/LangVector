@@ -52,6 +52,13 @@ export type LlamaContextOptions = {
   chatOptions?: {
     contextCompression?: (session: LlamaContext) => Awaitable<Uint32List>;
     chatWrapper?: ChatWrapper;
+    functions?: Record<string, {
+      description?: string;
+      params?: any;
+      handler: (params: any) => any;
+    }>;
+    documentFunctionParams?: boolean;
+    maxParallelFunctionCalls?: number;
   };
 };
 
