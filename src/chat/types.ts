@@ -76,7 +76,11 @@ export type ChatWrapperSettings = {
 
 export type ChatWrapper = {
   setting: ChatWrapperSettings;
-  generateContextState(chatHistory: ChatHistoryItem[]): Uint32List;
+  generateContextState(options: {
+    chatHistory: ChatHistoryItem[];
+    functions?: Record<string, ChatModelFunctionOptions>;
+    documentFunctionParams?: boolean;
+  }): Uint32List;
   generateChatHistory(tokens: Uint32Array): ChatHistoryItem[];
 };
 
