@@ -14,6 +14,7 @@ const model = await LlamaDevice.loadModel({
 
 const context = model.createContext({
   embeddings: true,
+  contextSize: 4096,
 });
 
 console.log(await context.embedding('hello, world'))
