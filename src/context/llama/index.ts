@@ -82,6 +82,10 @@ export class LlamaContext extends LLMContext<LlamaDevice, LlamaModel> {
     return this._ctx.contextSize;
   }
 
+  get tokens() {
+    return new Uint32Array(this._tokens);
+  }
+
   private async _evaluate(
     value: LLMTextValue,
     options: LLamaChatPromptOptions = {},
