@@ -82,24 +82,32 @@ export class LlamaContext extends LLMContext<LlamaDevice, LlamaModel> {
     return this._ctx.contextSize;
   }
 
-  private async _evaluate(value: LLMTextValue): Promise<number> {
-    const tokens = this.model._tokenize(value);
-    if (_.isNil(this._ctx)) throw new DisposedError();
-    this._tokens.push(...tokens);
-    const time = clock();
-    await this._ctx.ctx.eval(tokens);
-    return clock() - time;
-  }
+  private async _evaluate(
+    value: LLMTextValue,
+    options: LLamaChatPromptOptions = {},
+  ): Promise<number> {
 
-  async evaluate(value: LLMTextValue) {
+    const tokens = this.model._tokenize(value);
 
     return await this._worker.sync(async () => {
 
+      if (_.isNil(this._ctx)) throw new DisposedError();
 
+      this._tokens.push(...tokens);
+
+      const time = clock();
+
+      await this._ctx.ctx.eval(tokens);
+
+      return clock() - time;
     });
   }
 
-  async prompt(value: LLMTextValue, options: LLamaChatPromptOptions = {}) {
+  evaluate(value: LLMTextValue) {
+    return this._evaluate(value);
+  }
 
+  prompt(value: LLMTextValue, options: LLamaChatPromptOptions = {}) {
+    return this._evaluate(value, options);
   }
 }
