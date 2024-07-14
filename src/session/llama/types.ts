@@ -47,6 +47,8 @@ export type LlamaContextShiftOptions = {
     chatHistory: ChatHistoryItem[];
     metadata?: object | null;
   }>;
+
+  lastShiftMetadata?: object | null;
 };
 
 export type LlamaSessionOptions = {
