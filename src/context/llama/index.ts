@@ -108,8 +108,8 @@ export class LlamaContext extends LLMContext<LlamaDevice, LlamaModel> {
 
   private async _evaluate(
     value: LLMTextValue,
-    options: LLamaChatPromptOptions = {},
-    onToken?: (tokens: Uint32Array) => void,
+    options: LLamaChatPromptOptions,
+    onToken: (tokens: Uint32Array) => void,
   ): Promise<number> {
 
     const tokens = this.model._tokenize(value);
@@ -128,11 +128,13 @@ export class LlamaContext extends LLMContext<LlamaDevice, LlamaModel> {
     });
   }
 
-  evaluate(value: LLMTextValue) {
-    return this._evaluate(value, { maxTokens: 0 });
+  prompt(value: LLMTextValue, options: LLamaChatPromptOptions = {}) {
+    return this._evaluate(value, options, () => {
+
+    });
   }
 
-  prompt(value: LLMTextValue, options: LLamaChatPromptOptions = {}) {
-    return this._evaluate(value, options);
+  evaluate(value: LLMTextValue) {
+    return this.prompt(value, { maxTokens: 0 });
   }
 }
