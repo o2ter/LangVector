@@ -13,7 +13,3 @@ const model = await llama.loadModel({
 });
 const context = await model.createContext({});
 const session = new LlamaChatSession({ contextSequence: context.getSequence() });
-
-const context2 = await model.createEmbeddingContext({});
-
-console.log(await context2.getEmbeddingFor('hello, world'))
