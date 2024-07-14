@@ -51,7 +51,7 @@ export class LlamaSession extends LLMSession<LlamaDevice, LlamaModel, LlamaConte
   /** @internal */
   _tokens: number[] = [];
   /** @internal */
-  _compressed_tokens: Uint32List = [];
+  _compressed_tokens: number[] = [];
 
   /** @internal */
   constructor(
