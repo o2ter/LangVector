@@ -37,11 +37,6 @@ export type LlamaContextOptions = {
    * Max number of tokens in a single batch.
    */
   batchSize?: number;
-  /**
-   * Max number of concurrent sequences. (default to 1)
-   */
-  sequences?: number;
-  embeddings?: boolean;
   flashAttention?: boolean;
   /**
    * Max number of threads. (default to hardware)
