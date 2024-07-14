@@ -109,6 +109,7 @@ export class LlamaContext extends LLMContext<LlamaDevice, LlamaModel> {
   private async _evaluate(
     value: LLMTextValue,
     options: LLamaChatPromptOptions = {},
+    onToken?: (tokens: Uint32Array) => void,
   ): Promise<number> {
 
     const tokens = this.model._tokenize(value);

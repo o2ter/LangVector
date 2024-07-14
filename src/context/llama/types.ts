@@ -94,8 +94,6 @@ export type LlamaSequenceRepeatPenalty = {
 
 export type LLamaChatPromptOptions = {
 
-  onToken?: (tokens: Uint32Array) => void;
-
   signal?: AbortSignal;
 
   maxTokens?: number;
