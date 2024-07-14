@@ -53,7 +53,7 @@ export type LlamaSessionOptions = {
   contextShift?: LlamaContextShiftOptions;
 };
 
-export type LlamaContextSequenceRepeatPenalty = {
+export type LlamaSequenceRepeatPenalty = {
   /** Tokens to lower the predication probability of to be the next predicted token */
   punishTokens: Uint32List | (() => Uint32List);
   /**
