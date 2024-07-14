@@ -70,14 +70,14 @@ export class LlamaContext extends LLMContext<LlamaDevice, LlamaModel> {
   /**
    * The state size of context.
    */
-  get stateSize() {
+  get stateSize(): number {
     if (_.isNil(this._ctx)) throw new DisposedError();
     return this._ctx.stateSize;
   }
   /**
    * The context size of context.
    */
-  get contextSize() {
+  get contextSize(): number {
     if (_.isNil(this._ctx)) throw new DisposedError();
     return this._ctx.contextSize;
   }
