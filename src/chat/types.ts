@@ -25,8 +25,37 @@
 
 import { LLMTextValue } from '../types';
 
-export type ChatWrapper = {
+export type ChatWrapperSettings = {
+  supportsSystemMessages: boolean;
+  functions?: {
+    call: {
+      optionalPrefixSpace: boolean;
+      prefix: LLMTextValue;
+      paramsPrefix: LLMTextValue;
+      suffix: LLMTextValue;
+    };
+    result: {
+      prefix: LLMTextValue;
+      suffix: LLMTextValue;
+    };
+    parallelism?: {
+      call: {
+        sectionPrefix: LLMTextValue;
+        betweenCalls?: LLMTextValue;
+        sectionSuffix?: LLMTextValue;
+      };
+      result?: {
+        sectionPrefix?: LLMTextValue;
+        betweenResults?: LLMTextValue;
+        sectionSuffix?: LLMTextValue;
+      };
+    };
+  };
+};
 
+export type ChatWrapper = {
+  setting: ChatWrapperSettings;
+  generateContextState(options: { chatHistory: ChatHistoryItem[] }): { tokens: Uint32List; };
 };
 
 export type ChatHistoryItem = ChatSystemMessage | ChatUserMessage | ChatModelResponse;
