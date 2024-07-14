@@ -26,9 +26,10 @@
 import _ from 'lodash';
 import { LLMModel } from '../base';
 import { LlamaDevice } from '../../device/llama';
-import { DisposedError } from '../../types';
+import { DisposedError, LLMTextValue } from '../../types';
 import { LlamaContext } from '../../context/llama';
 import { LlamaContextOptions } from '../../context/llama/types';
+import { clock } from '../../utils';
 import * as llamaCpp from '../../plugins/llamaCpp';
 
 export class LlamaModel extends LLMModel<LlamaDevice> {
@@ -173,6 +174,26 @@ export class LlamaModel extends LLMModel<LlamaDevice> {
   }
 
   createContext(options: LlamaContextOptions = {}) {
-    return new LlamaContext(this, options);
+    const ctx = new llamaCpp.LlamaContext(this._model, options);
+    return new LlamaContext(this, ctx, options);
   }
+
+  /** @internal */
+  _tokenize(value: LLMTextValue): Uint32Array {
+    if (_.isString(value)) return this.tokenize(value);
+    return _.isArrayBuffer(value) ? value : new Uint32Array(value);
+  }
+
+  async embedding(value: LLMTextValue, { threads }: {
+    threads?: number;
+  } = {}) {
+    const time = clock();
+    const tokens = this._tokenize(value);
+    const ctx = new llamaCpp.LlamaEmbeddingContext(this._model, { batchSize: tokens.length, threads });
+    await ctx.eval(tokens);
+    const vector = ctx.embedding();
+    ctx.dispose();
+    return { type: 'embedding', vector, time: clock() - time };
+  }
+
 }

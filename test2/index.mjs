@@ -14,12 +14,7 @@ const model = await LlamaDevice.loadModel({
 
 let t = Date.now()
 
-const context = model.createContext({
-  embeddings: true,
-  contextSize: 4096,
-});
-
-const result = await context.embedding('hello, world')
+const result = await model.embedding('hello, world')
 
 const t2 = Date.now() - t;
 

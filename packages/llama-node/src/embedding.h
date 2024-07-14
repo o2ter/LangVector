@@ -1,5 +1,5 @@
 //
-//  context.h
+//  embedding.h
 //
 //  The MIT License
 //  Copyright (c) 2021 - 2024 O2ter Limited. All rights reserved.
@@ -28,14 +28,14 @@
 #include "common.h"
 #include "model.h"
 
-class LlamaContext : public Napi::ObjectWrap<LlamaContext>
+class LlamaEmbeddingContext : public Napi::ObjectWrap<LlamaEmbeddingContext>
 {
 public:
   LlamaModel *model;
   llama_context_params params;
   llama_context *ctx;
 
-  LlamaContext(const Napi::CallbackInfo &info) : Napi::ObjectWrap<LlamaContext>(info)
+  LlamaEmbeddingContext(const Napi::CallbackInfo &info) : Napi::ObjectWrap<LlamaEmbeddingContext>(info)
   {
     model = Napi::ObjectWrap<LlamaModel>::Unwrap(info[0].As<Napi::Object>());
     model->Ref();
@@ -43,34 +43,17 @@ public:
     auto hardware_concurrency = std::thread::hardware_concurrency();
 
     params = llama_context_default_params();
-    params.seed = -1;
     params.n_ctx = 0;
     params.n_seq_max = 1;
     params.n_threads = hardware_concurrency;
     params.n_threads_batch = hardware_concurrency;
+    params.embeddings = true;
 
     Napi::Object options = info[1].As<Napi::Object>();
 
-    if (options.Has("seed") && options.Get("seed").IsNumber())
-    {
-      params.seed = options.Get("seed").As<Napi::Number>().Uint32Value();
-    }
-
-    if (options.Has("contextSize") && options.Get("contextSize").IsNumber())
-    {
-      params.n_ctx = options.Get("contextSize").As<Napi::Number>().Uint32Value();
-    }
-
-    if (options.Has("batchSize") && options.Get("batchSize").IsNumber())
-    {
-      params.n_batch = options.Get("batchSize").As<Napi::Number>().Uint32Value();
-      params.n_ubatch = params.n_batch;
-    }
-
-    if (options.Has("flashAttention") && options.Get("flashAttention").IsBoolean())
-    {
-      params.flash_attn = options.Get("flashAttention").As<Napi::Boolean>().Value();
-    }
+    params.n_batch = options.Get("batchSize").As<Napi::Number>().Uint32Value();
+    params.n_ubatch = params.n_batch;
+    params.n_ctx = params.n_batch;
 
     if (options.Has("threads") && options.Get("threads").IsNumber())
     {
@@ -89,7 +72,7 @@ public:
     Napi::MemoryManagement::AdjustExternalMemory(Env(), llama_state_get_size(ctx));
   }
 
-  ~LlamaContext()
+  ~LlamaEmbeddingContext()
   {
     dispose();
   }
@@ -115,12 +98,7 @@ public:
     dispose();
   }
 
-  Napi::Value GetContextSize(const Napi::CallbackInfo &info)
-  {
-    return Napi::Number::From(Env(), llama_n_ctx(ctx));
-  }
-
-  Napi::Value EvalSequence(const Napi::CallbackInfo &info)
+  Napi::Value EvalEmbedding(const Napi::CallbackInfo &info)
   {
     Napi::Uint32Array tokens = info[0].As<Napi::Uint32Array>();
 
@@ -133,8 +111,7 @@ public:
           auto token_length = tokens.ElementLength();
           size_t n_batch = llama_n_batch(ctx);
 
-          if (token_length > n_batch)
-          {
+          if (token_length > n_batch) {
             throw std::runtime_error("error: number of tokens exceeds batch size");
           }
 
@@ -144,6 +121,7 @@ public:
           {
             llama_batch_add(batch, tokens[i], i, {0}, false);
           }
+          batch.logits[batch.n_tokens - 1] = true;
           auto status = llama_decode(ctx, batch);
           if (status < 0)
           {
@@ -161,23 +139,40 @@ public:
     worker->Queue();
     return worker->Promise();
   }
-
-  Napi::Value GetStateSize(const Napi::CallbackInfo &info)
+  Napi::Value GetEmbedding(const Napi::CallbackInfo &info)
   {
-    return Napi::Number::From(Env(), llama_state_get_size(ctx));
+    const int n_embd = llama_n_embd(model->model);
+    const auto *embeddings = llama_get_embeddings_seq(ctx, 0);
+    if (embeddings == NULL)
+    {
+      embeddings = llama_get_embeddings_ith(ctx, -1);
+
+      if (embeddings == NULL)
+      {
+        Napi::Error::New(Env(), "Failed to get embeddings").ThrowAsJavaScriptException();
+        return Env().Undefined();
+      }
+    }
+
+    Napi::Float64Array result = Napi::Float64Array::New(Env(), n_embd);
+    for (size_t i = 0; i < n_embd; ++i)
+    {
+      result[i] = embeddings[i];
+    }
+
+    return result;
   }
 
   static void init(Napi::Object exports)
   {
     auto def = DefineClass(
         exports.Env(),
-        "LlamaContext",
+        "LlamaEmbeddingContext",
         {
-            InstanceMethod("contextSize", &LlamaContext::GetContextSize),
-            InstanceMethod("stateSize", &LlamaContext::GetStateSize),
-            InstanceMethod("eval", &LlamaContext::EvalSequence),
-            InstanceMethod("dispose", &LlamaContext::Dispose),
+            InstanceMethod("eval", &LlamaEmbeddingContext::EvalEmbedding),
+            InstanceMethod("embedding", &LlamaEmbeddingContext::GetEmbedding),
+            InstanceMethod("dispose", &LlamaEmbeddingContext::Dispose),
         });
-    exports.Set("LlamaContext", def);
+    exports.Set("LlamaEmbeddingContext", def);
   }
 };

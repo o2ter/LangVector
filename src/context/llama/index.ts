@@ -28,61 +28,70 @@ import { LLMContext } from '../base';
 import { LlamaModel } from '../../model/llama';
 import { LlamaDevice } from '../../device/llama';
 import { LlamaContextOptions } from './types';
-import { LlamaSessionOptions } from '../../session/llama/types';
-import { LlamaSession } from '../../session/llama';
-import { _LlamaContext } from './context';
+import { DisposedError, LLMTextValue } from '../../types';
+import { Worker } from './worker';
 import * as llamaCpp from '../../plugins/llamaCpp';
-import { LLMTextValue } from '../../types';
+import { clock } from '../../utils';
 
 export class LlamaContext extends LLMContext<LlamaDevice, LlamaModel> {
 
   /** @internal */
-  _options: LlamaContextOptions;
+  _ctx: typeof llamaCpp.LlamaContext;
   /** @internal */
-  _pool: _LlamaContext[] = [];
+  _options: LlamaContextOptions;
 
   /** @internal */
-  constructor(model: LlamaModel, options: LlamaContextOptions) {
+  _worker = new Worker;
+
+  /** @internal */
+  _tokens: number[] = [];
+  /** @internal */
+  _compressed_tokens: number[] = [];
+
+  /** @internal */
+  constructor(model: LlamaModel, ctx: typeof llamaCpp.LlamaContext, options: LlamaContextOptions) {
     super(model);
+    this._ctx = ctx;
     this._options = options;
   }
 
   async dispose() {
-    for (const ctx of this._pool) {
-      ctx.dispose();
-    }
-    this._pool = [];
+    return await this._worker.sync(async () => {
+      if (_.isNil(this._ctx)) return;
+      this._ctx.dispose();
+      this._ctx = null;
+    });
   }
 
   get disposed() {
-    return _.isEmpty(this._pool);
+    return _.isNil(this._ctx);
   }
 
-  get poolSize() {
-    return this._pool.length;
+  /**
+   * The state size of context.
+   */
+  get stateSize() {
+    if (_.isNil(this._ctx)) throw new DisposedError();
+    return this._ctx.stateSize;
+  }
+  /**
+   * The context size of context.
+   */
+  get contextSize() {
+    if (_.isNil(this._ctx)) throw new DisposedError();
+    return this._ctx.contextSize;
   }
 
-  private get _available_context() {
-    for (const ctx of this._pool) {
-      if (ctx.seq.length < ctx.maxSequence) return ctx;
-    }
-    const ctx = new _LlamaContext(this.model, new llamaCpp.LlamaContext(this.model._model, this._options));
-    this._pool.push(ctx);
-    return ctx;
+  /** @internal */
+  async _evaluate(value: LLMTextValue): Promise<number> {
+    const tokens = this.model._tokenize(value);
+    return await this._worker.sync(async () => {
+      if (_.isNil(this._ctx)) throw new DisposedError();
+      this._tokens.push(...tokens);
+      const time = clock();
+      await this._ctx.ctx.eval(tokens);
+      return clock() - time;
+    });
   }
 
-  async embedding(value: LLMTextValue) {
-    const session = this.createSession();
-    const time = await session._evaluate(value, { logitEnd: true });
-    const vector = await session._embedding();
-    session.dispose();
-    return { type: 'embedding', vector, time };
-  }
-
-  createSession(options: LlamaSessionOptions = {}) {
-    const ctx = this._available_context;
-    const idx = ctx.availableSeqIdx();
-    if (_.isNil(idx)) throw Error('Unknown error');
-    return new LlamaSession(this, ctx, idx, options);
-  }
 }

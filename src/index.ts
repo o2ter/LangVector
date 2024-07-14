@@ -28,9 +28,7 @@ export * from './types';
 export * from './device/base';
 export * from './model/base';
 export * from './context/base';
-export * from './session/base';
 
 export * from './device/llama';
 export * from './model/llama';
 export * from './context/llama';
-export * from './session/llama';

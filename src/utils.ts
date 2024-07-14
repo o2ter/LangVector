@@ -1,5 +1,5 @@
 //
-//  types.ts
+//  utils.ts
 //
 //  The MIT License
 //  Copyright (c) 2021 - 2024 O2ter Limited. All rights reserved.
@@ -23,36 +23,9 @@
 //  THE SOFTWARE.
 //
 
-import { Awaitable } from '@o2ter/utils-js';
-import { ChatWrapper } from '../../chat/types';
-import type { LlamaSession } from './index';
+import _ from 'lodash';
 
-export type LlamaSessionOptions = {
-
-  contextCompression?: (session: LlamaSession) => Awaitable<Uint32List>;
-
-  chatWrapper?: ChatWrapper;
-};
-
-export type LlamaSequenceRepeatPenalty = {
-  /** Tokens to lower the predication probability of to be the next predicted token */
-  punishTokens: Uint32List | (() => Uint32List);
-  /**
-   * The relative amount to lower the probability of the tokens in `punishTokens` by
-   * Defaults to `1.1`.
-   * Set to `1` to disable.
-   */
-  penalty?: number;
-  /**
-   * For n time a token is in the `punishTokens` array, lower its probability by `n * frequencyPenalty`
-   * Disabled by default (`0`).
-   * Set to a value between `0` and `1` to enable.
-   */
-  frequencyPenalty?: number;
-  /**
-   * Lower the probability of all the tokens in the `punishTokens` array by `presencePenalty`
-   * Disabled by default (`0`).
-   * Set to a value between `0` and `1` to enable.
-   */
-  presencePenalty?: number;
+export const clock = () => {
+  const [seconds, nanoseconds] = process.hrtime();
+  return seconds + nanoseconds / 1000000000;
 };

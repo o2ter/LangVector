@@ -1,5 +1,5 @@
 //
-//  llama.ts
+//  worker.ts
 //
 //  The MIT License
 //  Copyright (c) 2021 - 2024 O2ter Limited. All rights reserved.
@@ -23,40 +23,14 @@
 //  THE SOFTWARE.
 //
 
-import _ from 'lodash';
-import { LlamaModel } from '../../model/llama';
-import { DisposedError } from '../../types';
-import type { LlamaSession } from '../../session/llama';
-import * as llamaCpp from '../../plugins/llamaCpp';
 import { Awaitable } from '@o2ter/utils-js';
 
-export class _LlamaContext {
+export class Worker {
 
-  model: LlamaModel;
-  ctx: typeof llamaCpp.LlamaContext;
+  private lock = false;
+  private jobs: (() => Promise<void>)[] = [];
 
-  seq: LlamaSession[] = [];
-
-  lock = false;
-  jobs: (() => Promise<void>)[] = [];
-
-  constructor(model: LlamaModel, context: typeof llamaCpp.LlamaContext) {
-    this.model = model;
-    this.ctx = context;
-  }
-
-  async dispose() {
-    return await this._sync(async () => {
-      if (_.isNil(this.ctx)) return;
-      this.ctx.dispose();
-      this.ctx = null;
-    });
-  }
-  get disposed() {
-    return _.isNil(this.ctx);
-  }
-
-  async _sync<T = void>(callback: () => Awaitable<T>) {
+  async sync<T = void>(callback: () => Awaitable<T>) {
     return await new Promise<T>(async (res, rej) => {
       this.jobs.push(async () => {
         try {
@@ -75,31 +49,5 @@ export class _LlamaContext {
         this.lock = false;
       }
     });
-  }
-
-  get maxSequence(): number {
-    if (_.isNil(this.ctx)) throw new DisposedError();
-    return this.ctx.maxSequence();
-  }
-
-  get contextSize(): number {
-    if (_.isNil(this.ctx)) throw new DisposedError();
-    return this.ctx.contextSize();
-  }
-
-  async disposeSeq(idx: number) {
-    return await this._sync(async () => {
-      if (_.isNil(this.ctx)) return;
-      this.seq = _.filter(this.seq, s => s._idx !== idx);
-      this.ctx.disposeSequence(idx);
-    });
-  }
-
-  availableSeqIdx() {
-    const max = this.maxSequence;
-    for (let i = 0; i < max; i++) {
-      if (_.find(this.seq, s => s._idx === i)) continue;
-      return i;
-    }
   }
 }
