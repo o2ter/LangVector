@@ -25,6 +25,27 @@
 
 import { LLMTextValue } from '../types';
 
+export type ChatHistoryItem = ChatSystemMessage | ChatUserMessage | ChatModelResponse;
+export type ChatSystemMessage = {
+  type: "system";
+  text: LLMTextValue;
+};
+export type ChatUserMessage = {
+  type: "user";
+  text: string;
+};
+export type ChatModelResponse = {
+  type: "model";
+  response: (string | ChatModelFunctionCall)[];
+};
+export type ChatModelFunctionCall = {
+  type: "functionCall";
+  name: string;
+  description?: string;
+  params: any;
+  result: any;
+};
+
 export type ChatWrapperSettings = {
   supportsSystemMessages: boolean;
   functions?: {
@@ -56,27 +77,6 @@ export type ChatWrapperSettings = {
 export type ChatWrapper = {
   setting: ChatWrapperSettings;
   generateContextState(options: { chatHistory: ChatHistoryItem[] }): { tokens: Uint32List; };
-};
-
-export type ChatHistoryItem = ChatSystemMessage | ChatUserMessage | ChatModelResponse;
-export type ChatSystemMessage = {
-  type: "system";
-  text: LLMTextValue;
-};
-export type ChatUserMessage = {
-  type: "user";
-  text: string;
-};
-export type ChatModelResponse = {
-  type: "model";
-  response: (string | ChatModelFunctionCall)[];
-};
-export type ChatModelFunctionCall = {
-  type: "functionCall";
-  name: string;
-  description?: string;
-  params: any;
-  result: any;
 };
 
 export type ChatModelFunctionOptions = {
