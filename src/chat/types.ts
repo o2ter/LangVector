@@ -81,7 +81,11 @@ export type ChatWrapper = {
     functions?: Record<string, ChatModelFunctionOptions>;
     documentFunctionParams?: boolean;
   }): Uint32List;
-  generateChatHistory(tokens: Uint32Array): ChatHistoryItem[];
+  generateChatHistory(options: {
+    tokens: Uint32Array;
+    functions?: Record<string, ChatModelFunctionOptions>;
+    documentFunctionParams?: boolean;
+  }): ChatHistoryItem[];
 };
 
 export type ChatModelFunctionOptions = {
