@@ -17,3 +17,5 @@ console.log(await model.embedding('hello, world'));
 const context = model.createContext({
   contextSize: 512,
 });
+
+console.log(context)
