@@ -286,7 +286,45 @@ public:
             candidates.emplace_back(llama_token_data{token_id, logit, 0.0f});
           }
 
-          return 0;
+          llama_token_data_array candidates_p = {candidates.data(), candidates.size(), false};
+
+          if (!repeat_penalty_tokens.empty())
+          {
+            llama_sample_repetition_penalties(
+                ctx,
+                &candidates_p,
+                repeat_penalty_tokens.data(),
+                repeat_penalty_tokens.size(),
+                repeat_penalty,
+                repeat_penalty_frequency_penalty,
+                repeat_penalty_presence_penalty);
+          }
+
+          if (temperature <= 0)
+          {
+            result = llama_sample_token_greedy(ctx, &candidates_p);
+          }
+          else
+          {
+            const int32_t resolved_top_k =
+                top_k <= 0 ? llama_n_vocab(model->model) : std::min(top_k, llama_n_vocab(model->model));
+            const int32_t n_probs = 0;          // Number of probabilities to keep - 0 = disabled
+            const float tfs_z = 1.00f;          // Tail free sampling - 1.0 = disabled
+            const float typical_p = 1.00f;      // Typical probability - 1.0 = disabled
+            const float resolved_top_p = top_p; // Top p sampling - 1.0 = disabled
+
+            // Temperature sampling
+            size_t min_keep = std::max(1, n_probs);
+            llama_sample_top_k(ctx, &candidates_p, resolved_top_k, min_keep);
+            llama_sample_tail_free(ctx, &candidates_p, tfs_z, min_keep);
+            llama_sample_typical(ctx, &candidates_p, typical_p, min_keep);
+            llama_sample_top_p(ctx, &candidates_p, resolved_top_p, min_keep);
+            llama_sample_min_p(ctx, &candidates_p, min_p, min_keep);
+            llama_sample_temp(ctx, &candidates_p, temperature);
+            result = llama_sample_token(ctx, &candidates_p);
+          }
+
+          return result;
         },
         [=](Napi::Env env, llama_token result)
         {
