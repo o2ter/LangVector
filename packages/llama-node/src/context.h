@@ -261,6 +261,31 @@ public:
           std::vector<llama_token_data> candidates;
           candidates.reserve(n_vocab);
 
+          for (llama_token token_id = 0; token_id < n_vocab; token_id++)
+          {
+            auto logit = logits[token_id];
+            if (useTokenBiases)
+            {
+              bool hasTokenBias = tokenBiases.find(token_id) != tokenBiases.end();
+              if (hasTokenBias)
+              {
+                auto logitBias = tokenBiases.at(token_id);
+                if (logitBias == -INFINITY || logitBias < -INFINITY)
+                {
+                  if (!llama_token_is_eog(model->model, token_id))
+                  {
+                    logit = -INFINITY;
+                  }
+                }
+                else
+                {
+                  logit += logitBias;
+                }
+              }
+            }
+            candidates.emplace_back(llama_token_data{token_id, logit, 0.0f});
+          }
+
           return 0;
         },
         [=](Napi::Env env, llama_token result)
