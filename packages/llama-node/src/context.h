@@ -120,6 +120,11 @@ public:
     return Napi::Number::From(Env(), llama_n_ctx(ctx));
   }
 
+  Napi::Value GetStateSize(const Napi::CallbackInfo &info)
+  {
+    return Napi::Number::From(Env(), llama_state_get_size(ctx));
+  }
+
   Napi::Value EvalSequence(const Napi::CallbackInfo &info)
   {
     Napi::Uint32Array tokens = info[0].As<Napi::Uint32Array>();
@@ -162,11 +167,25 @@ public:
     return worker->Promise();
   }
 
-  Napi::Value GetStateSize(const Napi::CallbackInfo &info)
+  Napi::Value RemoveTokens(const Napi::CallbackInfo &info)
   {
-    return Napi::Number::From(Env(), llama_state_get_size(ctx));
-  }
+    int32_t startPos = info[0].As<Napi::Number>().Int32Value();
+    int32_t endPos = info[1].As<Napi::Number>().Int32Value();
 
+    bool result = llama_kv_cache_seq_rm(ctx, 0, startPos, endPos);
+
+    return Napi::Boolean::New(info.Env(), result);
+  }
+  Napi::Value ShiftTokens(const Napi::CallbackInfo &info)
+  {
+    int32_t startPos = info[0].As<Napi::Number>().Int32Value();
+    int32_t endPos = info[1].As<Napi::Number>().Int32Value();
+    int32_t shiftDelta = info[2].As<Napi::Number>().Int32Value();
+
+    llama_kv_cache_seq_add(ctx, 0, startPos, endPos, shiftDelta);
+
+    return info.Env().Undefined();
+  }
   static void init(Napi::Object exports)
   {
     auto def = DefineClass(
@@ -176,6 +195,8 @@ public:
             InstanceMethod("contextSize", &LlamaContext::GetContextSize),
             InstanceMethod("stateSize", &LlamaContext::GetStateSize),
             InstanceMethod("eval", &LlamaContext::EvalSequence),
+            InstanceMethod("removeTokens", &LlamaContext::RemoveTokens),
+            InstanceMethod("shiftTokens", &LlamaContext::ShiftTokens),
             InstanceMethod("dispose", &LlamaContext::Dispose),
         });
     exports.Set("LlamaContext", def);
