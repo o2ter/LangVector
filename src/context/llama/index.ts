@@ -136,7 +136,7 @@ export class LlamaContext extends LLMContext<LlamaDevice, LlamaModel> {
 
       const punishTokens = options.repeatPenalty ? options.repeatPenalty?.punishTokens?.() : null;
 
-      await this._ctx.sampleToken(_.pickBy({
+      const result = await this._ctx.sampleToken(_.pickBy({
         temperature: options.temperature,
         minP: options.minP,
         topK: options.topK,
