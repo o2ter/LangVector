@@ -132,7 +132,7 @@ export class LlamaContext extends LLMContext<LlamaDevice, LlamaModel> {
 
       const time = clock();
 
-      await this._ctx.ctx.eval(tokens);
+      await this._ctx.eval(tokens);
 
       return clock() - time;
     });
