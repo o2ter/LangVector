@@ -12,7 +12,7 @@ const model = await LlamaDevice.loadModel({
   useMmap: true,
 });
 
-console.log(await model.embedding('hello, world'));
+// console.log(await model.embedding('hello, world'));
 
 const context = model.createContext({
   contextSize: 512,
