@@ -48,7 +48,6 @@ export type ChatModelFunctionCall = {
 };
 
 export type ChatWrapperSettings = {
-  supportsSystemMessages: boolean;
   functions?: {
     call: {
       optionalPrefixSpace: boolean;
@@ -77,6 +76,9 @@ export type ChatWrapperSettings = {
 
 export type ChatWrapper = {
   setting: ChatWrapperSettings;
+  generateSystemMessages(
+    session: LlamaContext,
+  ): ChatHistoryItem | undefined;
   generateContextState(
     session: LlamaContext,
     chatHistory: ChatHistoryItem[],
