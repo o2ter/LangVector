@@ -119,9 +119,8 @@ public:
 
           for (size_t i = 0; i < token_length; ++i)
           {
-            llama_batch_add(batch, tokens[i], i, {0}, false);
+            llama_batch_add(batch, tokens[i], i, {0}, i + 1 == token_length);
           }
-          batch.logits[batch.n_tokens - 1] = true;
           auto status = llama_decode(ctx, batch);
           if (status < 0)
           {
