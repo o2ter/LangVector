@@ -28,7 +28,7 @@ import { EventIterator } from '@o2ter/utils-js';
 import { LLMContext } from '../base';
 import { LlamaModel } from '../../model/llama';
 import { LlamaDevice } from '../../device/llama';
-import { LLamaChatPromptOptions, LlamaContextOptions } from './types';
+import { LLamaChatPromptOptions, LlamaContextOptions, LlamaSequenceRepeatPenalty } from './types';
 import { DisposedError, LLMTextValue } from '../../types';
 import { Worker } from './worker';
 import { clock } from '../../utils';
@@ -135,16 +135,22 @@ export class LlamaContext extends LLMContext<LlamaDevice, LlamaModel> {
 
       await this._ctx.eval(tokens);
 
-      const punishTokens = options.repeatPenalty ? options.repeatPenalty?.punishTokens?.() : null;
+      const repeatPenalty = {
+        punishTokens: () => {
+          return new Uint32Array;
+        },
+        ...options.repeatPenalty ? options.repeatPenalty : {},
+      };
+      const punishTokens = repeatPenalty.punishTokens();
 
       const result = await this._ctx.sampleToken(_.pickBy({
         temperature: options.temperature,
         minP: options.minP,
         topK: options.topK,
         topP: options.topP,
-        repeatPenalty: options.repeatPenalty ? options.repeatPenalty?.penalty : null,
-        repeatPenaltyPresencePenalty: options.repeatPenalty ? options.repeatPenalty?.presencePenalty : null,
-        repeatPenaltyFrequencyPenalty: options.repeatPenalty ? options.repeatPenalty?.frequencyPenalty : null,
+        repeatPenalty: repeatPenalty.penalty,
+        repeatPenaltyPresencePenalty: repeatPenalty.presencePenalty,
+        repeatPenaltyFrequencyPenalty: repeatPenalty.frequencyPenalty,
         repeatPenaltyTokens: !punishTokens || _.isArrayBuffer(punishTokens) ? punishTokens : new Uint32Array(punishTokens),
       }, v => !_.isNil(v)));
 
