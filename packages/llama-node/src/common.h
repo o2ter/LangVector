@@ -99,7 +99,7 @@ public:
   _AsyncWorkerWithResult(
       Napi::Env env,
       std::function<R()> execute,
-      std::function<napi_value(Env env, R result)> resolve,
+      std::function<napi_value(Napi::Env env, R result)> resolve,
       std::function<void()> finalizer = []() {}) : AsyncWorker(env), execute(execute), resolve(resolve), finalizer(finalizer), deferred(Napi::Promise::Deferred::New(env))
   {
   }
@@ -115,7 +115,7 @@ public:
 
 private:
   std::function<R()> execute;
-  std::function<napi_value(Env env, R result)> resolve;
+  std::function<napi_value(Napi::Env env, R result)> resolve;
   std::function<void()> finalizer;
   Napi::Promise::Deferred deferred;
   R result;
