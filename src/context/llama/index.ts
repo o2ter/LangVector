@@ -159,6 +159,8 @@ export class LlamaContext extends LLMContext<LlamaDevice, LlamaModel> {
         repeatPenaltyTokens: _.isArrayBuffer(punishTokens) ? punishTokens : new Uint32Array(punishTokens),
       }, v => !_.isNil(v)));
 
+      console.log({ sample })
+
       return clock() - time;
     });
   }
