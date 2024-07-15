@@ -209,7 +209,7 @@ public:
     {
       Napi::Uint32Array array = options.Get("repeatPenaltyTokens").As<Napi::Uint32Array>();
       repeat_penalty_tokens.reserve(array.ElementLength());
-      for (size_t i = 0; i < array.ElementLength(); i++)
+      for (size_t i = 0; i < array.ElementLength(); ++i)
       {
         repeat_penalty_tokens.push_back(static_cast<llama_token>(array[i]));
       }
@@ -231,7 +231,7 @@ public:
       Napi::Float32Array tokenBiasValues = options.Get("tokenBiasValues").As<Napi::Float32Array>();
       if (tokenBiasKeys.ElementLength() == tokenBiasValues.ElementLength())
       {
-        for (size_t i = 0; i < tokenBiasKeys.ElementLength(); i++)
+        for (size_t i = 0; i < tokenBiasKeys.ElementLength(); ++i)
         {
           tokenBiases[static_cast<llama_token>(tokenBiasKeys[i])] = tokenBiasValues[i];
         }
@@ -258,7 +258,7 @@ public:
           std::vector<llama_token_data> candidates;
           candidates.reserve(n_vocab);
 
-          for (llama_token token_id = 0; token_id < n_vocab; token_id++)
+          for (llama_token token_id = 0; token_id < n_vocab; ++token_id)
           {
             auto logit = logits[token_id];
             if (!tokenBiases.empty() && tokenBiases.find(token_id) != tokenBiases.end())
