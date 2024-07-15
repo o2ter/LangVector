@@ -144,12 +144,15 @@ export class LlamaContext extends LLMContext<LlamaDevice, LlamaModel> {
         ...options.repeatPenalty ? options.repeatPenalty : {},
       };
       const punishTokens = options.repeatPenalty === false ? [] : repeatPenalty.punishTokens();
-
+      const tokenBias = [...options.tokenBias?.() ?? []];
+      
       const sample = await this._ctx.sampleToken(_.pickBy({
         temperature: options.temperature,
         minP: options.minP,
         topK: options.topK,
         topP: options.topP,
+        tokenBiasKeys: new Uint32Array(_.map(tokenBias, x => x[0])),
+        tokenBiasValues: new Float32Array(_.map(tokenBias, x => x[1] === 'never' ? Number.NEGATIVE_INFINITY : x[1])),
         repeatPenalty: repeatPenalty.penalty,
         repeatPenaltyPresencePenalty: repeatPenalty.presencePenalty,
         repeatPenaltyFrequencyPenalty: repeatPenalty.frequencyPenalty,

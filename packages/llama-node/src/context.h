@@ -169,7 +169,6 @@ public:
 
   Napi::Value SampleToken(const Napi::CallbackInfo &info)
   {
-    llama_token result;
     float temperature = 0.0f;
     float min_p = 0;
     int32_t top_k = 40;
@@ -241,6 +240,40 @@ public:
         useTokenBiases = true;
       }
     }
+
+    this->Ref();
+
+    auto worker = new _AsyncWorkerWithResult<llama_token>(
+        Env(),
+        [=]()
+        {
+          llama_token result;
+
+          // Select the best prediction.
+          if (llama_get_logits(ctx) == nullptr)
+          {
+            throw std::runtime_error("This model does not support token generation");
+          }
+
+          auto logits = llama_get_logits_ith(ctx, -1);
+          auto n_vocab = llama_n_vocab(model->model);
+
+          std::vector<llama_token_data> candidates;
+          candidates.reserve(n_vocab);
+
+          return 0;
+        },
+        [=](Napi::Env env, llama_token result)
+        {
+          return Napi::Number::New(Env(), result);
+        },
+        [=]()
+        {
+          this->Unref();
+        });
+
+    worker->Queue();
+    return worker->Promise();
   }
 
   Napi::Value RemoveTokens(const Napi::CallbackInfo &info)
@@ -250,7 +283,7 @@ public:
 
     bool result = llama_kv_cache_seq_rm(ctx, 0, startPos, endPos);
 
-    return Napi::Boolean::New(info.Env(), result);
+    return Napi::Boolean::New(Env(), result);
   }
   Napi::Value ShiftTokens(const Napi::CallbackInfo &info)
   {
@@ -260,7 +293,7 @@ public:
 
     llama_kv_cache_seq_add(ctx, 0, startPos, endPos, shiftDelta);
 
-    return info.Env().Undefined();
+    return Env().Undefined();
   }
   static void init(Napi::Object exports)
   {
