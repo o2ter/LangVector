@@ -112,7 +112,7 @@ public:
           size_t n_batch = llama_n_batch(ctx);
 
           if (token_length > n_batch) {
-            throw std::runtime_error("error: number of tokens exceeds batch size");
+            throw std::runtime_error("Number of tokens exceeds batch size");
           }
 
           llama_batch batch = llama_batch_init(token_length, 0, 1);

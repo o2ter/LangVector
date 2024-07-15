@@ -28,11 +28,6 @@ import { ChatModelFunctionOptions, ChatWrapper } from "../../chat/types";
 import { LLMTextValue } from "../../types";
 import type { LlamaContext } from "./index";
 
-type TokenBias = {
-  tokens: LLMTextValue;
-  bias: 'never' | number;
-}[];
-
 export type LlamaContextOptions = {
   seed?: number;
   /**
@@ -148,7 +143,7 @@ export type LLamaChatPromptOptions = {
    * Can be used to bias the model to generate tokens that you want it to lean towards,
    * or to avoid generating tokens that you want it to avoid.
    */
-  tokenBias?: () => TokenBias;
+  tokenBias?: () => Record<number, 'never' | number>;
   /**
    * Custom stop triggers to stop the generation of the response when any of the provided triggers are found.
    */
