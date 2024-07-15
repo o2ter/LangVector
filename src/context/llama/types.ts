@@ -143,7 +143,7 @@ export type LLamaChatPromptOptions = {
    * Can be used to bias the model to generate tokens that you want it to lean towards,
    * or to avoid generating tokens that you want it to avoid.
    */
-  tokenBias?: () => Record<number, 'never' | number>;
+  tokenBias?: () => Map<number, 'never' | number>;
   /**
    * Custom stop triggers to stop the generation of the response when any of the provided triggers are found.
    */
