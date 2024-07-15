@@ -59,14 +59,14 @@ export type LlamaSequenceRepeatPenalty = {
    * Defaults to `64`.
    */
   lastTokens?: number;
-  punishTokensFilter?: (tokens: Uint32List) => Uint32List;
   /**
    * Penalize new line tokens.
    * Enabled by default.
    */
   penalizeNewLine?: boolean;
   /** Tokens to lower the predication probability of to be the next predicted token */
-  punishTokens?: () => Uint32List;
+  punishTokens?: Uint32List | (() => Uint32List);
+  punishTokensFilter?: (tokens: Uint32List) => Uint32List;
   /**
    * The relative amount to lower the probability of the tokens in `punishTokens` by
    * Defaults to `1.1`.
@@ -143,7 +143,7 @@ export type LLamaChatPromptOptions = {
    * Can be used to bias the model to generate tokens that you want it to lean towards,
    * or to avoid generating tokens that you want it to avoid.
    */
-  tokenBias?: () => Map<number, 'never' | number>;
+  tokenBias?: Map<number, 'never' | number> | (() => Map<number, 'never' | number>);
   /**
    * Custom stop triggers to stop the generation of the response when any of the provided triggers are found.
    */
