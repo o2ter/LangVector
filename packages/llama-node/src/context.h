@@ -177,7 +177,6 @@ public:
     float repeat_penalty_frequency_penalty = 0.00f; // 0.0 = disabled
     std::vector<llama_token> repeat_penalty_tokens;
     std::unordered_map<llama_token, float> tokenBiases;
-    bool useTokenBiases = false;
 
     Napi::Object options = info[0].As<Napi::Object>();
 
@@ -236,7 +235,6 @@ public:
         {
           tokenBiases[static_cast<llama_token>(tokenBiasKeys[i])] = tokenBiasValues[i];
         }
-        useTokenBiases = true;
       }
     }
 
@@ -263,23 +261,19 @@ public:
           for (llama_token token_id = 0; token_id < n_vocab; token_id++)
           {
             auto logit = logits[token_id];
-            if (useTokenBiases)
+            if (!tokenBiases.empty() && tokenBiases.find(token_id) != tokenBiases.end())
             {
-              bool hasTokenBias = tokenBiases.find(token_id) != tokenBiases.end();
-              if (hasTokenBias)
+              auto logitBias = tokenBiases.at(token_id);
+              if (logitBias == -INFINITY || logitBias < -INFINITY)
               {
-                auto logitBias = tokenBiases.at(token_id);
-                if (logitBias == -INFINITY || logitBias < -INFINITY)
+                if (!llama_token_is_eog(model->model, token_id))
                 {
-                  if (!llama_token_is_eog(model->model, token_id))
-                  {
-                    logit = -INFINITY;
-                  }
+                  logit = -INFINITY;
                 }
-                else
-                {
-                  logit += logitBias;
-                }
+              }
+              else
+              {
+                logit += logitBias;
               }
             }
             candidates.emplace_back(llama_token_data{token_id, logit, 0.0f});
