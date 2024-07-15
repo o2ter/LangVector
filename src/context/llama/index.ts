@@ -134,6 +134,8 @@ export class LlamaContext extends LLMContext<LlamaDevice, LlamaModel> {
 
       await this._ctx.eval(tokens);
 
+      const punishTokens = options.repeatPenalty ? options.repeatPenalty?.punishTokens() : null;
+
       await this._ctx.sampleToken(_.pickBy({
         temperature: options.temperature,
         minP: options.minP,
@@ -142,6 +144,7 @@ export class LlamaContext extends LLMContext<LlamaDevice, LlamaModel> {
         repeatPenalty: options.repeatPenalty ? options.repeatPenalty?.penalty : null,
         repeatPenaltyPresencePenalty: options.repeatPenalty ? options.repeatPenalty?.presencePenalty : null,
         repeatPenaltyFrequencyPenalty: options.repeatPenalty ? options.repeatPenalty?.frequencyPenalty : null,
+        repeatPenaltyTokens: !punishTokens || _.isArrayBuffer(punishTokens) ? punishTokens : new Uint32Array(punishTokens),
       }, v => !_.isNil(v)));
 
       return clock() - time;
