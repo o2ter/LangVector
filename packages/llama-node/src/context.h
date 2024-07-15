@@ -51,28 +51,28 @@ public:
 
     Napi::Object options = info[1].As<Napi::Object>();
 
-    if (options.Has("seed") && options.Get("seed").IsNumber())
+    if (options.Has("seed"))
     {
       params.seed = options.Get("seed").As<Napi::Number>().Uint32Value();
     }
 
-    if (options.Has("contextSize") && options.Get("contextSize").IsNumber())
+    if (options.Has("contextSize"))
     {
       params.n_ctx = options.Get("contextSize").As<Napi::Number>().Uint32Value();
     }
 
-    if (options.Has("batchSize") && options.Get("batchSize").IsNumber())
+    if (options.Has("batchSize"))
     {
       params.n_batch = options.Get("batchSize").As<Napi::Number>().Uint32Value();
       params.n_ubatch = params.n_batch;
     }
 
-    if (options.Has("flashAttention") && options.Get("flashAttention").IsBoolean())
+    if (options.Has("flashAttention"))
     {
       params.flash_attn = options.Get("flashAttention").As<Napi::Boolean>().Value();
     }
 
-    if (options.Has("threads") && options.Get("threads").IsNumber())
+    if (options.Has("threads"))
     {
       const auto n_threads = options.Get("threads").As<Napi::Number>().Uint32Value();
       const auto resolved_n_threads = n_threads > 0 ? n_threads : hardware_concurrency;
@@ -167,6 +167,82 @@ public:
     return worker->Promise();
   }
 
+  Napi::Value SampleToken(const Napi::CallbackInfo &info)
+  {
+    llama_token result;
+    float temperature = 0.0f;
+    float min_p = 0;
+    int32_t top_k = 40;
+    float top_p = 0.95f;
+    float repeat_penalty = 1.10f;                   // 1.0 = disabled
+    float repeat_penalty_presence_penalty = 0.00f;  // 0.0 = disabled
+    float repeat_penalty_frequency_penalty = 0.00f; // 0.0 = disabled
+    std::vector<llama_token> repeat_penalty_tokens;
+    std::unordered_map<llama_token, float> tokenBiases;
+    bool useTokenBiases = false;
+
+    Napi::Object options = info[0].As<Napi::Object>();
+
+    if (options.Has("temperature"))
+    {
+      temperature = options.Get("temperature").As<Napi::Number>().FloatValue();
+    }
+
+    if (options.Has("minP"))
+    {
+      min_p = options.Get("minP").As<Napi::Number>().FloatValue();
+    }
+
+    if (options.Has("topK"))
+    {
+      top_k = options.Get("topK").As<Napi::Number>().Int32Value();
+    }
+
+    if (options.Has("topP"))
+    {
+      top_p = options.Get("topP").As<Napi::Number>().FloatValue();
+    }
+
+    if (options.Has("repeatPenalty"))
+    {
+      repeat_penalty = options.Get("repeatPenalty").As<Napi::Number>().FloatValue();
+    }
+
+    if (options.Has("repeatPenaltyTokens"))
+    {
+      Napi::Uint32Array array = options.Get("repeatPenaltyTokens").As<Napi::Uint32Array>();
+      repeat_penalty_tokens.reserve(array.ElementLength());
+      for (size_t i = 0; i < array.ElementLength(); i++)
+      {
+        repeat_penalty_tokens.push_back(static_cast<llama_token>(array[i]));
+      }
+    }
+
+    if (options.Has("tokenBiasKeys") && options.Has("tokenBiasValues"))
+    {
+      Napi::Uint32Array tokenBiasKeys = options.Get("tokenBiasKeys").As<Napi::Uint32Array>();
+      Napi::Float32Array tokenBiasValues = options.Get("tokenBiasValues").As<Napi::Float32Array>();
+      if (tokenBiasKeys.ElementLength() == tokenBiasValues.ElementLength())
+      {
+        for (size_t i = 0; i < tokenBiasKeys.ElementLength(); i++)
+        {
+          tokenBiases[static_cast<llama_token>(tokenBiasKeys[i])] = tokenBiasValues[i];
+        }
+        useTokenBiases = true;
+      }
+    }
+
+    if (options.Has("repeatPenaltyPresencePenalty"))
+    {
+      repeat_penalty_presence_penalty = options.Get("repeatPenaltyPresencePenalty").As<Napi::Number>().FloatValue();
+    }
+
+    if (options.Has("repeatPenaltyFrequencyPenalty"))
+    {
+      repeat_penalty_frequency_penalty = options.Get("repeatPenaltyFrequencyPenalty").As<Napi::Number>().FloatValue();
+    }
+  }
+
   Napi::Value RemoveTokens(const Napi::CallbackInfo &info)
   {
     int32_t startPos = info[0].As<Napi::Number>().Int32Value();
@@ -195,6 +271,7 @@ public:
             InstanceMethod("contextSize", &LlamaContext::GetContextSize),
             InstanceMethod("stateSize", &LlamaContext::GetStateSize),
             InstanceMethod("eval", &LlamaContext::EvalSequence),
+            InstanceMethod("sampleToken", &LlamaContext::SampleToken),
             InstanceMethod("removeTokens", &LlamaContext::RemoveTokens),
             InstanceMethod("shiftTokens", &LlamaContext::ShiftTokens),
             InstanceMethod("dispose", &LlamaContext::Dispose),

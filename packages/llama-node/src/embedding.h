@@ -55,7 +55,7 @@ public:
     params.n_ubatch = params.n_batch;
     params.n_ctx = params.n_batch;
 
-    if (options.Has("threads") && options.Get("threads").IsNumber())
+    if (options.Has("threads"))
     {
       const auto n_threads = options.Get("threads").As<Napi::Number>().Uint32Value();
       const auto resolved_n_threads = n_threads > 0 ? n_threads : hardware_concurrency;

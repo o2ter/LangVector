@@ -52,7 +52,7 @@ export class LlamaDevice extends LLMDevice {
     return new LlamaModel(this, await new Promise((res, rej) => {
       const model = new llamaCpp.LlamaModel(
         path.resolve(process.cwd(), modelPath),
-        {
+        _.pickBy({
           ...options,
           onLoadProgress: (progress: number) => {
             if (_.isFunction(onLoadProgress)) onLoadProgress(progress);
@@ -65,7 +65,7 @@ export class LlamaDevice extends LLMDevice {
               res(model);
             }
           },
-        }
+        }, v => !_.isNil(v)) 
       );
     }));
   }

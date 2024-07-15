@@ -174,8 +174,9 @@ export class LlamaModel extends LLMModel<LlamaDevice> {
   }
 
   createContext(options: LlamaContextOptions = {}) {
-    const ctx = new llamaCpp.LlamaContext(this._model, options);
-    return new LlamaContext(this, ctx, options);
+    const _options = _.pickBy(options, v => !_.isNil(v));
+    const ctx = new llamaCpp.LlamaContext(this._model, _options);
+    return new LlamaContext(this, ctx, _options);
   }
 
   /** @internal */
@@ -189,7 +190,10 @@ export class LlamaModel extends LLMModel<LlamaDevice> {
   } = {}) {
     const time = clock();
     const tokens = this._tokenize(value);
-    const ctx = new llamaCpp.LlamaEmbeddingContext(this._model, { batchSize: tokens.length, threads });
+    const ctx = new llamaCpp.LlamaEmbeddingContext(this._model, _.pickBy({
+      batchSize: tokens.length,
+      threads,
+    }, v => !_.isNil(v)));
     await ctx.eval(tokens);
     const vector = ctx.embedding() as Float64Array;
     ctx.dispose();

@@ -157,27 +157,27 @@ public:
     modelPath = info[0].As<Napi::String>().Utf8Value();
     options = Napi::Persistent(info[1].As<Napi::Object>());
 
-    if (options.Value().Has("gpuLayers") && options.Value().Get("gpuLayers").IsNumber())
+    if (options.Value().Has("gpuLayers"))
     {
       params.n_gpu_layers = options.Value().Get("gpuLayers").As<Napi::Number>().Int32Value();
     }
 
-    if (options.Value().Has("vocabOnly") && options.Value().Get("vocabOnly").IsBoolean())
+    if (options.Value().Has("vocabOnly"))
     {
       params.vocab_only = options.Value().Get("vocabOnly").As<Napi::Boolean>().Value();
     }
 
-    if (options.Value().Has("useMmap") && options.Value().Get("useMmap").IsBoolean())
+    if (options.Value().Has("useMmap"))
     {
       params.use_mmap = options.Value().Get("useMmap").As<Napi::Boolean>().Value();
     }
 
-    if (options.Value().Has("useMlock") && options.Value().Get("useMlock").IsBoolean())
+    if (options.Value().Has("useMlock"))
     {
       params.use_mlock = options.Value().Get("useMlock").As<Napi::Boolean>().Value();
     }
 
-    if (options.Value().Has("checkTensors") && options.Value().Get("checkTensors").IsBoolean())
+    if (options.Value().Has("checkTensors"))
     {
       params.check_tensors = options.Value().Get("checkTensors").As<Napi::Boolean>().Value();
     }
