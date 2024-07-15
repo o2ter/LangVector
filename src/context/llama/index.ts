@@ -107,11 +107,6 @@ export class LlamaContext extends LLMContext<LlamaDevice, LlamaModel> {
   }
 
   /** @internal */
-  _sampleToken() {
-
-  }
-
-  /** @internal */
   _removeTokens(startPos: number, endPos: number): boolean {
     return this._ctx.removeTokens(startPos, endPos);
   }
