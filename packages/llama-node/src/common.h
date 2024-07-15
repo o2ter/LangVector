@@ -96,14 +96,14 @@ template <typename R>
 class _AsyncWorkerWithResult : public Napi::AsyncWorker
 {
 public:
-  _AsyncWorker(
+  _AsyncWorkerWithResult(
       Napi::Env env,
       std::function<R()> execute,
       std::function<napi_value(Env env, R result)> resolve,
       std::function<void()> finalizer = []() {}) : AsyncWorker(env), execute(execute), resolve(resolve), finalizer(finalizer), deferred(Napi::Promise::Deferred::New(env))
   {
   }
-  ~_AsyncWorker()
+  ~_AsyncWorkerWithResult()
   {
     finalizer();
   }
