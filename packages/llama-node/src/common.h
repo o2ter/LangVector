@@ -138,7 +138,7 @@ private:
 
   void OnOK()
   {
-    deferred.Resolve(resolve(Env() result));
+    deferred.Resolve(resolve(Env(), result));
   }
 
   void OnError(const Napi::Error &err)
