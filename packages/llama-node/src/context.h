@@ -218,6 +218,16 @@ public:
       }
     }
 
+    if (options.Has("repeatPenaltyPresencePenalty"))
+    {
+      repeat_penalty_presence_penalty = options.Get("repeatPenaltyPresencePenalty").As<Napi::Number>().FloatValue();
+    }
+
+    if (options.Has("repeatPenaltyFrequencyPenalty"))
+    {
+      repeat_penalty_frequency_penalty = options.Get("repeatPenaltyFrequencyPenalty").As<Napi::Number>().FloatValue();
+    }
+
     if (options.Has("tokenBiasKeys") && options.Has("tokenBiasValues"))
     {
       Napi::Uint32Array tokenBiasKeys = options.Get("tokenBiasKeys").As<Napi::Uint32Array>();
@@ -230,16 +240,6 @@ public:
         }
         useTokenBiases = true;
       }
-    }
-
-    if (options.Has("repeatPenaltyPresencePenalty"))
-    {
-      repeat_penalty_presence_penalty = options.Get("repeatPenaltyPresencePenalty").As<Napi::Number>().FloatValue();
-    }
-
-    if (options.Has("repeatPenaltyFrequencyPenalty"))
-    {
-      repeat_penalty_frequency_penalty = options.Get("repeatPenaltyFrequencyPenalty").As<Napi::Number>().FloatValue();
     }
   }
 

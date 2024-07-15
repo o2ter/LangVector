@@ -134,6 +134,16 @@ export class LlamaContext extends LLMContext<LlamaDevice, LlamaModel> {
 
       await this._ctx.eval(tokens);
 
+      await this._ctx.sampleToken(_.pickBy({
+        temperature: options.temperature,
+        minP: options.minP,
+        topK: options.topK,
+        topP: options.topP,
+        repeatPenalty: options.repeatPenalty ? options.repeatPenalty?.penalty : null,
+        repeatPenaltyPresencePenalty: options.repeatPenalty ? options.repeatPenalty?.presencePenalty : null,
+        repeatPenaltyFrequencyPenalty: options.repeatPenalty ? options.repeatPenalty?.frequencyPenalty : null,
+      }, v => !_.isNil(v)));
+
       return clock() - time;
     });
   }
