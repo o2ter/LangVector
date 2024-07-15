@@ -135,6 +135,8 @@ export class LlamaContext extends LLMContext<LlamaDevice, LlamaModel> {
 
       await this._ctx.eval(tokens);
 
+      if (options.maxTokens === 0) return clock() - time;
+
       const repeatPenalty = {
         punishTokens: () => {
           return new Uint32Array;
