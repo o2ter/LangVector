@@ -78,6 +78,7 @@ export type ChatWrapper = {
   setting: ChatWrapperSettings;
   generateSystemMessages(
     session: LlamaContext,
+    chatHistory: ChatHistoryItem[],
   ): ChatHistoryItem[];
   generateContextState(
     session: LlamaContext,
