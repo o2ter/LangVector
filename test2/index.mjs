@@ -18,7 +18,7 @@ const context = model.createContext({
   contextSize: 512,
 });
 
-for (const tokens of context.prompt('hello, world')) {
+for await (const tokens of context.prompt('hello, world')) {
   console.log({ tokens })
 }
 
