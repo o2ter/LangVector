@@ -149,8 +149,7 @@ public:
           {
             llama_batch_add(batch, tokens[i], i, {0}, i + 1 == token_length);
           }
-          auto status = llama_decode(ctx, batch);
-          if (status < 0)
+          if (llama_decode(ctx, batch) < 0)
           {
             throw std::runtime_error("Eval failed");
           }
