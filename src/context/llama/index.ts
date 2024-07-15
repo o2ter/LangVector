@@ -24,6 +24,7 @@
 //
 
 import _ from 'lodash';
+import { EventIterator } from '@o2ter/utils-js';
 import { LLMContext } from '../base';
 import { LlamaModel } from '../../model/llama';
 import { LlamaDevice } from '../../device/llama';
@@ -152,8 +153,8 @@ export class LlamaContext extends LLMContext<LlamaDevice, LlamaModel> {
   }
 
   prompt(value: LLMTextValue, options: LLamaChatPromptOptions = {}) {
-    return this._evaluate(value, options, () => {
-
+    return EventIterator<Uint32Array, Awaited<ReturnType<LlamaContext['_evaluate']>>>(async (push, resolve) => {
+      resolve(await this._evaluate(value, options, push));
     });
   }
 
