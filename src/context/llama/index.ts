@@ -204,7 +204,7 @@ export class LlamaContext extends LLMContext<LlamaDevice, LlamaModel> {
       const state = chatWrapper.generateContextState(this, []);
       const _tokens = _.flatMap(state, x => _.isArray(x.tokens) ? x.tokens : [...x.tokens]);
       this._tokens.push(..._tokens);
-      await this._ctx.eval(new Uint32Array(_tokens));
+      await this._ctx.eval(new Uint32Array(_tokens), this._ctx_state.length);
       this._ctx_state.push(..._tokens);
     }
 
@@ -225,7 +225,7 @@ export class LlamaContext extends LLMContext<LlamaDevice, LlamaModel> {
         this._ctx_state = this._ctx_state.slice(0, diff);
 
         const _tokens = _state.slice(diff);
-        await this._ctx.eval(new Uint32Array(_tokens));
+        await this._ctx.eval(new Uint32Array(_tokens), this._ctx_state.length);
         this._ctx_state.push(..._tokens);
 
       } else if (this._ctx_state.length < _state.length) {
@@ -233,7 +233,7 @@ export class LlamaContext extends LLMContext<LlamaDevice, LlamaModel> {
       }
     }
 
-    await this._ctx.eval(tokens);
+    await this._ctx.eval(tokens, this._ctx_state.length);
     this._ctx_state.push(...tokens);
   }
 
