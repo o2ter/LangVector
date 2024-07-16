@@ -75,7 +75,7 @@ public:
   {
     ctx = Napi::ObjectWrap<LlamaContext>::Unwrap(info[0].As<Napi::Object>());
     ctx->Ref();
-    grammar = Napi::ObjectWrap<LlamaGrammar>::Unwrap(info[0].As<Napi::Object>());
+    grammar = Napi::ObjectWrap<LlamaGrammar>::Unwrap(info[1].As<Napi::Object>());
     grammar->Ref();
 
     std::vector<const llama_grammar_element *> grammar_rules(grammar->grammar.c_rules());

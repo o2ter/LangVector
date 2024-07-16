@@ -25,6 +25,7 @@
 
 import _ from 'lodash';
 import * as llamaCpp from '../../plugins/llamaCpp';
+import type { LlamaContext } from '../../context/llama';
 
 export class LlamaGrammer {
 
@@ -37,5 +38,23 @@ export class LlamaGrammer {
 
   get description(): string {
     return this._grammar.description();
+  }
+}
+
+export class LlamaGrammarEvaluationState {
+
+  /** @internal */
+  _state: typeof llamaCpp.LlamaGrammarEvaluationState;
+
+  constructor(context: LlamaContext, grammar: LlamaGrammer) {
+    this._state = new llamaCpp.LlamaGrammarEvaluationState(context, grammar);
+  }
+
+  acceptToken(token: number) {
+    this._state.acceptToken(token);
+  }
+
+  canBeNextToken(token: number): boolean {
+    return this._state.canBeNextToken(token);
   }
 }
