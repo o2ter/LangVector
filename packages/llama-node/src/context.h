@@ -159,6 +159,7 @@ public:
   Napi::Value EvalSequence(const Napi::CallbackInfo &info)
   {
     Napi::Uint32Array tokens = info[0].As<Napi::Uint32Array>();
+    int32_t startPos = info[1].As<Napi::Number>().Int32Value();
 
     this->Ref();
 
@@ -178,7 +179,7 @@ public:
 
           for (size_t i = 0; i < token_length; ++i)
           {
-            llama_batch_add(batch, tokens[i], i, {0}, i + 1 == token_length);
+            llama_batch_add(batch, tokens[i], i + startPos, {0}, i + 1 == token_length);
           }
           if (llama_decode(ctx, batch) < 0)
           {
