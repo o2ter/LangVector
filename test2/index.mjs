@@ -12,6 +12,13 @@ const model = await LlamaDevice.loadModel({
   useMmap: true,
 });
 
+console.log(model.chatApplyTemplate([
+  { role: "system", content: "You are a helpful assistant"},
+  { role: "user", content: "Hello"},
+  { role: "assistant", content: "Hi there"},
+  { role: "user", content: "How are you?"},
+]))
+
 // console.log(await model.embedding('hello, world'));
 
 const context = model.createContext({

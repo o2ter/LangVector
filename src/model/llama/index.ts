@@ -31,6 +31,7 @@ import { LlamaContext } from '../../context/llama';
 import { LlamaContextOptions } from '../../context/llama/types';
 import { clock } from '../../utils';
 import * as llamaCpp from '../../plugins/llamaCpp';
+import { ChatHistoryItem } from '../../chat/types';
 
 export class LlamaModel extends LLMModel<LlamaDevice> {
 
@@ -171,6 +172,11 @@ export class LlamaModel extends LLMModel<LlamaDevice> {
     if (_.isNil(this._model)) throw new DisposedError();
     const _tokens = _.isArrayBuffer(tokens) ? tokens : new Uint32Array(_.isNumber(tokens) ? [tokens] : tokens);
     return this._model.detokenize(_tokens, decodeSpecial);
+  }
+
+  chatApplyTemplate(msgs: { role: string; content: string; }[]): string | undefined {
+    const template = this.meta['tokenizer.chat_template'];
+    return template ? this._model.chatApplyTemplate(template, msgs) : undefined;
   }
 
   createContext(options: LlamaContextOptions = {}) {
