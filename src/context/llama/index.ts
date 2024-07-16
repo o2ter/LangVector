@@ -126,8 +126,13 @@ export class LlamaContext extends LLMContext<LlamaDevice, LlamaModel> {
     options: LLamaChatPromptOptions,
   ) {
 
+    const lastTokens = options.repeatPenalty ? options.repeatPenalty.lastTokens ?? 64 : 0;
+
     const repeatPenalty = {
       punishTokens: () => {
+
+        this.tokens
+
         return new Uint32Array;
       },
       ...options.repeatPenalty ? options.repeatPenalty : {},
@@ -220,8 +225,8 @@ export class LlamaContext extends LLMContext<LlamaDevice, LlamaModel> {
         onToken(sample, clock() - time);
 
         for (const trigger of stopTriggers) {
-          const last = this.tokens.subarray(-trigger.length);
-          if (last.length === trigger.length && last.every((v, i) => v === trigger[i])) return {
+          let offset = this._tokens.length - trigger.length;
+          if (offset >= 0 && trigger.every((v, i) => v === this._tokens[i + offset])) return {
             stopReason: 'stopTrigger',
             totalTime: clock() - totalTime,
           } as const;
