@@ -160,6 +160,10 @@ export class LlamaContext extends LLMContext<LlamaDevice, LlamaModel> {
 
     this._tokens.push(...tokens);
 
+    if (this._ctx_state.length + tokens.length > this.contextSize) {
+
+    }
+
     await this._ctx.eval(tokens);
     this._ctx_state.push(...tokens);
   }
