@@ -157,7 +157,7 @@ export class LlamaContext extends LLMContext<LlamaDevice, LlamaModel> {
   private async _evaluate(
     value: LLMTextValue,
     options: LLamaChatPromptOptions,
-    onToken: (tokens: Uint32Array) => void,
+    onToken: (token: number, time: number) => void,
   ) {
 
     const tokens = this.model._tokenize(value);
@@ -167,10 +167,9 @@ export class LlamaContext extends LLMContext<LlamaDevice, LlamaModel> {
 
       if (_.isNil(this._ctx)) throw new DisposedError();
 
+      const totalTime = clock();
+
       this._tokens.push(...tokens);
-
-      const time = clock();
-
       await this._ctx.eval(tokens);
 
       let maxTokens = options.maxTokens ?? -1;
@@ -178,9 +177,10 @@ export class LlamaContext extends LLMContext<LlamaDevice, LlamaModel> {
 
         if (options.signal?.aborted) return {
           stopReason: 'abort',
-          time: clock() - time,
+          totalTime: clock() - totalTime,
         } as const;
 
+        const time = clock();
         let candidates = this._sampleCandidates(options);
 
         if (grammar) {
@@ -203,19 +203,25 @@ export class LlamaContext extends LLMContext<LlamaDevice, LlamaModel> {
           grammar.acceptToken(sample);
         }
 
-        onToken(sample);
+        onToken(sample, clock() - time);
       }
 
       return {
         stopReason: 'maxTokens',
-        time: clock() - time,
+        totalTime: clock() - totalTime,
       } as const;
     });
   }
 
   prompt(value: LLMTextValue, options: LLamaChatPromptOptions = {}) {
-    return EventIterator<Uint32Array, Awaited<ReturnType<LlamaContext['_evaluate']>>>(async (push, resolve) => {
-      resolve(await this._evaluate(value, options, push));
+    return EventIterator<
+      {
+        token: number;
+        time: number;
+      },
+      Awaited<ReturnType<LlamaContext['_evaluate']>>
+    >(async (push, resolve) => {
+      resolve(await this._evaluate(value, options, (token, time) => push({ token, time })));
     });
   }
 
