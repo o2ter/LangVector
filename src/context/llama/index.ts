@@ -201,8 +201,10 @@ export class LlamaContext extends LLMContext<LlamaDevice, LlamaModel> {
     ];
 
     return new llamaCpp.LlamaContextSampleCandidates(this._ctx, _.pickBy({
-      tokenBiasKeys: new Uint32Array(_.map(tokenBias, x => x[0])),
-      tokenBiasValues: new Float32Array(_.map(tokenBias, x => x[1] === 'never' ? Number.NEGATIVE_INFINITY : x[1])),
+      tokenBias: _.map(tokenBias, ([key, value]) => ({
+        key: key,
+        value: value === 'never' ? Number.NEGATIVE_INFINITY : value,
+      })),
       repeatPenalty: repeatPenalty.penalty,
       repeatPenaltyPresencePenalty: repeatPenalty.presencePenalty,
       repeatPenaltyFrequencyPenalty: repeatPenalty.frequencyPenalty,

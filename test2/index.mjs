@@ -18,7 +18,10 @@ const context = model.createContext({
   contextSize: 512,
 });
 
-for await (const { token, time } of context.prompt('hello, world', { temperature: 0.8, maxTokens: 2 })) {
+const tokenBias = new Map;
+tokenBias.set(0, 'never');
+
+for await (const { token, time } of context.prompt('hello, world', { temperature: 0.8, maxTokens: 2, tokenBias })) {
   console.log({ token, time, text: model.detokenize(token, { decodeSpecial: true }) })
 }
 

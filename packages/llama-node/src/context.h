@@ -322,22 +322,20 @@ LlamaContextSampleCandidates::LlamaContextSampleCandidates(const Napi::CallbackI
   float repeat_penalty = 1.10f;                   // 1.0 = disabled
   float repeat_penalty_presence_penalty = 0.00f;  // 0.0 = disabled
   float repeat_penalty_frequency_penalty = 0.00f; // 0.0 = disabled
-  std::unordered_map<llama_token, float> tokenBiases;
+  std::unordered_map<llama_token, float> tokenBias;
   std::vector<llama_token> repeat_penalty_tokens;
 
   auto ctx = Napi::ObjectWrap<LlamaContext>::Unwrap(info[0].As<Napi::Object>());
   Napi::Object options = info[1].As<Napi::Object>();
 
-  if (options.Has("tokenBiasKeys") && options.Has("tokenBiasValues"))
+  if (options.Has("tokenBias"))
   {
-    Napi::Uint32Array tokenBiasKeys = options.Get("tokenBiasKeys").As<Napi::Uint32Array>();
-    Napi::Float32Array tokenBiasValues = options.Get("tokenBiasValues").As<Napi::Float32Array>();
-    if (tokenBiasKeys.ElementLength() == tokenBiasValues.ElementLength())
+    auto _tokenBias = options.Get("tokenBias").As<Napi::Array>();
+    for (size_t i = 0; i < _tokenBias.Length(); ++i)
     {
-      for (size_t i = 0; i < tokenBiasKeys.ElementLength(); ++i)
-      {
-        tokenBiases[static_cast<llama_token>(tokenBiasKeys[i])] = tokenBiasValues[i];
-      }
+      auto key = _tokenBias.Get(i).As<Napi::Object>().Get("key").As<Napi::Number>().Uint32Value();
+      auto value = _tokenBias.Get(i).As<Napi::Object>().Get("value").As<Napi::Number>().FloatValue();
+      tokenBias[static_cast<llama_token>(key)] = value;
     }
   }
 
@@ -380,9 +378,9 @@ LlamaContextSampleCandidates::LlamaContextSampleCandidates(const Napi::CallbackI
   for (llama_token token_id = 0; token_id < n_vocab; ++token_id)
   {
     auto logit = logits[token_id];
-    if (!tokenBiases.empty() && tokenBiases.find(token_id) != tokenBiases.end())
+    if (!tokenBias.empty() && tokenBias.find(token_id) != tokenBias.end())
     {
-      auto logitBias = tokenBiases.at(token_id);
+      auto logitBias = tokenBias.at(token_id);
       if (logitBias == -INFINITY || logitBias < -INFINITY)
       {
         if (!llama_token_is_eog(ctx->model->model, token_id))

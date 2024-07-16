@@ -382,6 +382,24 @@ public:
     return Napi::String::New(Env(), result.data(), result.size() - 1);
   }
 
+  Napi::Value ChatApplyTemplate(const Napi::CallbackInfo &info)
+  {
+    std::string tmpl = info[0].As<Napi::String>().Utf8Value();
+    std::vector<llama_chat_msg> msgs;
+
+    auto _msgs = info[1].As<Napi::Array>();
+    for (size_t i = 0; i < _msgs.Length(); ++i)
+    {
+      auto role = _msgs.Get(i).As<Napi::Object>().Get("role").As<Napi::String>().Utf8Value();
+      auto content = _msgs.Get(i).As<Napi::Object>().Get("content").As<Napi::String>().Utf8Value();
+      msgs.push_back({role, content});
+    }
+
+    auto result = llama_chat_apply_template(model, tmpl, msgs, false);
+
+    return Napi::String::New(Env(), result);
+  }
+
   static void init(Napi::Object exports)
   {
     auto def = DefineClass(
@@ -411,6 +429,7 @@ public:
             InstanceMethod("metaLength", &LlamaModel::MetaLength),
             InstanceMethod("metaKey", &LlamaModel::MetaKey),
             InstanceMethod("metaValue", &LlamaModel::MetaValue),
+            InstanceMethod("chatApplyTemplate", &LlamaModel::ChatApplyTemplate),
             InstanceMethod("dispose", &LlamaModel::Dispose),
         });
     exports.Set("LlamaModel", def);
