@@ -79,7 +79,7 @@ export type ChatWrapper = {
   generateContextState(
     session: LlamaContext,
     chatHistory: ChatHistoryItem[],
-  ): Uint32List;
+  ): Uint32List[];
   generateChatHistory(
     session: LlamaContext,
     tokens: Uint32Array,
