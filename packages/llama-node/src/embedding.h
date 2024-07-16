@@ -27,6 +27,7 @@
 
 #include "common.h"
 #include "model.h"
+#include "worker.h"
 
 class LlamaEmbeddingContext : public Napi::ObjectWrap<LlamaEmbeddingContext>
 {

@@ -1,5 +1,5 @@
 //
-//  common.h
+//  template.h
 //
 //  The MIT License
 //  Copyright (c) 2021 - 2024 O2ter Limited. All rights reserved.
@@ -25,19 +25,4 @@
 
 #pragma once
 
-#include <stddef.h>
-
-#include "llama.h"
-#include "common/common.h"
-#include "common/grammar-parser.h"
-#include "napi.h"
-
-#ifdef GPU_INFO_USE_CUDA
-#include "../gpuInfo/cuda-gpu-info.h"
-#endif
-#ifdef GPU_INFO_USE_VULKAN
-#include "../gpuInfo/vulkan-gpu-info.h"
-#endif
-#ifdef GPU_INFO_USE_METAL
-#include "../gpuInfo/metal-gpu-info.h"
-#endif
+#include "common.h"

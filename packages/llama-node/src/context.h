@@ -27,6 +27,7 @@
 
 #include "common.h"
 #include "model.h"
+#include "worker.h"
 
 class LlamaContextSampleCandidates : public Napi::ObjectWrap<LlamaContextSampleCandidates>
 {

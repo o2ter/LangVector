@@ -29,6 +29,7 @@
 #include "src/context.h"
 #include "src/embedding.h"
 #include "src/grammar.h"
+#include "src/template.h"
 
 Napi::Object registerCallback(Napi::Env env, Napi::Object exports)
 {
