@@ -108,6 +108,42 @@ export class LlamaContext extends LLMContext<LlamaDevice, LlamaModel> {
     return history;
   }
 
+  set chatHistory(value) {
+
+    const chatWrapper = this.chatWrapper;
+    if (_.isNil(chatWrapper)) return;
+
+    this._worker.sync(async () => {
+
+      const state = await chatWrapper.generateContextState(this, value);
+      this._tokens = _.flatMap(state, x => _.isArray(x.tokens) ? x.tokens : [...x.tokens]);
+
+      let _state = await this._contextShiftStrategy();
+      _state = _.isArray(_state) ? _state : [..._state];
+
+      if (_state.length > this.contextSize) {
+        throw Error('Invalid context shift operation');
+      }
+
+      const diff = _.findIndex(this._ctx_state, (x, i) => x !== _state[i]);
+
+      if (diff !== -1) {
+
+        this._removeTokens(diff, this._ctx_state.length);
+        this._ctx_state = this._ctx_state.slice(0, diff);
+
+        const _tokens = _state.slice(diff);
+        await this._ctx.eval(new Uint32Array(_tokens), this._ctx_state.length);
+        this._ctx_state.push(..._tokens);
+
+      } else if (this._ctx_state.length < _state.length) {
+
+        await this._ctx.eval(new Uint32Array(_state), this._ctx_state.length);
+        this._ctx_state.push(..._state);
+      }
+    });
+  }
+
   private _removeTokens(startPos: number, endPos: number): boolean {
     return this._ctx.removeTokens(startPos, endPos);
   }
