@@ -170,6 +170,7 @@ export class LlamaContext extends LLMContext<LlamaDevice, LlamaModel> {
   ) {
 
     const grammar = options.grammar ? this._grammarEvaluationState(options.grammar) : null;
+    const stopTriggers = _.map(options.stopTriggers, x => this.model._tokenize(x));
 
     return await this._worker.sync(async () => {
 
@@ -215,15 +216,12 @@ export class LlamaContext extends LLMContext<LlamaDevice, LlamaModel> {
         await this._decodeTokens([sample]);
         onToken(sample, clock() - time);
 
-        if (options.stopTriggers) {
-          for (const stopTrigger of options.stopTriggers) {
-            const _tokens = this.model._tokenize(stopTrigger);
-            const last = this.tokens.subarray(-_tokens.length);
-            if (last.length === _tokens.length && last.every((v, i) => v === _tokens[i])) return {
-              stopReason: 'stopTrigger',
-              totalTime: clock() - totalTime,
-            } as const;
-          }
+        for (const trigger of stopTriggers) {
+          const last = this.tokens.subarray(-trigger.length);
+          if (last.length === trigger.length && last.every((v, i) => v === trigger[i])) return {
+            stopReason: 'stopTrigger',
+            totalTime: clock() - totalTime,
+          } as const;
         }
       }
 
