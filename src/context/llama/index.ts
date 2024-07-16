@@ -161,6 +161,7 @@ export class LlamaContext extends LLMContext<LlamaDevice, LlamaModel> {
   ): Promise<number> {
 
     const tokens = this.model._tokenize(value);
+    const grammar = options.grammar ? this._grammarEvaluationState(options.grammar) : null;
 
     return await this._worker.sync(async () => {
 
@@ -174,16 +175,36 @@ export class LlamaContext extends LLMContext<LlamaDevice, LlamaModel> {
 
       if (options.maxTokens === 0) return clock() - time;
 
-      const candidates = this._sampleCandidates(options);
+      let maxTokens = options.maxTokens ?? -1;
 
-      const sample = await this._ctx.sampleToken(candidates, _.pickBy({
-        temperature: options.temperature,
-        minP: options.minP,
-        topK: options.topK,
-        topP: options.topP,
-      }, v => !_.isNil(v)));
+      while (maxTokens--) {
 
-      console.log({ sample })
+        if (options.signal?.aborted) return clock() - time;
+
+        let candidates = this._sampleCandidates(options);
+
+        if (grammar) {
+          grammar.sampleToken(candidates);
+          if (!candidates.isValid()) {
+            // logit biases caused grammar sampling to fail, so sampling again without logit biases
+            candidates = this._sampleCandidates(_.omit(options, 'tokenBias'));
+            grammar.sampleToken(candidates);
+          }
+        }
+
+        const sample = await this._ctx.sampleToken(candidates, _.pickBy({
+          temperature: options.temperature,
+          minP: options.minP,
+          topK: options.topK,
+          topP: options.topP,
+        }, v => !_.isNil(v)));
+
+        if (grammar && !this.model.isEogToken(sample)) {
+          grammar.acceptToken(sample);
+        }
+
+        onToken(sample);
+      }
 
       return clock() - time;
     });
