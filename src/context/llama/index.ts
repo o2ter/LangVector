@@ -125,14 +125,17 @@ export class LlamaContext extends LLMContext<LlamaDevice, LlamaModel> {
     });
   }
 
+  /** @internal */
   private _removeTokens(startPos: number, endPos: number): boolean {
     return this._ctx.removeTokens(startPos, endPos);
   }
 
+  /** @internal */
   private _shiftTokens(startPos: number, endPos: number, shiftDelta: number) {
     return this._ctx.shiftTokens(startPos, endPos, shiftDelta);
   }
 
+  /** @internal */
   private async _updateTokens(value: Uint32List) {
 
     const tokens = _.isArray(value) ? value : [...value];
@@ -159,12 +162,14 @@ export class LlamaContext extends LLMContext<LlamaDevice, LlamaModel> {
     }
   }
 
+  /** @internal */
   private _grammarEvaluationState(
     grammar: LlamaGrammar,
   ) {
     return new llamaCpp.LlamaGrammarEvaluationState(this._ctx, grammar._grammar);
   }
 
+  /** @internal */
   private _sampleCandidates(
     options: LLamaChatPromptOptions,
   ) {
@@ -205,6 +210,7 @@ export class LlamaContext extends LLMContext<LlamaDevice, LlamaModel> {
     }, v => !_.isNil(v)));
   }
 
+  /** @internal */
   private async _contextShiftStrategy() {
 
     const contextShiftStrategy = this._options.chatOptions?.contextShiftStrategy;
@@ -240,6 +246,7 @@ export class LlamaContext extends LLMContext<LlamaDevice, LlamaModel> {
     return _.flatMap(_.reverse(result), x => _.isArray(x) ? x : [...x]);
   }
 
+  /** @internal */
   private async _decodeTokens(value: LLMTextValue) {
 
     const chatWrapper = this._options.chatOptions?.chatWrapper;
@@ -268,6 +275,7 @@ export class LlamaContext extends LLMContext<LlamaDevice, LlamaModel> {
     this._ctx_state.push(...tokens);
   }
 
+  /** @internal */
   private async _evaluate(
     value: LLMTextValue,
     options: LLamaChatPromptOptions,
