@@ -102,7 +102,7 @@ export class LlamaContext extends LLMContext<LlamaDevice, LlamaModel> {
   get chatHistory() {
     if (!_.isNil(this._chat_history)) return this._chat_history;
     const chatWrapper = this.chatWrapper;
-    if (_.isNil(chatWrapper)) return;
+    if (_.isNil(chatWrapper)) return [];
     const history = chatWrapper.generateChatHistory(this, this.tokens);
     this._chat_history = history;
     return history;
@@ -179,7 +179,7 @@ export class LlamaContext extends LLMContext<LlamaDevice, LlamaModel> {
       }
     }
 
-    const state = chatWrapper.generateContextState(this, this.chatHistory ?? []);
+    const state = chatWrapper.generateContextState(this, this.chatHistory);
 
     const sys = _.first(state)?.item.type === 'system' ? _.first(state) : undefined;
     const rest = sys ? _.drop(state, 1) : state;
