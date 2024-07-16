@@ -115,6 +115,8 @@ export class LlamaContext extends LLMContext<LlamaDevice, LlamaModel> {
 
     this._worker.sync(async () => {
 
+      this._chat_history = undefined;
+
       const state = await chatWrapper.generateContextState(this, value);
       this._tokens = _.flatMap(state, x => _.isArray(x.tokens) ? x.tokens : [...x.tokens]);
 
