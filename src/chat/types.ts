@@ -77,11 +77,11 @@ export type ChatWrapperSettings = {
 export type ChatWrapper = {
   setting: ChatWrapperSettings;
   generateContextState(
-    session: LlamaContext,
+    ctx: LlamaContext,
     chatHistory: ChatHistoryItem[],
   ): { item: ChatHistoryItem; tokens: Uint32List; }[];
   generateChatHistory(
-    session: LlamaContext,
+    ctx: LlamaContext,
     tokens: Uint32Array,
   ): ChatHistoryItem[];
 };
