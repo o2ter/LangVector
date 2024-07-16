@@ -120,7 +120,7 @@ public:
 
     llama_sample_grammar(ctx->ctx, &candidates_p, state);
 
-    if (candidates_p.size == 0 || candidates_p.data[0].logit == -INFINITY)
+    if (candidates_p.data[0].logit == -INFINITY)
     {
       return Napi::Boolean::New(info.Env(), false);
     }
