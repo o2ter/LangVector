@@ -94,6 +94,13 @@ public:
     }
   }
 
+  Napi::Value SampleToken(const Napi::CallbackInfo &info)
+  {
+    auto candidates = Napi::ObjectWrap<LlamaContextSampleCandidates>::Unwrap(info[0].As<Napi::Object>());
+    llama_token_data_array candidates_p = {candidates->candidates.data(), candidates->candidates.size(), false};
+    llama_sample_grammar(ctx->ctx, &candidates_p, state);
+  }
+
   Napi::Value AcceptToken(const Napi::CallbackInfo &info)
   {
     llama_token tokenId = info[0].As<Napi::Number>().Int32Value();
@@ -127,6 +134,7 @@ public:
         exports.Env(),
         "LlamaGrammarEvaluationState",
         {
+            InstanceMethod("sampleToken", &LlamaGrammarEvaluationState::SampleToken),
             InstanceMethod("acceptToken", &LlamaGrammarEvaluationState::AcceptToken),
             InstanceMethod("canBeNextToken", &LlamaGrammarEvaluationState::CanBeNextToken),
         });
