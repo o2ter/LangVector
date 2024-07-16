@@ -162,6 +162,37 @@ export class LlamaContext extends LLMContext<LlamaDevice, LlamaModel> {
     }, v => !_.isNil(v)));
   }
 
+  private async _contextShiftStrategy() {
+
+    const contextShiftStrategy = this._options.chatOptions?.contextShiftStrategy;
+    if (contextShiftStrategy) return contextShiftStrategy(this);
+
+    const chatWrapper = this._options.chatOptions?.chatWrapper;
+    const maxTokens = Math.floor(this.contextSize * 0.9);
+
+    if (!chatWrapper) {
+      const bos = this.model.tokens.bos
+      if (bos && _.first(this._tokens) === bos) {
+        return [bos, ...this._tokens.slice(-maxTokens)];
+      } else {
+        return this._tokens.slice(-maxTokens);
+      }
+    }
+
+    const state = chatWrapper.generateContextState(this, this.chatHistory ?? []);
+
+    if (_.first(state)?.item.type === 'system') {
+
+
+
+    } else {
+
+
+    }
+
+    return [];
+  }
+
   private async _decodeTokens(value: LLMTextValue) {
 
     const tokens = this.model._tokenize(value);
@@ -169,12 +200,14 @@ export class LlamaContext extends LLMContext<LlamaDevice, LlamaModel> {
     this._tokens.push(...tokens);
     this._chat_history = undefined;
 
-    if (this._ctx_state.length + tokens.length > this.contextSize) {
-
+    if (this._ctx_state.length + tokens.length <= this.contextSize) {
+      this._ctx_state.push(...tokens);
+    } else {
+      const _state = await this._contextShiftStrategy();
+      this._ctx_state = _.isArray(_state) ? _state : [..._state];
     }
 
     await this._ctx.eval(tokens);
-    this._ctx_state.push(...tokens);
   }
 
   private async _evaluate(
