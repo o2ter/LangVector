@@ -28,21 +28,8 @@ import path from 'path';
 import { LLMDevice } from '../base';
 import { LlamaModel } from '../../model/llama';
 import { LlamaModelOptions } from '../../model/llama/types';
+import { LlamaGrammer } from './grammar';
 import * as llamaCpp from '../../plugins/llamaCpp';
-
-class LlamaGrammer {
-
-  /** @internal */
-  _grammar: typeof llamaCpp.LlamaGrammar;
-
-  constructor(str: string) {
-    this._grammar = new llamaCpp.LlamaGrammar(str);
-  }
-
-  get description(): string {
-    return this._grammar.description();
-  }
-}
 
 export class LlamaDevice extends LLMDevice {
 
