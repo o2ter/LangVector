@@ -158,7 +158,7 @@ export class LlamaContext extends LLMContext<LlamaDevice, LlamaModel> {
     value: LLMTextValue,
     options: LLamaChatPromptOptions,
     onToken: (tokens: Uint32Array) => void,
-  ): Promise<number> {
+  ) {
 
     const tokens = this.model._tokenize(value);
     const grammar = options.grammar ? this._grammarEvaluationState(options.grammar) : null;
@@ -173,13 +173,13 @@ export class LlamaContext extends LLMContext<LlamaDevice, LlamaModel> {
 
       await this._ctx.eval(tokens);
 
-      if (options.maxTokens === 0) return clock() - time;
-
       let maxTokens = options.maxTokens ?? -1;
-
       while (maxTokens--) {
 
-        if (options.signal?.aborted) return clock() - time;
+        if (options.signal?.aborted) return {
+          stopReason: 'abort',
+          time: clock() - time,
+        } as const;
 
         let candidates = this._sampleCandidates(options);
 
@@ -206,7 +206,10 @@ export class LlamaContext extends LLMContext<LlamaDevice, LlamaModel> {
         onToken(sample);
       }
 
-      return clock() - time;
+      return {
+        stopReason: 'maxTokens',
+        time: clock() - time,
+      } as const;
     });
   }
 
