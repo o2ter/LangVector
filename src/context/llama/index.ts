@@ -33,6 +33,7 @@ import { DisposedError, LLMTextValue } from '../../types';
 import { Worker } from './worker';
 import { clock } from '../../utils';
 import { ChatHistoryItem } from '../../chat/types';
+import { LlamaGrammar } from '../../device/llama/grammar';
 import * as llamaCpp from '../../plugins/llamaCpp';
 
 export class LlamaContext extends LLMContext<LlamaDevice, LlamaModel> {
@@ -115,6 +116,12 @@ export class LlamaContext extends LLMContext<LlamaDevice, LlamaModel> {
   /** @internal */
   _shiftTokens(startPos: number, endPos: number, shiftDelta: number) {
     return this._ctx.shiftTokens(startPos, endPos, shiftDelta);
+  }
+
+  private _grammarEvaluationState(
+    grammar: LlamaGrammar,
+  ) {
+    return new llamaCpp.LlamaGrammarEvaluationState(this._ctx, grammar._grammar);
   }
 
   private _sampleCandidates(

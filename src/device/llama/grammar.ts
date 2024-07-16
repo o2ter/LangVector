@@ -27,7 +27,7 @@ import _ from 'lodash';
 import * as llamaCpp from '../../plugins/llamaCpp';
 import type { LlamaContext } from '../../context/llama';
 
-export class LlamaGrammer {
+export class LlamaGrammar {
 
   /** @internal */
   _grammar: typeof llamaCpp.LlamaGrammar;
@@ -46,7 +46,7 @@ export class LlamaGrammarEvaluationState {
   /** @internal */
   _state: typeof llamaCpp.LlamaGrammarEvaluationState;
 
-  constructor(context: LlamaContext, grammar: LlamaGrammer) {
+  constructor(context: LlamaContext, grammar: LlamaGrammar) {
     this._state = new llamaCpp.LlamaGrammarEvaluationState(context, grammar);
   }
 
