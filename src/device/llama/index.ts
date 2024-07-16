@@ -30,7 +30,23 @@ import { LlamaModel } from '../../model/llama';
 import { LlamaModelOptions } from '../../model/llama/types';
 import * as llamaCpp from '../../plugins/llamaCpp';
 
+class LlamaGrammer {
+
+  /** @internal */
+  _grammar: typeof llamaCpp.LlamaGrammar;
+
+  constructor(str: string) {
+    this._grammar = new llamaCpp.LlamaGrammar(str);
+  }
+
+  get description(): string {
+    return this._grammar.description();
+  }
+}
+
 export class LlamaDevice extends LLMDevice {
+
+  static Grammar = LlamaGrammer;
 
   static systemInfo() { return llamaCpp.systemInfo(); }
   static supportsGpuOffloading() { return llamaCpp.getSupportsGpuOffloading(); }

@@ -29,6 +29,7 @@
 
 #include "llama.h"
 #include "common/common.h"
+#include "common/grammar-parser.h"
 #include "napi.h"
 
 #ifdef GPU_INFO_USE_CUDA
