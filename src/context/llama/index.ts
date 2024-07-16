@@ -108,13 +108,11 @@ export class LlamaContext extends LLMContext<LlamaDevice, LlamaModel> {
     return history;
   }
 
-  /** @internal */
-  _removeTokens(startPos: number, endPos: number): boolean {
+  private _removeTokens(startPos: number, endPos: number): boolean {
     return this._ctx.removeTokens(startPos, endPos);
   }
 
-  /** @internal */
-  _shiftTokens(startPos: number, endPos: number, shiftDelta: number) {
+  private _shiftTokens(startPos: number, endPos: number, shiftDelta: number) {
     return this._ctx.shiftTokens(startPos, endPos, shiftDelta);
   }
 
