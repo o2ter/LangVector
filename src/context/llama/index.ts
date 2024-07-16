@@ -118,29 +118,8 @@ export class LlamaContext extends LLMContext<LlamaDevice, LlamaModel> {
       const state = await chatWrapper.generateContextState(this, value);
       this._tokens = _.flatMap(state, x => _.isArray(x.tokens) ? x.tokens : [...x.tokens]);
 
-      let _state = await this._contextShiftStrategy();
-      _state = _.isArray(_state) ? _state : [..._state];
-
-      if (_state.length > this.contextSize) {
-        throw Error('Invalid context shift operation');
-      }
-
-      const diff = _.findIndex(this._ctx_state, (x, i) => x !== _state[i]);
-
-      if (diff !== -1) {
-
-        this._removeTokens(diff, this._ctx_state.length);
-        this._ctx_state = this._ctx_state.slice(0, diff);
-
-        const _tokens = _state.slice(diff);
-        await this._ctx.eval(new Uint32Array(_tokens), this._ctx_state.length);
-        this._ctx_state.push(..._tokens);
-
-      } else if (this._ctx_state.length < _state.length) {
-
-        await this._ctx.eval(new Uint32Array(_state), this._ctx_state.length);
-        this._ctx_state.push(..._state);
-      }
+      const _state = await this._contextShiftStrategy();
+      await this._updateTokens(_state);
     });
   }
 
@@ -150,6 +129,32 @@ export class LlamaContext extends LLMContext<LlamaDevice, LlamaModel> {
 
   private _shiftTokens(startPos: number, endPos: number, shiftDelta: number) {
     return this._ctx.shiftTokens(startPos, endPos, shiftDelta);
+  }
+
+  private async _updateTokens(value: Uint32List) {
+
+    const tokens = _.isArray(value) ? value : [...value];
+
+    if (tokens.length > this.contextSize) {
+      throw Error('Invalid context shift operation');
+    }
+
+    const diff = _.findIndex(this._ctx_state, (x, i) => x !== tokens[i]);
+
+    if (diff !== -1) {
+
+      this._removeTokens(diff, this._ctx_state.length);
+      this._ctx_state = this._ctx_state.slice(0, diff);
+
+      const _tokens = tokens.slice(diff);
+      await this._ctx.eval(new Uint32Array(_tokens), this._ctx_state.length);
+      this._ctx_state.push(..._tokens);
+
+    } else if (this._ctx_state.length < tokens.length) {
+
+      await this._ctx.eval(new Uint32Array(tokens), this._ctx_state.length);
+      this._ctx_state.push(...tokens);
+    }
   }
 
   private _grammarEvaluationState(
@@ -250,24 +255,8 @@ export class LlamaContext extends LLMContext<LlamaDevice, LlamaModel> {
     this._chat_history = undefined;
 
     if (this._ctx_state.length + tokens.length > this.contextSize) {
-
-      let _state = await this._contextShiftStrategy();
-      _state = _.isArray(_state) ? _state : [..._state];
-
-      const diff = _.findIndex(this._ctx_state, (x, i) => x !== _state[i]);
-
-      if (diff !== -1) {
-
-        this._removeTokens(diff, this._ctx_state.length);
-        this._ctx_state = this._ctx_state.slice(0, diff);
-
-        const _tokens = _state.slice(diff);
-        await this._ctx.eval(new Uint32Array(_tokens), this._ctx_state.length);
-        this._ctx_state.push(..._tokens);
-
-      } else if (this._ctx_state.length < _state.length) {
-        throw Error('Invalid context shift operation');
-      }
+      const _state = await this._contextShiftStrategy();
+      await this._updateTokens(_state);
     }
 
     await this._ctx.eval(tokens, this._ctx_state.length);
