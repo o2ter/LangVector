@@ -117,6 +117,36 @@ export class LlamaContext extends LLMContext<LlamaDevice, LlamaModel> {
     return this._ctx.shiftTokens(startPos, endPos, shiftDelta);
   }
 
+  private _sampleCandidates(
+    options: LLamaChatPromptOptions,
+  ) {
+
+    const repeatPenalty = {
+      punishTokens: () => {
+        return new Uint32Array;
+      },
+      ...options.repeatPenalty ? options.repeatPenalty : {},
+    };
+    const punishTokens = options.repeatPenalty === false ?
+      [] : _.isFunction(repeatPenalty.punishTokens) ?
+        repeatPenalty.punishTokens() :
+        repeatPenalty.punishTokens;
+    const tokenBias = [
+      ..._.isFunction(options.tokenBias) ?
+        options.tokenBias() :
+        options.tokenBias ?? []
+    ];
+
+    return new llamaCpp.LlamaContextSampleCandidates(this._ctx, _.pickBy({
+      tokenBiasKeys: new Uint32Array(_.map(tokenBias, x => x[0])),
+      tokenBiasValues: new Float32Array(_.map(tokenBias, x => x[1] === 'never' ? Number.NEGATIVE_INFINITY : x[1])),
+      repeatPenalty: repeatPenalty.penalty,
+      repeatPenaltyPresencePenalty: repeatPenalty.presencePenalty,
+      repeatPenaltyFrequencyPenalty: repeatPenalty.frequencyPenalty,
+      repeatPenaltyTokens: _.isArrayBuffer(punishTokens) ? punishTokens : new Uint32Array(punishTokens),
+    }, v => !_.isNil(v)));
+  }
+
   private async _evaluate(
     value: LLMTextValue,
     options: LLamaChatPromptOptions,
@@ -137,33 +167,13 @@ export class LlamaContext extends LLMContext<LlamaDevice, LlamaModel> {
 
       if (options.maxTokens === 0) return clock() - time;
 
-      const repeatPenalty = {
-        punishTokens: () => {
-          return new Uint32Array;
-        },
-        ...options.repeatPenalty ? options.repeatPenalty : {},
-      };
-      const punishTokens = options.repeatPenalty === false ?
-        [] : _.isFunction(repeatPenalty.punishTokens) ?
-          repeatPenalty.punishTokens() :
-          repeatPenalty.punishTokens;
-      const tokenBias = [
-        ..._.isFunction(options.tokenBias) ?
-          options.tokenBias() :
-          options.tokenBias ?? []
-      ];
+      const candidates = this._sampleCandidates(options);
 
-      const sample = await this._ctx.sampleToken(_.pickBy({
+      const sample = await this._ctx.sampleToken(candidates, _.pickBy({
         temperature: options.temperature,
         minP: options.minP,
         topK: options.topK,
         topP: options.topP,
-        tokenBiasKeys: new Uint32Array(_.map(tokenBias, x => x[0])),
-        tokenBiasValues: new Float32Array(_.map(tokenBias, x => x[1] === 'never' ? Number.NEGATIVE_INFINITY : x[1])),
-        repeatPenalty: repeatPenalty.penalty,
-        repeatPenaltyPresencePenalty: repeatPenalty.presencePenalty,
-        repeatPenaltyFrequencyPenalty: repeatPenalty.frequencyPenalty,
-        repeatPenaltyTokens: _.isArrayBuffer(punishTokens) ? punishTokens : new Uint32Array(punishTokens),
       }, v => !_.isNil(v)));
 
       console.log({ sample })
