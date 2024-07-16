@@ -167,9 +167,9 @@ export class LlamaModel extends LLMModel<LlamaDevice> {
     if (_.isNil(this._model)) throw new DisposedError();
     return this._model.tokenize(str, encodeSpecial);
   }
-  detokenize(tokens: Uint32List, { decodeSpecial = false } = {}): string {
+  detokenize(tokens: Uint32List | number, { decodeSpecial = false } = {}): string {
     if (_.isNil(this._model)) throw new DisposedError();
-    const _tokens = _.isArrayBuffer(tokens) ? tokens : new Uint32Array(tokens);
+    const _tokens = _.isArrayBuffer(tokens) ? tokens : new Uint32Array(_.isNumber(tokens) ? [tokens] : tokens);
     return this._model.detokenize(_tokens, decodeSpecial);
   }
 
