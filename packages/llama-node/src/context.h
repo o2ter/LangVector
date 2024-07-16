@@ -35,12 +35,26 @@ public:
 
   LlamaContextSampleCandidates(const Napi::CallbackInfo &info);
 
+  Napi::Value IsValid(const Napi::CallbackInfo &info)
+  {
+    for (auto candidate : candidates)
+    {
+      if (candidate.logit != -INFINITY)
+      {
+        return Napi::Boolean::New(info.Env(), true);
+      }
+    }
+    return Napi::Boolean::New(info.Env(), false);
+  }
+
   static void init(Napi::Object exports)
   {
     auto def = DefineClass(
         exports.Env(),
         "LlamaContextSampleCandidates",
-        {});
+        {
+            InstanceMethod("isValid", &LlamaContextSampleCandidates::IsValid),
+        });
     exports.Set("LlamaContextSampleCandidates", def);
   }
 };
