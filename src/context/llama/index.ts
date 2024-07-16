@@ -236,6 +236,7 @@ export class LlamaContext extends LLMContext<LlamaDevice, LlamaModel> {
   private async _decodeTokens(value: LLMTextValue) {
 
     const chatWrapper = this._options.chatOptions?.chatWrapper;
+
     if (!this._tokens.length && chatWrapper) {
       const state = chatWrapper.generateContextState(this, []);
       const _tokens = _.flatMap(state, x => _.isArray(x.tokens) ? x.tokens : [...x.tokens]);
