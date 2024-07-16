@@ -167,6 +167,7 @@ export class LlamaContext extends LLMContext<LlamaDevice, LlamaModel> {
     const tokens = this.model._tokenize(value);
 
     this._tokens.push(...tokens);
+    this._chat_history = undefined;
 
     if (this._ctx_state.length + tokens.length > this.contextSize) {
 
