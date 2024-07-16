@@ -154,6 +154,13 @@ export class LlamaContext extends LLMContext<LlamaDevice, LlamaModel> {
     }, v => !_.isNil(v)));
   }
 
+  private async _decodeTokens(tokens: Uint32List) {
+
+    this._tokens.push(...tokens);
+    await this._ctx.eval(tokens);
+
+  }
+
   private async _evaluate(
     value: LLMTextValue,
     options: LLamaChatPromptOptions,
@@ -169,8 +176,7 @@ export class LlamaContext extends LLMContext<LlamaDevice, LlamaModel> {
 
       const totalTime = clock();
 
-      this._tokens.push(...tokens);
-      await this._ctx.eval(tokens);
+      await this._decodeTokens(tokens);
 
       let maxTokens = options.maxTokens ?? -1;
       while (maxTokens--) {
@@ -202,6 +208,8 @@ export class LlamaContext extends LLMContext<LlamaDevice, LlamaModel> {
         if (grammar && !this.model.isEogToken(sample)) {
           grammar.acceptToken(sample);
         }
+
+        await this._decodeTokens([sample]);
 
         onToken(sample, clock() - time);
       }
