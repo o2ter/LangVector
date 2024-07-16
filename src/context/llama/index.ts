@@ -154,7 +154,9 @@ export class LlamaContext extends LLMContext<LlamaDevice, LlamaModel> {
     }, v => !_.isNil(v)));
   }
 
-  private async _decodeTokens(tokens: Uint32List) {
+  private async _decodeTokens(value: LLMTextValue) {
+
+    const tokens = this.model._tokenize(value);
 
     this._tokens.push(...tokens);
     await this._ctx.eval(tokens);
@@ -167,7 +169,6 @@ export class LlamaContext extends LLMContext<LlamaDevice, LlamaModel> {
     onToken: (token: number, time: number) => void,
   ) {
 
-    const tokens = this.model._tokenize(value);
     const grammar = options.grammar ? this._grammarEvaluationState(options.grammar) : null;
 
     return await this._worker.sync(async () => {
@@ -176,7 +177,7 @@ export class LlamaContext extends LLMContext<LlamaDevice, LlamaModel> {
 
       const totalTime = clock();
 
-      await this._decodeTokens(tokens);
+      await this._decodeTokens(value);
 
       let maxTokens = options.maxTokens ?? -1;
       while (maxTokens--) {
