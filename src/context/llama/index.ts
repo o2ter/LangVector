@@ -207,8 +207,18 @@ export class LlamaContext extends LLMContext<LlamaDevice, LlamaModel> {
     if (this._ctx_state.length + tokens.length <= this.contextSize) {
       this._ctx_state.push(...tokens);
     } else {
-      const _state = await this._contextShiftStrategy();
-      this._ctx_state = _.isArray(_state) ? _state : [..._state];
+      let _state = await this._contextShiftStrategy();
+      _state = _.isArray(_state) ? _state : [..._state];
+
+      const diff = _.findIndex(this._ctx_state, (x, i) => x !== _state[i]);
+
+      if (diff !== -1) {
+
+
+
+      } else if (this._ctx_state.length < _state.length) {
+        throw Error('Invalid context shift operation');
+      }
     }
 
     await this._ctx.eval(tokens);
