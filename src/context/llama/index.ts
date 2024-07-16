@@ -206,7 +206,12 @@ export class LlamaContext extends LLMContext<LlamaDevice, LlamaModel> {
           topP: options.topP,
         }, v => !_.isNil(v)));
 
-        if (grammar && !this.model.isEogToken(sample)) {
+        if (this.model.isEogToken(sample)) return {
+          stopReason: 'eogToken',
+          totalTime: clock() - totalTime,
+        } as const;
+
+        if (grammar) {
           grammar.acceptToken(sample);
         }
 
