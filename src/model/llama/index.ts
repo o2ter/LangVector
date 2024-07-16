@@ -139,6 +139,10 @@ export class LlamaModel extends LLMModel<LlamaDevice> {
     return this._model.modelSize();
   }
 
+  get chatTemplate() {
+    return this.meta['tokenizer.chat_template'];
+  }
+
   get meta() {
     if (_.isNil(this._model)) throw new DisposedError();
     const length = this._model.metaLength();
@@ -175,7 +179,7 @@ export class LlamaModel extends LLMModel<LlamaDevice> {
   }
 
   chatApplyTemplate(msgs: { role: string; content: string; }[]): string | undefined {
-    const template = this.meta['tokenizer.chat_template'];
+    const template = this.chatTemplate;
     return template ? this._model.chatApplyTemplate(template, msgs) : undefined;
   }
 
