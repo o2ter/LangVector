@@ -51,7 +51,7 @@ export class LlamaContext extends LLMContext<LlamaDevice, LlamaModel> {
   /** @internal */
   _chat_history?: ChatHistoryItem[];
   /** @internal */
-  _ctx_state?: number[];
+  _ctx_state: number[] = [];
 
   /** @internal */
   constructor(model: LlamaModel, ctx: typeof llamaCpp.LlamaContext, options: LlamaContextOptions) {
@@ -159,8 +159,9 @@ export class LlamaContext extends LLMContext<LlamaDevice, LlamaModel> {
     const tokens = this.model._tokenize(value);
 
     this._tokens.push(...tokens);
-    await this._ctx.eval(tokens);
 
+    await this._ctx.eval(tokens);
+    this._ctx_state.push(...tokens);
   }
 
   private async _evaluate(
