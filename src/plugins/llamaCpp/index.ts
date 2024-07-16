@@ -29,6 +29,7 @@ export const LlamaModel = pkg.LlamaModel;
 export const LlamaContext = pkg.LlamaContext;
 export const LlamaEmbeddingContext = pkg.LlamaEmbeddingContext;
 export const LlamaGrammar = pkg.LlamaGrammar;
+export const LlamaGrammarEvaluationState = pkg.LlamaGrammarEvaluationState;
 
 export const systemInfo = (): string => {
   return pkg.systemInfo();

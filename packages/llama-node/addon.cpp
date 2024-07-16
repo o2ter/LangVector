@@ -49,6 +49,7 @@ Napi::Object registerCallback(Napi::Env env, Napi::Object exports)
   LlamaContext::init(exports);
   LlamaEmbeddingContext::init(exports);
   LlamaGrammar::init(exports);
+  LlamaGrammarEvaluationState::init(exports);
   llama_log_set(llama_log_callback, nullptr);
   return exports;
 }

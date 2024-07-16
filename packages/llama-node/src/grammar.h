@@ -62,3 +62,40 @@ public:
     exports.Set("LlamaGrammar", def);
   }
 };
+
+class LlamaGrammarEvaluationState : public Napi::ObjectWrap<LlamaGrammarEvaluationState>
+{
+public:
+  LlamaGrammar *grammar;
+  llama_grammar *state;
+
+  LlamaGrammarEvaluationState(const Napi::CallbackInfo &info) : Napi::ObjectWrap<LlamaGrammarEvaluationState>(info)
+  {
+    grammar = Napi::ObjectWrap<LlamaGrammar>::Unwrap(info[0].As<Napi::Object>());
+    grammar->Ref();
+
+    std::vector<const llama_grammar_element *> grammar_rules(grammar->grammar.c_rules());
+    state = llama_grammar_init(grammar_rules.data(), grammar_rules.size(), grammar->grammar.symbol_ids.at("root"));
+  }
+
+  ~LlamaGrammarEvaluationState()
+  {
+    grammar->Unref();
+
+    if (state != NULL)
+    {
+      llama_grammar_free(state);
+      state = NULL;
+    }
+  }
+
+  static void init(Napi::Object exports)
+  {
+    auto def = DefineClass(
+        exports.Env(),
+        "LlamaGrammarEvaluationState",
+        {
+        });
+    exports.Set("LlamaGrammarEvaluationState", def);
+  }
+};
