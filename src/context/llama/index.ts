@@ -127,12 +127,18 @@ export class LlamaContext extends LLMContext<LlamaDevice, LlamaModel> {
   ) {
 
     const lastTokens = options.repeatPenalty ? options.repeatPenalty.lastTokens ?? 64 : 0;
+    const penalizeNewLine = options.repeatPenalty ? options.repeatPenalty.penalizeNewLine : null;
     const punishTokensFilter = options.repeatPenalty ? options.repeatPenalty.punishTokensFilter : null;
 
     const repeatPenalty = {
       punishTokens: () => {
-        const tokens = this._tokens.slice(-lastTokens);
-        return punishTokensFilter ? punishTokensFilter(tokens) : tokens;
+        let tokens: Uint32List = this._tokens.slice(-lastTokens);
+        tokens = punishTokensFilter ? punishTokensFilter(tokens) : tokens;
+        if (penalizeNewLine !== false) {
+          const nlToken = this.model.tokens.nl;
+          if (nlToken != null) tokens = tokens.filter(token => token !== nlToken);
+        }
+        return tokens;
       },
       ...options.repeatPenalty ? options.repeatPenalty : {},
     };
