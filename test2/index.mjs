@@ -12,7 +12,7 @@ const model = await LlamaDevice.loadModel({
   useMmap: true,
 });
 
-console.log(model.chatApplyTemplate([
+console.log(model.applyChatTemplate([
   { role: "system", content: "You are a helpful assistant" },
   { role: "user", content: "Hello" },
   { role: "assistant", content: "Hi there" },

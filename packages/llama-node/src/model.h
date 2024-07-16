@@ -382,7 +382,7 @@ public:
     return Napi::String::New(Env(), result.data(), result.size() - 1);
   }
 
-  Napi::Value ChatApplyTemplate(const Napi::CallbackInfo &info)
+  Napi::Value ApplyChatTemplate(const Napi::CallbackInfo &info)
   {
     std::string tmpl = info[0].As<Napi::String>().Utf8Value();
     std::vector<llama_chat_msg> msgs;
@@ -429,7 +429,7 @@ public:
             InstanceMethod("metaLength", &LlamaModel::MetaLength),
             InstanceMethod("metaKey", &LlamaModel::MetaKey),
             InstanceMethod("metaValue", &LlamaModel::MetaValue),
-            InstanceMethod("chatApplyTemplate", &LlamaModel::ChatApplyTemplate),
+            InstanceMethod("applyChatTemplate", &LlamaModel::ApplyChatTemplate),
             InstanceMethod("dispose", &LlamaModel::Dispose),
         });
     exports.Set("LlamaModel", def);

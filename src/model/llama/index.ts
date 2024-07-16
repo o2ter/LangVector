@@ -178,9 +178,9 @@ export class LlamaModel extends LLMModel<LlamaDevice> {
     return this._model.detokenize(_tokens, decodeSpecial);
   }
 
-  chatApplyTemplate(msgs: { role: string; content: string; }[]): string | undefined {
+  applyChatTemplate(msgs: { role: string; content: string; }[]): string | undefined {
     const template = this.chatTemplate;
-    return template ? this._model.chatApplyTemplate(template, msgs) : undefined;
+    return template ? this._model.applyChatTemplate(template, msgs) : undefined;
   }
 
   createContext(options: LlamaContextOptions = {}) {
