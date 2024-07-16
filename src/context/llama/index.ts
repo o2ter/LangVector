@@ -205,7 +205,17 @@ export class LlamaContext extends LLMContext<LlamaDevice, LlamaModel> {
     this._chat_history = undefined;
 
     if (this._ctx_state.length + tokens.length <= this.contextSize) {
+
+      const chatWrapper = this._options.chatOptions?.chatWrapper;
+      if (!this._tokens.length && chatWrapper) {
+        const state = chatWrapper.generateContextState(this, []);
+        const _tokens = _.flatMap(state, x => _.isArray(x.tokens) ? x.tokens : [...x.tokens]);
+        this._ctx_state.push(..._tokens);
+        await this._ctx.eval(new Uint32Array(_tokens));
+      }
+
       this._ctx_state.push(...tokens);
+
     } else {
       let _state = await this._contextShiftStrategy();
       _state = _.isArray(_state) ? _state : [..._state];
@@ -217,9 +227,9 @@ export class LlamaContext extends LLMContext<LlamaDevice, LlamaModel> {
         this._removeTokens(diff, this._ctx_state.length);
         this._ctx_state = this._ctx_state.slice(0, diff);
 
-        const tokens = _state.slice(diff);
-        this._ctx_state.push(...tokens);
-        await this._ctx.eval(new Uint32Array(tokens));
+        const _tokens = _state.slice(diff);
+        this._ctx_state.push(..._tokens);
+        await this._ctx.eval(new Uint32Array(_tokens));
 
       } else if (this._ctx_state.length < _state.length) {
         throw Error('Invalid context shift operation');
