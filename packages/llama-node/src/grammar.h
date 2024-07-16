@@ -26,6 +26,7 @@
 #pragma once
 
 #include "common.h"
+#include "context.h"
 
 class LlamaGrammar : public Napi::ObjectWrap<LlamaGrammar>
 {
@@ -66,11 +67,14 @@ public:
 class LlamaGrammarEvaluationState : public Napi::ObjectWrap<LlamaGrammarEvaluationState>
 {
 public:
+  LlamaContext *ctx;
   LlamaGrammar *grammar;
   llama_grammar *state;
 
   LlamaGrammarEvaluationState(const Napi::CallbackInfo &info) : Napi::ObjectWrap<LlamaGrammarEvaluationState>(info)
   {
+    ctx = Napi::ObjectWrap<LlamaContext>::Unwrap(info[0].As<Napi::Object>());
+    ctx->Ref();
     grammar = Napi::ObjectWrap<LlamaGrammar>::Unwrap(info[0].As<Napi::Object>());
     grammar->Ref();
 
@@ -80,6 +84,7 @@ public:
 
   ~LlamaGrammarEvaluationState()
   {
+    ctx->Unref();
     grammar->Unref();
 
     if (state != NULL)
@@ -89,12 +94,41 @@ public:
     }
   }
 
+  Napi::Value AcceptToken(const Napi::CallbackInfo &info)
+  {
+    llama_token tokenId = info[0].As<Napi::Number>().Int32Value();
+    llama_grammar_accept_token(ctx->ctx, state, tokenId);
+    return info.Env().Undefined();
+  }
+
+  Napi::Value CanBeNextToken(const Napi::CallbackInfo &info)
+  {
+    llama_token tokenId = info[0].As<Napi::Number>().Int32Value();
+
+    std::vector<llama_token_data> candidates;
+    candidates.reserve(1);
+    candidates.emplace_back(llama_token_data{tokenId, 1, 0.0f});
+
+    llama_token_data_array candidates_p = {candidates.data(), candidates.size(), false};
+
+    llama_sample_grammar(ctx->ctx, &candidates_p, state);
+
+    if (candidates_p.size == 0 || candidates_p.data[0].logit == -INFINITY)
+    {
+      return Napi::Boolean::New(info.Env(), false);
+    }
+
+    return Napi::Boolean::New(info.Env(), true);
+  }
+
   static void init(Napi::Object exports)
   {
     auto def = DefineClass(
         exports.Env(),
         "LlamaGrammarEvaluationState",
         {
+            InstanceMethod("acceptToken", &LlamaGrammarEvaluationState::AcceptToken),
+            InstanceMethod("canBeNextToken", &LlamaGrammarEvaluationState::CanBeNextToken),
         });
     exports.Set("LlamaGrammarEvaluationState", def);
   }
