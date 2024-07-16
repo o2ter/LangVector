@@ -214,7 +214,12 @@ export class LlamaContext extends LLMContext<LlamaDevice, LlamaModel> {
 
       if (diff !== -1) {
 
+        this._removeTokens(diff, this._ctx_state.length);
+        this._ctx_state = this._ctx_state.slice(0, diff);
 
+        const tokens = _state.slice(diff);
+        this._ctx_state.push(...tokens);
+        await this._ctx.eval(new Uint32Array(tokens));
 
       } else if (this._ctx_state.length < _state.length) {
         throw Error('Invalid context shift operation');
