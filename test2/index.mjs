@@ -19,7 +19,7 @@ const context = model.createContext({
 });
 
 for await (const { token, time } of context.prompt('hello, world', { temperature: 0.8, maxTokens: 2 })) {
-  console.log({ token, time, text: model.detokenize(token, { decodeSpecial: true }) })
+  console.log({ token, time, text: model.detokenize([token], { decodeSpecial: true }) })
 }
 
 console.log(context)
