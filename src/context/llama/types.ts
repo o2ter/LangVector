@@ -46,7 +46,7 @@ export type LlamaContextOptions = {
   threads?: number;
 
   chatOptions?: {
-    contextShiftStrategy?: (session: LlamaContext) => Awaitable<Uint32List>;
+    contextShiftStrategy?: (ctx: LlamaContext) => Awaitable<Uint32List>;
     chatWrapper?: ChatWrapper;
     functions?: Record<string, ChatModelFunctionOptions>;
     documentFunctionParams?: boolean;
@@ -66,8 +66,8 @@ export type LlamaSequenceRepeatPenalty = {
    */
   penalizeNewLine?: boolean;
   /** Tokens to lower the predication probability of to be the next predicted token */
-  punishTokens?: Uint32List | ((session: LlamaContext) => Uint32List);
-  punishTokensFilter?: (session: LlamaContext, tokens: Uint32List) => Uint32List;
+  punishTokens?: Uint32List | ((ctx: LlamaContext) => Uint32List);
+  punishTokensFilter?: (ctx: LlamaContext, tokens: Uint32List) => Uint32List;
   /**
    * The relative amount to lower the probability of the tokens in `punishTokens` by
    * Defaults to `1.1`.
@@ -144,7 +144,7 @@ export type LLamaChatPromptOptions = {
    * Can be used to bias the model to generate tokens that you want it to lean towards,
    * or to avoid generating tokens that you want it to avoid.
    */
-  tokenBias?: Map<number, 'never' | number> | ((session: LlamaContext) => Map<number, 'never' | number>);
+  tokenBias?: Map<number, 'never' | number> | ((ctx: LlamaContext) => Map<number, 'never' | number>);
   /**
    * Custom stop triggers to stop the generation of the response when any of the provided triggers are found.
    */
