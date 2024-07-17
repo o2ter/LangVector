@@ -9,7 +9,7 @@ cd ../
 LIST=(
   meta-llama/Meta-Llama-3-8B-Instruct
   # meta-llama/Meta-Llama-3-70B-Instruct
-  # stabilityai/stable-diffusion-2-1
+  stabilityai/stable-diffusion-2-1
 )
 
 OUTTYPE=f16
@@ -28,7 +28,8 @@ if [ -f "${HOMEBREW_PREFIX}/bin/python3" ]; then
   PYTHON="${HOMEBREW_PREFIX}/bin/python3"
 fi
 
-for SOURCE in "${LIST[@]}"; do
+for SRC in ./models/*/*; do
+  SOURCE="$( basename "$( dirname "${SRC}" )" )/$( basename "${SRC}" )"
 
   if [ ! -f "./models/${SOURCE}/ggml-model-${OUTTYPE}.gguf" ]; then
     mkdir -p ./models/${SOURCE}
