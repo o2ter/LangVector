@@ -37,10 +37,6 @@ export class Llama3ChatWrapper implements ChatWrapper {
     ], x => !_.isEmpty(x));
   }
 
-  generateFunctionGrammar(ctx: LlamaContext) {
-    return undefined;
-  }
-
   generateContextState(ctx: LlamaContext, chatHistory: ChatHistoryItem[]) {
 
     const shouldPrependBosToken = ctx.model.shouldPrependBosToken;

@@ -50,25 +50,25 @@ export type ChatModelFunctionCall = {
 
 export type ChatWrapper = {
 
-  stopGenerationTriggers(ctx: LlamaContext): LLMTextValue[];
+  stopGenerationTriggers: (ctx: LlamaContext) => LLMTextValue[];
 
-  generateFunctionGrammar(
+  generateFunctionGrammar?: (
     ctx: LlamaContext,
-  ): {
+  ) => {
     beginTrigger: LLMTextValue;
     grammar: LlamaGrammar;
     stopGenerationTriggers: LLMTextValue[];
   } | undefined;
 
-  generateContextState(
+  generateContextState: (
     ctx: LlamaContext,
     chatHistory: ChatHistoryItem[],
-  ): { item: ChatHistoryItem; tokens: Uint32List; }[];
+  ) => { item: ChatHistoryItem; tokens: Uint32List; }[];
 
-  generateChatHistory(
+  generateChatHistory: (
     ctx: LlamaContext,
     tokens: Uint32Array,
-  ): ChatHistoryItem[];
+  ) => ChatHistoryItem[];
 };
 
 export type ChatModelFunctionOptions = {
