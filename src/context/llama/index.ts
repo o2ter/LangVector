@@ -280,7 +280,7 @@ export class LlamaContext extends LLMContext<LlamaDevice, LlamaModel> {
       this._ctx_state.push(..._tokens);
     }
 
-    const tokens = this.model._tokenize(value);
+    const tokens = this.model.tokenize(value);
     this._tokens.push(...tokens);
     this._chat_history = undefined;
 
@@ -301,7 +301,7 @@ export class LlamaContext extends LLMContext<LlamaDevice, LlamaModel> {
   ) {
 
     const grammar = options.grammar ? this._grammarEvaluationState(options.grammar) : null;
-    const stopTriggers = _.map(options.stopTriggers, x => this.model._tokenize(x));
+    const stopTriggers = _.map(options.stopTriggers, x => this.model.tokenize(x));
 
     return await this._worker.sync(async () => {
 

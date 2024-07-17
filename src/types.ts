@@ -29,4 +29,5 @@ export class DisposedError extends Error {
   }
 }
 
-export type LLMTextValue = string | Uint32List;
+type Many<T> = T | Iterable<Many<T>>;
+export type LLMTextValue = Many<string | Uint32List>;

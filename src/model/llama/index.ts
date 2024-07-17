@@ -31,7 +31,6 @@ import { LlamaContext } from '../../context/llama';
 import { LlamaContextOptions } from '../../context/llama/types';
 import { clock } from '../../utils';
 import * as llamaCpp from '../../plugins/llamaCpp';
-import { ChatHistoryItem } from '../../chat/types';
 
 export class LlamaModel extends LLMModel<LlamaDevice> {
 
@@ -168,9 +167,21 @@ export class LlamaModel extends LLMModel<LlamaDevice> {
     return this._model.isEogToken(token);
   }
 
-  tokenize(str: string, { encodeSpecial = false } = {}): Uint32Array {
+  tokenize(value: LLMTextValue, { encodeSpecial = false } = {}): Uint32Array {
     if (_.isNil(this._model)) throw new DisposedError();
-    return this._model.tokenize(str, encodeSpecial);
+    const model = this._model;
+    function* _tokenize(value: number | LLMTextValue): Generator<number, void, undefined> {
+      if (_.isNumber(value)) {
+        yield value;
+      } else if (_.isArrayBuffer(value)) {
+        yield* value;
+      } else if (_.isString(value)) {
+        yield* model.tokenize(value, encodeSpecial);
+      } else {
+        for (const v of value) yield* _tokenize(v);
+      }
+    }
+    return new Uint32Array([..._tokenize(value)]);
   }
   detokenize(tokens: Uint32List | number, { decodeSpecial = false } = {}): string {
     if (_.isNil(this._model)) throw new DisposedError();
@@ -189,18 +200,12 @@ export class LlamaModel extends LLMModel<LlamaDevice> {
     return new LlamaContext(this, ctx, _options);
   }
 
-  /** @internal */
-  _tokenize(value: LLMTextValue): Uint32Array {
-    if (_.isString(value)) return this.tokenize(value);
-    return _.isArrayBuffer(value) ? value : new Uint32Array(value);
-  }
-
   async embedding(value: LLMTextValue, { batchSize, threads }: {
     batchSize?: number;
     threads?: number;
   } = {}) {
     const time = clock();
-    const tokens = this._tokenize(value);
+    const tokens = this.tokenize(value);
     const _batchSize = batchSize ?? tokens.length;
     const ctx = new llamaCpp.LlamaEmbeddingContext(this._model, _.pickBy({
       contextSize: tokens.length,
