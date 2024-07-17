@@ -48,7 +48,18 @@ export class Llama3ChatWrapper implements ChatWrapper {
     }[] = [];
 
     if (ctx.chatOptions?.functions) {
-
+      result.push({
+        item: {
+          type: 'system',
+          text: sysMsg,
+        },
+        tokens: ctx.model.tokenize([
+          _.compact([shouldPrependBosToken && bos]),
+          start_header, 'system', end_header, '\n\n',
+          sysMsg,
+          _.compact([eot]),
+        ]),
+      });
     } else {
       result.push({
         item: {
