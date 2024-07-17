@@ -22,7 +22,7 @@ if [ -f "${HOMEBREW_PREFIX}/bin/python3" ]; then
   PYTHON="${HOMEBREW_PREFIX}/bin/python3"
 fi
 
-for SRC in ./models/*/*; do
+for SRC in ./.cache/models/*/*; do
   SOURCE="$( basename "$( dirname "${SRC}" )" )/$( basename "${SRC}" )"
 
   if [ ! -f "./models/${SOURCE}/ggml-model-${OUTTYPE}.gguf" ]; then
