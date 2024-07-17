@@ -84,6 +84,8 @@ export class Llama3ChatWrapper implements ChatWrapper {
                 ];
               }
               return [
+                start_header, 'assistant', end_header, '\n\n',
+                '||call: ', response.name, '(', JSON.stringify(response.params), ')',
                 start_header, 'function_call_result', end_header, '\n\n',
                 JSON.stringify(response.result),
               ];
