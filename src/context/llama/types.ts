@@ -39,6 +39,9 @@ export type LlamaContextOptions = {
    * Max number of tokens in a single batch.
    */
   batchSize?: number;
+  /**
+   * Memory usage optimization. (default to false)
+   */
   flashAttention?: boolean;
   /**
    * Max number of threads. (default to hardware)
