@@ -25,7 +25,6 @@
 
 import _ from 'lodash';
 import { LLMDevice } from '../device/base';
-import { Awaitable } from '@o2ter/utils-js';
 
 export abstract class LLMModel<D extends LLMDevice> {
 
