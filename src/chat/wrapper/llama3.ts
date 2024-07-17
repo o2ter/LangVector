@@ -41,39 +41,38 @@ export class Llama3ChatWrapper implements ChatWrapper {
     const sys = _.first(chatHistory)?.type === 'system' ? _.first(chatHistory) as ChatSystemMessage : undefined;
     const history = sys ? _.drop(chatHistory, 1) : chatHistory;
 
-    const sysMsg = sys?.text ?? defaultSysMsg;
+    const sysMsg = sys?.text ?? (ctx.chatOptions?.functions ? [
+      "The assistant calls the provided functions as needed to retrieve information instead of relying on existing knowledge.",
+      "To fulfill a request, the assistant calls relevant functions in advance when needed before responding to the request, and does not tell the user prior to calling a function.",
+      "Provided functions:",
+      "```typescript",
+
+      "```",
+      "",
+      "Calling any of the provided functions can be done like this:",
+      "||call: getSomeInfo({ someKey: \"someValue\" })",
+      "",
+      "Note that the || prefix is mandatory",
+      "The assistant does not inform the user about using functions and does not explain anything before calling a function.",
+      "After calling a function, the raw result appears afterwards and is not part of the conversation",
+      "To make information be part of the conversation, the assistant paraphrases and repeats the information without the function syntax.",
+    ] : defaultSysMsg);
+
     const result: {
       item: ChatHistoryItem;
       tokens: Uint32List;
-    }[] = [];
-
-    if (ctx.chatOptions?.functions) {
-      result.push({
-        item: {
-          type: 'system',
-          text: sysMsg,
-        },
-        tokens: ctx.model.tokenize([
-          _.compact([shouldPrependBosToken && bos]),
-          start_header, 'system', end_header, '\n\n',
-          sysMsg,
-          _.compact([eot]),
-        ]),
-      });
-    } else {
-      result.push({
-        item: {
-          type: 'system',
-          text: sysMsg,
-        },
-        tokens: ctx.model.tokenize([
-          _.compact([shouldPrependBosToken && bos]),
-          start_header, 'system', end_header, '\n\n',
-          sysMsg,
-          _.compact([eot]),
-        ]),
-      });
-    }
+    }[] = [{
+      item: {
+        type: 'system',
+        text: sysMsg,
+      },
+      tokens: ctx.model.tokenize([
+        _.compact([shouldPrependBosToken && bos]),
+        start_header, 'system', end_header, '\n\n',
+        sysMsg,
+        _.compact([eot]),
+      ]),
+    }];
 
     for (const item of history) {
       switch (item.type) {
@@ -90,7 +89,7 @@ export class Llama3ChatWrapper implements ChatWrapper {
         case 'model':
           result.push({
             item,
-            tokens: ctx.model.tokenize(_.flatMap(item.response, response => { 
+            tokens: ctx.model.tokenize(_.flatMap(item.response, response => {
               if (_.isString(response)) {
                 return [
                   start_header, 'assistant', end_header, '\n\n',
