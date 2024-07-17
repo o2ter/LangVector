@@ -29,7 +29,19 @@ import { LlamaContext } from '../../context/llama';
 
 export class Llama3ChatWrapper implements ChatWrapper {
 
-  generateContextState(ctx: LlamaContext, chatHistory: ChatHistoryItem[]): { item: ChatHistoryItem; tokens: Uint32List; }[] {
+  stopGenerationTriggers(ctx: LlamaContext) {
+    const { eot, eos } = ctx.model.tokens;
+    return _.filter([
+      _.compact([eot]),
+      _.compact([eos]),
+    ], x => !_.isEmpty(x));
+  }
+
+  generateFunctionGrammar(ctx: LlamaContext) {
+    return undefined;
+  }
+
+  generateContextState(ctx: LlamaContext, chatHistory: ChatHistoryItem[]) {
 
     const shouldPrependBosToken = ctx.model.shouldPrependBosToken;
     const { bos, eot } = ctx.model.tokens;
@@ -55,7 +67,7 @@ export class Llama3ChatWrapper implements ChatWrapper {
       "After calling a function, the raw result appears afterwards and is not part of the conversation",
       "To make information be part of the conversation, the assistant paraphrases and repeats the information without the function syntax.",
     ] : [
-        'You are a helpful AI assistant for travel tips and recommendations',
+      'You are a helpful AI assistant for travel tips and recommendations',
     ]).join('\n');
 
     const result: {

@@ -24,6 +24,7 @@
 //
 
 import { LLMTextValue } from '../types';
+import { LlamaGrammar } from '../device/llama/grammar';
 import type { LlamaContext } from '../context/llama';
 
 export type ChatHistoryItem = ChatSystemMessage | ChatUserMessage | ChatModelResponse;
@@ -48,10 +49,18 @@ export type ChatModelFunctionCall = {
 };
 
 export type ChatWrapper = {
+
+  stopGenerationTriggers(ctx: LlamaContext): LLMTextValue[];
+
+  generateFunctionGrammar(
+    ctx: LlamaContext,
+  ): { grammar: LlamaGrammar; } | undefined;
+  
   generateContextState(
     ctx: LlamaContext,
     chatHistory: ChatHistoryItem[],
   ): { item: ChatHistoryItem; tokens: Uint32List; }[];
+
   generateChatHistory(
     ctx: LlamaContext,
     tokens: Uint32Array,
