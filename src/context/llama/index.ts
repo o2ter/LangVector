@@ -301,7 +301,10 @@ export class LlamaContext extends LLMContext<LlamaDevice, LlamaModel> {
   ) {
 
     const grammar = options.grammar ? this._grammarEvaluationState(options.grammar) : null;
-    const stopTriggers = _.map(options.stopTriggers, x => this.model.tokenize(x));
+    const stopTriggers = _.map(
+      options.stopTriggers ?? this.chatWrapper?.stopGenerationTriggers(this),
+      x => this.model.tokenize(x)
+    );
 
     return await this._worker.sync(async () => {
 
