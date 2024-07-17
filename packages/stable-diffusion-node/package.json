@@ -1,0 +1,17 @@
+{
+  "name": "stable-diffusion-node",
+  "version": "1.0.0",
+  "main": "index.js",
+  "type": "commonjs",
+  "binary": {
+    "napi_versions": [7]
+  },
+  "scripts": {
+    "install": "./scripts/install"
+  },
+  "dependencies": {
+    "cmake-js": "^7.3.0",
+    "lodash": "^4.17.21",
+    "node-addon-api": "^8.1.0"
+  }
+}

@@ -24,35 +24,11 @@
 //
 
 #include "src/common.h"
-#include "src/log.h"
-#include "src/info.h"
-#include "src/model.h"
-#include "src/context.h"
-#include "src/embedding.h"
-#include "src/grammar.h"
 
 Napi::Object registerCallback(Napi::Env env, Napi::Object exports)
 {
-  llama_backend_init();
   exports.DefineProperties({
-      Napi::PropertyDescriptor::Function("systemInfo", systemInfo),
-      Napi::PropertyDescriptor::Function("getSupportsGpuOffloading", getSupportsGpuOffloading),
-      Napi::PropertyDescriptor::Function("getSupportsMmap", getSupportsMmap),
-      Napi::PropertyDescriptor::Function("getSupportsMlock", getSupportsMlock),
-      Napi::PropertyDescriptor::Function("getBlockSizeForGgmlType", getBlockSizeForGgmlType),
-      Napi::PropertyDescriptor::Function("getTypeSizeForGgmlType", getTypeSizeForGgmlType),
-      Napi::PropertyDescriptor::Function("getConsts", getConsts),
-      Napi::PropertyDescriptor::Function("getGpuVramInfo", getGpuVramInfo),
-      Napi::PropertyDescriptor::Function("getGpuDeviceInfo", getGpuDeviceInfo),
-      Napi::PropertyDescriptor::Function("getGpuType", getGpuType),
   });
-  LlamaModel::init(exports);
-  LlamaContext::init(exports);
-  LlamaContextSampleCandidates::init(exports);
-  LlamaEmbeddingContext::init(exports);
-  LlamaGrammar::init(exports);
-  LlamaGrammarEvaluationState::init(exports);
-  llama_log_set(llama_log_callback, nullptr);
   return exports;
 }
 

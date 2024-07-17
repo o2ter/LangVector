@@ -1,0 +1,23 @@
+#!/bin/bash
+set -e
+
+SCRIPT_DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )"
+
+cd $SCRIPT_DIR
+cd ../
+
+if [ -f "../../packages/stable-diffusion.cpp/CMakeLists.txt" ]; then
+  export STABLE_DIFFUSION_CPP_SOURCE="$( cd "$( dirname ../../packages/stable-diffusion.cpp/CMakeLists.txt )" && pwd )"
+else
+  LANG_VECTOR_PATH="$( node -p "require('@o2ter/lang-vector').include.slice(1,-1)" )"
+  if [ -f "${LANG_VECTOR_PATH}/packages/stable-diffusion.cpp/CMakeLists.txt" ]; then
+    export STABLE_DIFFUSION_CPP_SOURCE="$( cd "$( dirname ${LANG_VECTOR_PATH}/packages/stable-diffusion.cpp/CMakeLists.txt )" && pwd )"
+  fi
+fi
+
+if [[ -z "${STABLE_DIFFUSION_CPP_SOURCE}" ]]; then
+  echo "Package stable-diffusion.cpp not found" 1>&2
+  exit 1
+fi
+
+cmake-js compile --CDSTABLE_DIFFUSION_CPP_SOURCE=${STABLE_DIFFUSION_CPP_SOURCE}
