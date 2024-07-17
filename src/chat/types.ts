@@ -54,7 +54,7 @@ export type ChatWrapper = {
 
   generateFunctionGrammar(
     ctx: LlamaContext,
-  ): { grammar: LlamaGrammar; } | undefined;
+  ): { grammar: LlamaGrammar; stopGenerationTriggers: LLMTextValue[]; } | undefined;
   
   generateContextState(
     ctx: LlamaContext,
