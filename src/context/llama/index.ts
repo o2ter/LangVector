@@ -240,12 +240,12 @@ export class LlamaContext extends LLMContext<LlamaDevice, LlamaModel> {
     const state = chatWrapper.generateContextState(this, this.chatHistory);
 
     const sys = _.first(state)?.item.type === 'system' ? _.first(state) : undefined;
-    const rest = sys ? _.drop(state, 1) : state;
+    const history = sys ? _.drop(state, 1) : state;
     const result: Uint32List[] = [];
 
     let remain = sys ? maxTokens - sys.tokens.length : maxTokens;
 
-    for (const item of _.reverse(rest)) {
+    for (const item of _.reverse(history)) {
       if (remain <= 0) break;
       result.push(item.tokens);
       remain -= item.tokens.length;
