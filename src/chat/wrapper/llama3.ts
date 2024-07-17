@@ -54,7 +54,9 @@ export class Llama3ChatWrapper implements ChatWrapper {
       "The assistant does not inform the user about using functions and does not explain anything before calling a function.",
       "After calling a function, the raw result appears afterwards and is not part of the conversation",
       "To make information be part of the conversation, the assistant paraphrases and repeats the information without the function syntax.",
-    ].join('\n') : 'You are a helpful AI assistant for travel tips and recommendations');
+    ].join('\n') : [
+        'You are a helpful AI assistant for travel tips and recommendations',
+    ]);
 
     const result: {
       item: ChatHistoryItem;
