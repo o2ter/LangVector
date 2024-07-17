@@ -33,10 +33,6 @@ export class Llama3ChatWrapper implements ChatWrapper {
 
   generateContextState(ctx: LlamaContext, chatHistory: ChatHistoryItem[]): { item: ChatHistoryItem; tokens: Uint32List; }[] {
 
-    if (ctx.chatOptions?.functions) {
-
-    }
-
     const shouldPrependBosToken = ctx.model.shouldPrependBosToken;
     const { bos, eot } = ctx.model.tokens;
     const start_header = ctx.model.tokenize('<|start_header_id|>', { encodeSpecial: true });
@@ -49,18 +45,24 @@ export class Llama3ChatWrapper implements ChatWrapper {
     const result: {
       item: ChatHistoryItem;
       tokens: Uint32List;
-    }[] = [{
-      item: {
-        type: 'system',
-        text: sysMsg,
-      },
-      tokens: ctx.model.tokenize([
-        _.compact([shouldPrependBosToken && bos]),
-        start_header, 'system', end_header, '\n\n',
-        sysMsg,
-        _.compact([eot]),
-      ]),
-    }];
+    }[] = [];
+
+    if (ctx.chatOptions?.functions) {
+
+    } else {
+      result.push({
+        item: {
+          type: 'system',
+          text: sysMsg,
+        },
+        tokens: ctx.model.tokenize([
+          _.compact([shouldPrependBosToken && bos]),
+          start_header, 'system', end_header, '\n\n',
+          sysMsg,
+          _.compact([eot]),
+        ]),
+      });
+    }
 
     for (const item of history) {
       switch (item.type) {
