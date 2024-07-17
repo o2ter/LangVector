@@ -56,12 +56,43 @@ export class Llama3ChatWrapper implements ChatWrapper {
       },
       tokens: ctx.model.tokenize([
         _.compact([shouldPrependBosToken && bos]),
-        start_header, 'system', end_header,
+        start_header, 'system', end_header, '\n\n',
         sysMsg,
         _.compact([eot]),
       ]),
     }];
 
+    for (const item of history) {
+      switch (item.type) {
+        case 'user':
+          result.push({
+            item,
+            tokens: ctx.model.tokenize([
+              start_header, 'user', end_header, '\n\n',
+              item.text,
+            ]),
+          });
+          break;
+        case 'model':
+          result.push({
+            item,
+            tokens: ctx.model.tokenize(_.flatMap(item.response, response => { 
+              if (_.isString(response)) {
+                return [
+                  start_header, 'assistant', end_header, '\n\n',
+                  response,
+                ];
+              }
+              return [
+                start_header, 'functionCall', end_header, '\n\n',
+                JSON.stringify(response.result),
+              ];
+            })),
+          });
+          break;
+        default: break;
+      }
+    }
 
     return result;
   }
