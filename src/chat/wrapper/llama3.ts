@@ -23,44 +23,17 @@
 //  THE SOFTWARE.
 //
 
-import { LLMTextValue } from '../types';
-import type { LlamaContext } from '../context/llama';
+import _ from 'lodash';
+import { ChatHistoryItem, ChatWrapper } from './../types';
+import { LlamaContext } from '../../context/llama';
 
-export type ChatHistoryItem = ChatSystemMessage | ChatUserMessage | ChatModelResponse;
-export type ChatSystemMessage = {
-  type: "system";
-  text: LLMTextValue;
-};
-export type ChatUserMessage = {
-  type: "user";
-  text: string;
-};
-export type ChatModelResponse = {
-  type: "model";
-  response: (string | ChatModelFunctionCall)[];
-};
-export type ChatModelFunctionCall = {
-  type: "functionCall";
-  name: string;
-  description?: string;
-  params: any;
-  result: any;
-};
+export class Llama3ChatWrapper implements ChatWrapper {
 
-export type ChatWrapper = {
-  generateContextState(
-    ctx: LlamaContext,
-    chatHistory: ChatHistoryItem[],
-  ): { item: ChatHistoryItem; tokens: Uint32List; }[];
-  generateChatHistory(
-    ctx: LlamaContext,
-    tokens: Uint32Array,
-  ): ChatHistoryItem[];
-};
+  generateContextState(ctx: LlamaContext, chatHistory: ChatHistoryItem[]): { item: ChatHistoryItem; tokens: Uint32List; }[] {
+    throw new Error('Method not implemented.');
+  }
+  generateChatHistory(ctx: LlamaContext, tokens: Uint32Array): ChatHistoryItem[] {
+    throw new Error('Method not implemented.');
+  }
 
-export type ChatModelFunctionOptions = {
-  description?: string;
-  params?: any;
-  resultType?: any;
-  handler: (params: any) => any;
-};
+}
