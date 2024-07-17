@@ -84,7 +84,7 @@ export class Llama3ChatWrapper implements ChatWrapper {
                 ];
               }
               return [
-                start_header, 'functionCall', end_header, '\n\n',
+                start_header, 'function_call_result', end_header, '\n\n',
                 JSON.stringify(response.result),
               ];
             })),
