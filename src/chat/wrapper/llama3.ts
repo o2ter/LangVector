@@ -24,13 +24,46 @@
 //
 
 import _ from 'lodash';
-import { ChatHistoryItem, ChatWrapper } from './../types';
+import { ChatHistoryItem, ChatSystemMessage, ChatWrapper } from './../types';
 import { LlamaContext } from '../../context/llama';
+
+const defaultSysMsg = 'You are a helpful AI assistant for travel tips and recommendations';
 
 export class Llama3ChatWrapper implements ChatWrapper {
 
   generateContextState(ctx: LlamaContext, chatHistory: ChatHistoryItem[]): { item: ChatHistoryItem; tokens: Uint32List; }[] {
-    throw new Error('Method not implemented.');
+
+    if (ctx.chatOptions?.functions) {
+
+    }
+
+    const shouldPrependBosToken = ctx.model.shouldPrependBosToken;
+    const { bos, eot } = ctx.model.tokens;
+    const start_header = ctx.model.tokenize('<|start_header_id|>', { encodeSpecial: true });
+    const end_header = ctx.model.tokenize('<|start_header_id|>', { encodeSpecial: true });
+
+    const sys = _.first(chatHistory)?.type === 'system' ? _.first(chatHistory) as ChatSystemMessage : undefined;
+    const history = sys ? _.drop(chatHistory, 1) : chatHistory;
+
+    const sysMsg = sys?.text ?? defaultSysMsg;
+    const result: {
+      item: ChatHistoryItem;
+      tokens: Uint32List;
+    }[] = [{
+      item: {
+        type: 'system',
+        text: sysMsg,
+      },
+      tokens: ctx.model.tokenize([
+        _.compact([shouldPrependBosToken && bos]),
+        start_header, 'system', end_header,
+        sysMsg,
+        _.compact([eot]),
+      ]),
+    }];
+
+
+    return result;
   }
   generateChatHistory(ctx: LlamaContext, tokens: Uint32Array): ChatHistoryItem[] {
     throw new Error('Method not implemented.');
