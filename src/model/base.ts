@@ -44,6 +44,4 @@ export abstract class LLMModel<D extends LLMDevice> {
   abstract dispose(): Promise<void>;
   abstract get disposed(): boolean;
 
-  abstract tokenize(str: string): Awaitable<Uint32Array>;
-  abstract detokenize(tokens: Uint32List | number): Awaitable<string>;
 }
