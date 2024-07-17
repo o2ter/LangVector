@@ -6,12 +6,6 @@ SCRIPT_DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )"
 cd $SCRIPT_DIR
 cd ../
 
-LIST=(
-  meta-llama/Meta-Llama-3-8B-Instruct
-  # meta-llama/Meta-Llama-3-70B-Instruct
-  stabilityai/stable-diffusion-2-1
-)
-
 OUTTYPE=f16
 QUANTITY=(
   q3_k_m
