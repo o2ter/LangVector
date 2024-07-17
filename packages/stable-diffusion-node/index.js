@@ -23,4 +23,4 @@
 //  THE SOFTWARE.
 //
 
-module.exports = require('./build/Release/llama-node');
+module.exports = require('./build/Release/stable-diffusion-node');
