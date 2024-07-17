@@ -52,9 +52,9 @@ public:
 
     Napi::Object options = info[1].As<Napi::Object>();
 
+    params.n_ctx = options.Get("contextSize").As<Napi::Number>().Uint32Value();
     params.n_batch = options.Get("batchSize").As<Napi::Number>().Uint32Value();
     params.n_ubatch = params.n_batch;
-    params.n_ctx = params.n_batch;
 
     if (options.Has("threads"))
     {
@@ -102,6 +102,8 @@ public:
   Napi::Value EvalEmbedding(const Napi::CallbackInfo &info)
   {
     Napi::Uint32Array tokens = info[0].As<Napi::Uint32Array>();
+    int32_t startPos = info[1].As<Napi::Number>().Int32Value();
+    bool logitEnd = info[2].As<Napi::Boolean>().Value();
 
     this->Ref();
 
@@ -120,7 +122,7 @@ public:
 
           for (size_t i = 0; i < token_length; ++i)
           {
-            llama_batch_add(batch, tokens[i], i, {0}, i + 1 == token_length);
+            llama_batch_add(batch, tokens[i], i + startPos, {0}, logitEnd && i + 1 == token_length);
           }
           if (llama_decode(ctx, batch) < 0)
           {

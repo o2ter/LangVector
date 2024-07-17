@@ -28,7 +28,7 @@ import { EventIterator } from '@o2ter/utils-js';
 import { LLMContext } from '../base';
 import { LlamaModel } from '../../model/llama';
 import { LlamaDevice } from '../../device/llama';
-import { LLamaChatPromptOptions, LlamaContextOptions, LlamaSequenceRepeatPenalty } from './types';
+import { LLamaChatPromptOptions, LlamaContextOptions } from './types';
 import { DisposedError, LLMTextValue } from '../../types';
 import { Worker } from './worker';
 import { clock } from '../../utils';
@@ -85,6 +85,13 @@ export class LlamaContext extends LLMContext<LlamaDevice, LlamaModel> {
   get contextSize(): number {
     if (_.isNil(this._ctx)) throw new DisposedError();
     return this._ctx.contextSize();
+  }
+  /**
+   * The batch size of context.
+   */
+  get batchSize(): number {
+    if (_.isNil(this._ctx)) throw new DisposedError();
+    return this._ctx.batchSize();
   }
 
   get tokens() {
@@ -152,12 +159,12 @@ export class LlamaContext extends LLMContext<LlamaDevice, LlamaModel> {
       this._ctx_state = this._ctx_state.slice(0, diff);
 
       const _tokens = tokens.slice(diff);
-      await this._ctx.eval(new Uint32Array(_tokens), this._ctx_state.length);
+      await this._eval(new Uint32Array(_tokens), this._ctx_state.length);
       this._ctx_state.push(..._tokens);
 
     } else if (this._ctx_state.length < tokens.length) {
 
-      await this._ctx.eval(new Uint32Array(tokens), this._ctx_state.length);
+      await this._eval(new Uint32Array(tokens), this._ctx_state.length);
       this._ctx_state.push(...tokens);
     }
   }
@@ -249,6 +256,15 @@ export class LlamaContext extends LLMContext<LlamaDevice, LlamaModel> {
   }
 
   /** @internal */
+  private async _eval(tokens: Uint32List, startPos: number) {
+    const _tokens = _.isArrayBuffer(tokens) ? tokens : new Uint32Array(tokens);
+    const batchSize = this.batchSize;
+    for (let i = 0; i < tokens.length; i += batchSize) {
+      await this._ctx.eval(_tokens.subarray(i, i + batchSize), i + startPos, i + batchSize >= _tokens.length);
+    }
+  }
+
+  /** @internal */
   private async _decodeTokens(value: LLMTextValue) {
 
     const chatWrapper = this._options.chatOptions?.chatWrapper;
@@ -260,7 +276,7 @@ export class LlamaContext extends LLMContext<LlamaDevice, LlamaModel> {
       const _tokens = _.flatMap(state, x => _.isArray(x.tokens) ? x.tokens : [...x.tokens]);
       this._tokens = _tokens;
 
-      await this._ctx.eval(new Uint32Array(_tokens), this._ctx_state.length);
+      await this._eval(new Uint32Array(_tokens), this._ctx_state.length);
       this._ctx_state.push(..._tokens);
     }
 
@@ -273,7 +289,7 @@ export class LlamaContext extends LLMContext<LlamaDevice, LlamaModel> {
       await this._updateTokens(_state);
     }
 
-    await this._ctx.eval(tokens, this._ctx_state.length);
+    await this._eval(tokens, this._ctx_state.length);
     this._ctx_state.push(...tokens);
   }
 

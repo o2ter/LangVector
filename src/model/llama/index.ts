@@ -195,16 +195,21 @@ export class LlamaModel extends LLMModel<LlamaDevice> {
     return _.isArrayBuffer(value) ? value : new Uint32Array(value);
   }
 
-  async embedding(value: LLMTextValue, { threads }: {
+  async embedding(value: LLMTextValue, { batchSize, threads }: {
+    batchSize?: number;
     threads?: number;
   } = {}) {
     const time = clock();
     const tokens = this._tokenize(value);
+    const _batchSize = batchSize ?? tokens.length;
     const ctx = new llamaCpp.LlamaEmbeddingContext(this._model, _.pickBy({
-      batchSize: tokens.length,
+      contextSize: tokens.length,
+      batchSize: _batchSize,
       threads,
     }, v => !_.isNil(v)));
-    await ctx.eval(tokens);
+    for (let i = 0; i < tokens.length; i += _batchSize) {
+      await ctx.eval(tokens.subarray(i, i + _batchSize), i, i + _batchSize >= tokens.length);
+    }
     const vector = ctx.embedding() as Float64Array;
     ctx.dispose();
     return { type: 'embedding', vector, time: clock() - time } as const;

@@ -152,6 +152,11 @@ public:
     return Napi::Number::From(Env(), llama_n_ctx(ctx));
   }
 
+  Napi::Value GetBatchSize(const Napi::CallbackInfo &info)
+  {
+    return Napi::Number::From(Env(), llama_n_batch(ctx));
+  }
+
   Napi::Value GetStateSize(const Napi::CallbackInfo &info)
   {
     return Napi::Number::From(Env(), llama_state_get_size(ctx));
@@ -161,6 +166,7 @@ public:
   {
     Napi::Uint32Array tokens = info[0].As<Napi::Uint32Array>();
     int32_t startPos = info[1].As<Napi::Number>().Int32Value();
+    bool logitEnd = info[2].As<Napi::Boolean>().Value();
 
     this->Ref();
 
@@ -180,7 +186,7 @@ public:
 
           for (size_t i = 0; i < token_length; ++i)
           {
-            llama_batch_add(batch, tokens[i], i + startPos, {0}, i + 1 == token_length);
+            llama_batch_add(batch, tokens[i], i + startPos, {0}, logitEnd && i + 1 == token_length);
           }
           if (llama_decode(ctx, batch) < 0)
           {
@@ -306,6 +312,7 @@ public:
         "LlamaContext",
         {
             InstanceMethod("contextSize", &LlamaContext::GetContextSize),
+            InstanceMethod("batchSize", &LlamaContext::GetBatchSize),
             InstanceMethod("stateSize", &LlamaContext::GetStateSize),
             InstanceMethod("eval", &LlamaContext::EvalSequence),
             InstanceMethod("sampleToken", &LlamaContext::SampleToken),
