@@ -24,10 +24,17 @@
 //
 
 import { Awaitable } from "@o2ter/utils-js";
-import { ChatModelFunctionOptions, ChatWrapper } from "../../chat/types";
+import { ChatWrapper } from "../../chat/types";
 import { LLMTextValue } from "../../types";
 import { LlamaGrammar } from "../../device/llama/grammar";
 import type { LlamaContext } from "./index";
+
+type ChatModelFunctionOptions = {
+  description?: string;
+  params?: any;
+  resultType?: any;
+  handler: (params: any) => any;
+};
 
 export type LlamaContextOptions = {
   seed?: number;
