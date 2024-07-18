@@ -34,6 +34,8 @@ export class Llama3ChatWrapper implements ChatWrapper {
     return _.filter([
       _.compact([eot]),
       _.compact([eos]),
+      ctx.model.tokenize('<|eot_id|>', { encodeSpecial: true }),
+      ctx.model.tokenize('<|end_of_text|>', { encodeSpecial: true }),
     ], x => !_.isEmpty(x));
   }
 
