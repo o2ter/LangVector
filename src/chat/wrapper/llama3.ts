@@ -1,4 +1,3 @@
-import { SpecialToken } from './../../types';
 //
 //  types.ts
 //
