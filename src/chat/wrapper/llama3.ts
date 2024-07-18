@@ -30,13 +30,19 @@ import { LLMTextValue, SpecialToken } from '../../types';
 
 const role = (role: string) => [SpecialToken('<|start_header_id|>'), role, SpecialToken('<|end_header_id|>'), '\n\n'];
 
-const find_pattern = (tokens: Uint32Array, pattern: Uint32Array) => {
+const find = (tokens: Uint32Array, pattern: Uint32Array) => {
   for (let offset = 0; offset < tokens.length; ++offset) {
     if (offset + pattern.length > tokens.length) return -1;
     if (pattern.every((v, i) => tokens[i + offset] === v)) return offset;
   }
   return -1;
-}
+};
+
+const endsWith = (tokens: Uint32Array, pattern: Uint32Array) => {
+  if (tokens.length < pattern.length) return false;
+  const offset = tokens.length - pattern.length;
+  return pattern.every((v, i) => tokens[i + offset] === v);
+};
 
 export class Llama3ChatWrapper implements ChatWrapper {
 
@@ -51,12 +57,14 @@ export class Llama3ChatWrapper implements ChatWrapper {
   }
 
   generateNextContextState(ctx: LlamaContext, value: LLMTextValue) {
-    return [
+    const eot = ctx.model.tokenize(SpecialToken('<|eot_id|>'));
+    return _.compact([
+      !endsWith(ctx.tokens, eot) && eot,
       role('user'),
       value,
       SpecialToken('<|eot_id|>'),
       role('assistant'),
-    ]
+    ]);
   }
 
   generateContextState(ctx: LlamaContext, chatHistory: ChatHistoryItem[]) {
@@ -156,13 +164,13 @@ export class Llama3ChatWrapper implements ChatWrapper {
       if (!startHeaderId.every((v, i) => tokens[i] === v)) throw Error('Invalid chat history');
       tokens = tokens.subarray(startHeaderId.length);
 
-      const endHeaderIdx = find_pattern(tokens, endHeaderId);
+      const endHeaderIdx = find(tokens, endHeaderId);
       if (endHeaderIdx === -1) throw Error('Invalid chat history');
 
       const type = tokens.subarray(0, endHeaderIdx);
       tokens = tokens.subarray(endHeaderIdx);
 
-      const eotIdx = find_pattern(tokens, eotId);
+      const eotIdx = find(tokens, eotId);
       if (eotIdx === -1) throw Error('Invalid chat history');
 
       const content = tokens.subarray(0, eotIdx);
