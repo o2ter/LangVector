@@ -165,16 +165,19 @@ export class Llama3ChatWrapper implements ChatWrapper {
             type: 'system',
             text: content,
           });
+          break;
         case 'user':
           result.push({
             type: 'user',
             text: ctx.model.detokenize(content),
           });
+          break;
         case 'assistant':
           result.push({
             type: 'model',
             response: [ctx.model.detokenize(content)],
           });
+          break;
         // case 'function_call_result':
         //   result.push({
         //     type: 'model',
@@ -182,6 +185,7 @@ export class Llama3ChatWrapper implements ChatWrapper {
         //       type: 'functionCall',
         //     }],
         //   });
+        //   break;
         default: throw Error('Invalid chat history');
       }
     }
