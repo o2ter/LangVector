@@ -346,10 +346,6 @@ export class LlamaContext extends LLMContext<LlamaDevice, LlamaModel> {
           totalTime: clock() - totalTime,
         } as const;
 
-        if (grammar) grammar.acceptToken(sample);
-        await this._decodeTokens([sample]);
-        onToken(sample, clock() - time);
-
         for (const trigger of stopTriggers) {
           let offset = this._tokens.length - trigger.length;
           if (offset >= 0 && trigger.every((v, i) => v === this._tokens[i + offset])) return {
@@ -357,6 +353,10 @@ export class LlamaContext extends LLMContext<LlamaDevice, LlamaModel> {
             totalTime: clock() - totalTime,
           } as const;
         }
+
+        if (grammar) grammar.acceptToken(sample);
+        await this._decodeTokens([sample]);
+        onToken(sample, clock() - time);
       }
 
       return {
