@@ -367,7 +367,7 @@ export class LlamaContext extends LLMContext<LlamaDevice, LlamaModel> {
         const { value, done } = await iterator.next();
         if (done) {
           yield { done: true, response: new Uint32Array(response), ...value } as const;
-          return value;
+          return;
         } else {
           response.push(value.token);
           yield { done: false, response: new Uint32Array(response), ...value } as const;
