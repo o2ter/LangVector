@@ -28,4 +28,8 @@ for await (const { token, time } of context.prompt('hello, world', { temperature
   console.log({ token, time, text: model.detokenize(token, { decodeSpecial: true }) })
 }
 
+for await (const { token, time } of context.prompt('hi', { temperature: 0.8, maxTokens: 500, tokenBias })) {
+  console.log({ token, time, text: model.detokenize(token, { decodeSpecial: true }) })
+}
+
 console.log(model.detokenize(context.tokens, { decodeSpecial: true }))
