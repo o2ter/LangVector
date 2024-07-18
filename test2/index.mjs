@@ -21,12 +21,12 @@ const context = model.createContext({
   },
 });
 
-for await (const { token, time } of context.prompt('hello, world', { temperature: 0.8, maxTokens: 500 })) {
-  console.log({ token, time, text: model.detokenize(token, { decodeSpecial: true }) });
+for await (const { token, ...rest } of context.prompt('hello, world', { temperature: 0.8, maxTokens: 500 })) {
+  console.log({ ...rest, token, text: model.detokenize(token, { decodeSpecial: true }) });
 }
 
-for await (const { token, time } of context.prompt('hi', { temperature: 0.8, maxTokens: 500 })) {
-  console.log({ token, time, text: model.detokenize(token, { decodeSpecial: true }) });
+for await (const { token, ...rest } of context.prompt('hi', { temperature: 0.8, maxTokens: 500 })) {
+  console.log({ ...rest, token, text: model.detokenize(token, { decodeSpecial: true }) });
 }
 
 console.log('------------------------------------------');
