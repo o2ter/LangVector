@@ -64,6 +64,8 @@ export class Llama3ChatWrapper implements ChatWrapper {
       'You are a helpful AI assistant for travel tips and recommendations',
     ]).join('\n');
 
+    const role = (role: string) => [SpecialToken('<|start_header_id|>'), 'system', SpecialToken('<|end_header_id|>'), '\n\n'];
+
     const result: {
       item: ChatHistoryItem;
       tokens: Uint32List;
@@ -74,7 +76,7 @@ export class Llama3ChatWrapper implements ChatWrapper {
       },
       tokens: ctx.model.tokenize([
         SpecialToken('<|begin_of_text|>'),
-        SpecialToken('<|start_header_id|>'), 'system', SpecialToken('<|end_header_id|>'), '\n\n',
+        role('system'),
         sysMsg,
         SpecialToken('<|eot_id|>'),
       ]),
@@ -86,7 +88,7 @@ export class Llama3ChatWrapper implements ChatWrapper {
           result.push({
             item,
             tokens: ctx.model.tokenize([
-              SpecialToken('<|start_header_id|>'), 'user', SpecialToken('<|end_header_id|>'), '\n\n',
+              role('user'),
               item.text,
               SpecialToken('<|eot_id|>'),
             ]),
@@ -98,15 +100,16 @@ export class Llama3ChatWrapper implements ChatWrapper {
             tokens: ctx.model.tokenize(_.flatMap(item.response, response => {
               if (_.isString(response)) {
                 return [
-                  SpecialToken('<|start_header_id|>'), 'assistant', SpecialToken('<|end_header_id|>'), '\n\n',
+                  role('assistant'),
                   response,
                   SpecialToken('<|eot_id|>'),
                 ];
               }
               return [
-                SpecialToken('<|start_header_id|>'), 'assistant', SpecialToken('<|end_header_id|>'), '\n\n',
+                role('assistant'),
                 '||call: ', response.name, '(', JSON.stringify(response.params), ')',
-                SpecialToken('<|start_header_id|>'), 'function_call_result', SpecialToken('<|end_header_id|>'), '\n\n',
+                SpecialToken('<|eot_id|>'),
+                role('function_call_result'),
                 JSON.stringify(response.result),
                 SpecialToken('<|eot_id|>'),
               ];
