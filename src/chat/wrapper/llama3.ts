@@ -125,10 +125,16 @@ export class Llama3ChatWrapper implements ChatWrapper {
   generateChatHistory(ctx: LlamaContext, tokens: Uint32Array): ChatHistoryItem[] {
 
     const beginOfText = ctx.model.tokenize(SpecialToken('<|begin_of_text|>'));
+    const startHeaderId = ctx.model.tokenize(SpecialToken('<|start_header_id|>'));
+    const endHeaderId = ctx.model.tokenize(SpecialToken('<|end_header_id|>'));
 
-    if (beginOfText.every((v, i) => tokens[i] === v)) {
-      tokens = tokens.subarray(beginOfText.length);
-    }
+    if (!beginOfText.every((v, i) => tokens[i] === v)) throw Error('Invalid chat history');
+    tokens = tokens.subarray(beginOfText.length);
+
+    if (!startHeaderId.every((v, i) => tokens[i] === v)) throw Error('Invalid chat history');
+    tokens = tokens.subarray(startHeaderId.length);
+
+    
 
     throw new Error('Method not implemented.');
   }
