@@ -25,11 +25,12 @@ const tokenBias = new Map;
 tokenBias.set(0, 'never');
 
 for await (const { token, time } of context.prompt('hello, world', { temperature: 0.8, maxTokens: 500, tokenBias })) {
-  console.log({ token, time, text: model.detokenize(token, { decodeSpecial: true }) })
+  console.log({ token, time, text: model.detokenize(token, { decodeSpecial: true }) });
 }
 
 for await (const { token, time } of context.prompt('hi', { temperature: 0.8, maxTokens: 500, tokenBias })) {
-  console.log({ token, time, text: model.detokenize(token, { decodeSpecial: true }) })
+  console.log({ token, time, text: model.detokenize(token, { decodeSpecial: true }) });
 }
 
-console.log(model.detokenize(context.tokens, { decodeSpecial: true }))
+console.log(context.chatHistory);
+console.log(model.detokenize(context.tokens, { decodeSpecial: true }));
