@@ -368,8 +368,8 @@ export class LlamaContext extends LLMContext<LlamaDevice, LlamaModel> {
 
   prompt(value: LLMTextValue, options: LLamaChatPromptOptions = {}) {
     return EventIterator(async (
-        push: (item: { token: number; time: number; }) => void,
-        resolve: (result?: Awaited<ReturnType<LlamaContext['_evaluate']>>) => void ,
+      push: (item: { token: number; time: number; }) => void,
+      resolve: (result?: Awaited<ReturnType<LlamaContext['_evaluate']>>) => void,
     ) => {
       resolve(await this._evaluate(value, options, (token, time) => push({ token, time })));
     });
