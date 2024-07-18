@@ -85,7 +85,7 @@ export class Llama3ChatWrapper implements ChatWrapper {
     ].join('\n');
   }
 
-  generateNextContextState(ctx: LlamaContext, value: LLMTextValue) {
+  encodeNextContextState(ctx: LlamaContext, value: LLMTextValue) {
     const eot = ctx.model.tokenize(SpecialToken('<|eot_id|>'));
     return _.compact([
       _.isEmpty(ctx._tokens) && [
@@ -102,7 +102,7 @@ export class Llama3ChatWrapper implements ChatWrapper {
     ]);
   }
 
-  generateContextState(ctx: LlamaContext, chatHistory: ChatHistoryItem[]) {
+  encodeContextState(ctx: LlamaContext, chatHistory: ChatHistoryItem[]) {
 
     const sys = _.first(chatHistory)?.type === 'system' ? _.first(chatHistory) as ChatSystemMessage : undefined;
     const history = sys ? _.drop(chatHistory, 1) : chatHistory;
@@ -165,7 +165,7 @@ export class Llama3ChatWrapper implements ChatWrapper {
 
     return result;
   }
-  generateChatHistory(ctx: LlamaContext, tokens: Uint32Array): ChatHistoryItem[] {
+  decodeChatHistory(ctx: LlamaContext, tokens: Uint32Array): ChatHistoryItem[] {
 
     const newline = ctx.model.tokenize('\n\n');
     const beginOfText = ctx.model.tokenize(SpecialToken('<|begin_of_text|>'));

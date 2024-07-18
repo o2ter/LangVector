@@ -110,7 +110,7 @@ export class LlamaContext extends LLMContext<LlamaDevice, LlamaModel> {
     if (!_.isNil(this._chat_history)) return this._chat_history;
     const chatWrapper = this.chatWrapper;
     if (_.isNil(chatWrapper)) return [];
-    const history = chatWrapper.generateChatHistory(this, this.tokens);
+    const history = chatWrapper.decodeChatHistory(this, this.tokens);
     this._chat_history = history;
     return history;
   }
@@ -124,7 +124,7 @@ export class LlamaContext extends LLMContext<LlamaDevice, LlamaModel> {
 
       this._chat_history = undefined;
 
-      const state = await chatWrapper.generateContextState(this, value);
+      const state = await chatWrapper.encodeContextState(this, value);
       this._tokens = _.flatMap(state, x => _.isArray(x.tokens) ? x.tokens : [...x.tokens]);
 
       const _state = await this._contextShiftStrategy();
@@ -237,7 +237,7 @@ export class LlamaContext extends LLMContext<LlamaDevice, LlamaModel> {
       }
     }
 
-    const state = chatWrapper.generateContextState(this, this.chatHistory);
+    const state = chatWrapper.encodeContextState(this, this.chatHistory);
 
     const sys = _.first(state)?.item.type === 'system' ? _.first(state) : undefined;
     const history = sys ? _.drop(state, 1) : state;
@@ -294,7 +294,7 @@ export class LlamaContext extends LLMContext<LlamaDevice, LlamaModel> {
       x => this.model.tokenize(x)
     );
 
-    if (chatWrapper) value = chatWrapper.generateNextContextState(this, value);
+    if (chatWrapper) value = chatWrapper.encodeNextContextState(this, value);
 
     return await this._worker.sync(async () => {
 
