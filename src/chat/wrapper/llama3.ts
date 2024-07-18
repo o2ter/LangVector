@@ -26,6 +26,7 @@
 import _ from 'lodash';
 import { ChatHistoryItem, ChatSystemMessage, ChatWrapper } from './../types';
 import { LlamaContext } from '../../context/llama';
+import { SpecialToken } from '../../types';
 
 export class Llama3ChatWrapper implements ChatWrapper {
 
@@ -34,8 +35,8 @@ export class Llama3ChatWrapper implements ChatWrapper {
     return _.filter([
       _.compact([eot]),
       _.compact([eos]),
-      ctx.model.tokenize('<|eot_id|>', { encodeSpecial: true }),
-      ctx.model.tokenize('<|end_of_text|>', { encodeSpecial: true }),
+      SpecialToken('<|eot_id|>'),
+      SpecialToken('<|end_of_text|>'),
     ], x => !_.isEmpty(x));
   }
 
@@ -43,8 +44,8 @@ export class Llama3ChatWrapper implements ChatWrapper {
 
     const shouldPrependBosToken = ctx.model.shouldPrependBosToken;
     const { bos, eot } = ctx.model.tokens;
-    const start_header = ctx.model.tokenize('<|start_header_id|>', { encodeSpecial: true });
-    const end_header = ctx.model.tokenize('<|end_header_id|>', { encodeSpecial: true });
+    const start_header = SpecialToken('<|start_header_id|>');
+    const end_header = SpecialToken('<|end_header_id|>');
 
     const sys = _.first(chatHistory)?.type === 'system' ? _.first(chatHistory) as ChatSystemMessage : undefined;
     const history = sys ? _.drop(chatHistory, 1) : chatHistory;

@@ -29,5 +29,17 @@ export class DisposedError extends Error {
   }
 }
 
+export class _SpecialToken {
+
+  /** @internal */
+  _text: string;
+
+  constructor(text: string) {
+    this._text = text;
+  }
+}
+
+export const SpecialToken = (text: string) => new _SpecialToken(text);
+
 type Many<T> = T | Iterable<Many<T>>;
-export type LLMTextValue = Many<string | Uint32List>;
+export type LLMTextValue = Many<string | number | _SpecialToken | Uint32List>;
