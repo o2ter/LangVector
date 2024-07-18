@@ -300,11 +300,14 @@ export class LlamaContext extends LLMContext<LlamaDevice, LlamaModel> {
     onToken: (token: number, time: number) => void,
   ) {
 
+    const chatWrapper = this._options.chatOptions?.chatWrapper;
     const grammar = options.grammar ? this._grammarEvaluationState(options.grammar) : null;
     const stopTriggers = _.map(
-      options.stopTriggers ?? this.chatWrapper?.stopGenerationTriggers(this),
+      options.stopTriggers ?? chatWrapper?.stopGenerationTriggers(this),
       x => this.model.tokenize(x)
     );
+
+    if (chatWrapper) value = chatWrapper.generateNextContextState(this, value);
 
     return await this._worker.sync(async () => {
 

@@ -60,6 +60,8 @@ export type ChatWrapper = {
     stopGenerationTriggers: LLMTextValue[];
   } | undefined;
 
+  generateNextContextState(ctx: LlamaContext, value: LLMTextValue): LLMTextValue;
+
   generateContextState: (
     ctx: LlamaContext,
     chatHistory: ChatHistoryItem[],

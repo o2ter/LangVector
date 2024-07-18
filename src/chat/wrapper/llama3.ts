@@ -26,7 +26,9 @@
 import _ from 'lodash';
 import { ChatHistoryItem, ChatSystemMessage, ChatWrapper } from './../types';
 import { LlamaContext } from '../../context/llama';
-import { SpecialToken } from '../../types';
+import { LLMTextValue, SpecialToken } from '../../types';
+
+const role = (role: string) => [SpecialToken('<|start_header_id|>'), role, SpecialToken('<|end_header_id|>'), '\n\n'];
 
 const find_pattern = (tokens: Uint32Array, pattern: Uint32Array) => {
   for (let offset = 0; offset < tokens.length; ++offset) {
@@ -46,6 +48,15 @@ export class Llama3ChatWrapper implements ChatWrapper {
       SpecialToken('<|eot_id|>'),
       SpecialToken('<|end_of_text|>'),
     ], x => !_.isEmpty(x));
+  }
+
+  generateNextContextState(ctx: LlamaContext, value: LLMTextValue) {
+    return [
+      role('user'),
+      value,
+      SpecialToken('<|eot_id|>'),
+      role('assistant'),
+    ]
   }
 
   generateContextState(ctx: LlamaContext, chatHistory: ChatHistoryItem[]) {
@@ -71,8 +82,6 @@ export class Llama3ChatWrapper implements ChatWrapper {
     ] : [
       'You are a helpful AI assistant for travel tips and recommendations',
     ]).join('\n');
-
-    const role = (role: string) => [SpecialToken('<|start_header_id|>'), role, SpecialToken('<|end_header_id|>'), '\n\n'];
 
     const result: {
       item: ChatHistoryItem;
