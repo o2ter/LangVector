@@ -358,12 +358,9 @@ export class LlamaContext extends LLMContext<LlamaDevice, LlamaModel> {
 
   prompt(value: LLMTextValue, options: LLamaChatPromptOptions = {}) {
     type Result = Awaited<ReturnType<LlamaContext['_evaluate']>>;
-    const iterator = EventIterator(async (
-      push: (item: { token: number; time: number; }) => void,
-      resolve: (result: { [K in keyof Result]: Result[K] }) => void,
-    ) => {
+    const iterator = EventIterator(async (push, resolve) => {
       resolve(await this._evaluate(value, options, (token, time) => push({ token, time })));
-    });
+    }) as AsyncGenerator<{ token: number; time: number; }, { [K in keyof Result]: Result[K] }, undefined>;
     return (async function* () {
       const response: number[] = [];
       while (true) {
