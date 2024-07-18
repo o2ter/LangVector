@@ -167,6 +167,7 @@ export class Llama3ChatWrapper implements ChatWrapper {
   }
   generateChatHistory(ctx: LlamaContext, tokens: Uint32Array): ChatHistoryItem[] {
 
+    const newline = ctx.model.tokenize('\n\n');
     const beginOfText = ctx.model.tokenize(SpecialToken('<|begin_of_text|>'));
     const startHeaderId = ctx.model.tokenize(SpecialToken('<|start_header_id|>'));
     const endHeaderId = ctx.model.tokenize(SpecialToken('<|end_header_id|>'));
@@ -187,6 +188,10 @@ export class Llama3ChatWrapper implements ChatWrapper {
 
       const type = tokens.subarray(0, endHeaderIdx);
       tokens = tokens.subarray(endHeaderIdx + endHeaderId.length);
+
+      while (startsWith(tokens, newline)) {
+        tokens = tokens.subarray(newline.length);
+      }
 
       const _end = find(tokens, eotId);
       const content = _end === -1 ? tokens : tokens.subarray(0, _end);
