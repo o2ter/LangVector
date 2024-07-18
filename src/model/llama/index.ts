@@ -26,7 +26,7 @@
 import _ from 'lodash';
 import { LLMModel } from '../base';
 import { LlamaDevice } from '../../device/llama';
-import { _SpecialToken, DisposedError, LLMTextValue } from '../../types';
+import { SpecialTokenType, DisposedError, LLMTextValue } from '../../types';
 import { LlamaContext } from '../../context/llama';
 import { LlamaContextOptions } from '../../context/llama/types';
 import { clock } from '../../utils';
@@ -177,7 +177,7 @@ export class LlamaModel extends LLMModel<LlamaDevice> {
         yield* value;
       } else if (_.isString(value)) {
         yield* model.tokenize(value, encodeSpecial);
-      } else if (value instanceof _SpecialToken) {
+      } else if (value instanceof SpecialTokenType) {
         yield* model.tokenize(value._text, true);
       } else {
         for (const v of value) yield* _tokenize(v);

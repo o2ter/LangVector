@@ -29,7 +29,7 @@ export class DisposedError extends Error {
   }
 }
 
-export class _SpecialToken {
+export class SpecialTokenType {
 
   /** @internal */
   _text: string;
@@ -39,7 +39,7 @@ export class _SpecialToken {
   }
 }
 
-export const SpecialToken = (text: string) => new _SpecialToken(text);
+export const SpecialToken = (text: string) => new SpecialTokenType(text);
 
 type Many<T> = T | Iterable<Many<T>>;
-export type LLMTextValue = Many<string | number | _SpecialToken | Uint32List>;
+export type LLMTextValue = Many<string | number | SpecialTokenType | Uint32List>;
