@@ -28,6 +28,14 @@ import { ChatHistoryItem, ChatSystemMessage, ChatWrapper } from './../types';
 import { LlamaContext } from '../../context/llama';
 import { SpecialToken } from '../../types';
 
+const find_pattern = (tokens: Uint32Array, pattern: Uint32Array) => {
+  for (let offset = 0; offset < tokens.length; ++offset) {
+    if (offset + pattern.length > tokens.length) return -1;
+    if (pattern.every((v, i) => tokens[i + offset] === v)) return offset;
+  }
+  return -1;
+}
+
 export class Llama3ChatWrapper implements ChatWrapper {
 
   stopGenerationTriggers(ctx: LlamaContext) {
@@ -139,7 +147,7 @@ export class Llama3ChatWrapper implements ChatWrapper {
       if (!startHeaderId.every((v, i) => tokens[i] === v)) throw Error('Invalid chat history');
       tokens = tokens.subarray(startHeaderId.length);
 
-
+      const endHeaderIdx = find_pattern(tokens, endHeaderId);
     }
 
     return result;
