@@ -1,3 +1,4 @@
+import { SpecialToken } from './../../types';
 //
 //  types.ts
 //
@@ -42,11 +43,6 @@ export class Llama3ChatWrapper implements ChatWrapper {
 
   generateContextState(ctx: LlamaContext, chatHistory: ChatHistoryItem[]) {
 
-    const shouldPrependBosToken = ctx.model.shouldPrependBosToken;
-    const { bos, eot } = ctx.model.tokens;
-    const start_header = SpecialToken('<|start_header_id|>');
-    const end_header = SpecialToken('<|end_header_id|>');
-
     const sys = _.first(chatHistory)?.type === 'system' ? _.first(chatHistory) as ChatSystemMessage : undefined;
     const history = sys ? _.drop(chatHistory, 1) : chatHistory;
 
@@ -78,10 +74,10 @@ export class Llama3ChatWrapper implements ChatWrapper {
         text: sysMsg,
       },
       tokens: ctx.model.tokenize([
-        _.compact([shouldPrependBosToken && bos]),
-        start_header, 'system', end_header, '\n\n',
+        SpecialToken('<|begin_of_text|>'),
+        SpecialToken('<|start_header_id|>'), 'system', SpecialToken('<|end_header_id|>'), '\n\n',
         sysMsg,
-        _.compact([eot]),
+        SpecialToken('<|eot_id|>'),
       ]),
     }];
 
@@ -91,9 +87,9 @@ export class Llama3ChatWrapper implements ChatWrapper {
           result.push({
             item,
             tokens: ctx.model.tokenize([
-              start_header, 'user', end_header, '\n\n',
+              SpecialToken('<|start_header_id|>'), 'user', SpecialToken('<|end_header_id|>'), '\n\n',
               item.text,
-              _.compact([eot]),
+              SpecialToken('<|eot_id|>'),
             ]),
           });
           break;
@@ -103,17 +99,17 @@ export class Llama3ChatWrapper implements ChatWrapper {
             tokens: ctx.model.tokenize(_.flatMap(item.response, response => {
               if (_.isString(response)) {
                 return [
-                  start_header, 'assistant', end_header, '\n\n',
+                  SpecialToken('<|start_header_id|>'), 'assistant', SpecialToken('<|end_header_id|>'), '\n\n',
                   response,
-                  _.compact([eot]),
+                  SpecialToken('<|eot_id|>'),
                 ];
               }
               return [
-                start_header, 'assistant', end_header, '\n\n',
+                SpecialToken('<|start_header_id|>'), 'assistant', SpecialToken('<|end_header_id|>'), '\n\n',
                 '||call: ', response.name, '(', JSON.stringify(response.params), ')',
-                start_header, 'function_call_result', end_header, '\n\n',
+                SpecialToken('<|start_header_id|>'), 'function_call_result', SpecialToken('<|end_header_id|>'), '\n\n',
                 JSON.stringify(response.result),
-                _.compact([eot]),
+                SpecialToken('<|eot_id|>'),
               ];
             })),
           });
