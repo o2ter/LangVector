@@ -32,5 +32,7 @@ for await (const { token, time } of context.prompt('hi', { temperature: 0.8, max
   console.log({ token, time, text: model.detokenize(token, { decodeSpecial: true }) });
 }
 
-console.log(context.chatHistory);
+console.log('------------------------------------------');
 console.log(model.detokenize(context.tokens, { decodeSpecial: true }));
+console.log('------------------------------------------');
+console.log(context.chatHistory);

@@ -267,19 +267,6 @@ export class LlamaContext extends LLMContext<LlamaDevice, LlamaModel> {
   /** @internal */
   private async _decodeTokens(value: LLMTextValue) {
 
-    const chatWrapper = this._options.chatOptions?.chatWrapper;
-
-    if (!this._tokens.length && chatWrapper) {
-
-      const state = chatWrapper.generateContextState(this, []);
-
-      const _tokens = _.flatMap(state, x => _.isArray(x.tokens) ? x.tokens : [...x.tokens]);
-      this._tokens = _tokens;
-
-      await this._eval(new Uint32Array(_tokens), this._ctx_state.length);
-      this._ctx_state.push(..._tokens);
-    }
-
     const tokens = this.model.tokenize(value);
     this._tokens.push(...tokens);
     this._chat_history = undefined;

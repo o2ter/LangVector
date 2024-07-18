@@ -56,23 +56,13 @@ export class Llama3ChatWrapper implements ChatWrapper {
     ], x => !_.isEmpty(x));
   }
 
-  generateNextContextState(ctx: LlamaContext, value: LLMTextValue) {
-    const eot = ctx.model.tokenize(SpecialToken('<|eot_id|>'));
-    return _.compact([
-      !endsWith(ctx.tokens, eot) && eot,
-      role('user'),
-      value,
-      SpecialToken('<|eot_id|>'),
-      role('assistant'),
-    ]);
-  }
+  generateSystemMessage(ctx: LlamaContext) {
 
-  generateContextState(ctx: LlamaContext, chatHistory: ChatHistoryItem[]) {
+    if (_.isEmpty(ctx.chatOptions?.functions)) {
+      return 'You are a helpful AI assistant for travel tips and recommendations';
+    }
 
-    const sys = _.first(chatHistory)?.type === 'system' ? _.first(chatHistory) as ChatSystemMessage : undefined;
-    const history = sys ? _.drop(chatHistory, 1) : chatHistory;
-
-    const sysMsg = sys?.text ?? (ctx.chatOptions?.functions ? [
+    return [
       "The assistant calls the provided functions as needed to retrieve information instead of relying on existing knowledge.",
       "To fulfill a request, the assistant calls relevant functions in advance when needed before responding to the request, and does not tell the user prior to calling a function.",
       "Provided functions:",
@@ -87,9 +77,32 @@ export class Llama3ChatWrapper implements ChatWrapper {
       "The assistant does not inform the user about using functions and does not explain anything before calling a function.",
       "After calling a function, the raw result appears afterwards and is not part of the conversation",
       "To make information be part of the conversation, the assistant paraphrases and repeats the information without the function syntax.",
-    ] : [
-      'You are a helpful AI assistant for travel tips and recommendations',
-    ]).join('\n');
+    ].join('\n');
+  }
+
+  generateNextContextState(ctx: LlamaContext, value: LLMTextValue) {
+    const eot = ctx.model.tokenize(SpecialToken('<|eot_id|>'));
+    return _.compact([
+      _.isEmpty(ctx._tokens) && [
+        SpecialToken('<|begin_of_text|>'),
+        role('system'),
+        this.generateSystemMessage(ctx),
+        SpecialToken('<|eot_id|>'),
+      ],
+      !_.isEmpty(ctx._tokens) && !endsWith(ctx.tokens, eot) && eot,
+      role('user'),
+      value,
+      SpecialToken('<|eot_id|>'),
+      role('assistant'),
+    ]);
+  }
+
+  generateContextState(ctx: LlamaContext, chatHistory: ChatHistoryItem[]) {
+
+    const sys = _.first(chatHistory)?.type === 'system' ? _.first(chatHistory) as ChatSystemMessage : undefined;
+    const history = sys ? _.drop(chatHistory, 1) : chatHistory;
+
+    const sysMsg = sys?.text ?? this.generateSystemMessage(ctx);
 
     const result: {
       item: ChatHistoryItem;
@@ -161,20 +174,23 @@ export class Llama3ChatWrapper implements ChatWrapper {
 
     while (tokens.length > 0) {
 
-      if (!startHeaderId.every((v, i) => tokens[i] === v)) throw Error('Invalid chat history');
+      if (!startHeaderId.every((v, i) => tokens[i] === v)) {
+        console.log(ctx.model.detokenize(tokens, {decodeSpecial: true}))
+        throw Error('Invalid chat history');
+      }
       tokens = tokens.subarray(startHeaderId.length);
 
       const endHeaderIdx = find(tokens, endHeaderId);
       if (endHeaderIdx === -1) throw Error('Invalid chat history');
 
       const type = tokens.subarray(0, endHeaderIdx);
-      tokens = tokens.subarray(endHeaderIdx);
+      tokens = tokens.subarray(endHeaderIdx + endHeaderId.length);
 
       const eotIdx = find(tokens, eotId);
       if (eotIdx === -1) throw Error('Invalid chat history');
 
       const content = tokens.subarray(0, eotIdx);
-      tokens = tokens.subarray(eotIdx);
+      tokens = tokens.subarray(eotIdx + eotId.length);
 
       switch (ctx.model.detokenize(type)) {
         case 'system':
