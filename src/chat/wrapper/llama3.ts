@@ -131,12 +131,17 @@ export class Llama3ChatWrapper implements ChatWrapper {
     if (!beginOfText.every((v, i) => tokens[i] === v)) throw Error('Invalid chat history');
     tokens = tokens.subarray(beginOfText.length);
 
-    if (!startHeaderId.every((v, i) => tokens[i] === v)) throw Error('Invalid chat history');
-    tokens = tokens.subarray(startHeaderId.length);
+    const result: ChatHistoryItem[] = [];
 
-    
+    while (tokens.length > 0) {
 
-    throw new Error('Method not implemented.');
+      if (!startHeaderId.every((v, i) => tokens[i] === v)) throw Error('Invalid chat history');
+      tokens = tokens.subarray(startHeaderId.length);
+
+
+    }
+
+    return result;
   }
 
 }
