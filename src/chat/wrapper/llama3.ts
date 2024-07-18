@@ -42,7 +42,7 @@ export class Llama3ChatWrapper implements ChatWrapper {
     const shouldPrependBosToken = ctx.model.shouldPrependBosToken;
     const { bos, eot } = ctx.model.tokens;
     const start_header = ctx.model.tokenize('<|start_header_id|>', { encodeSpecial: true });
-    const end_header = ctx.model.tokenize('<|start_header_id|>', { encodeSpecial: true });
+    const end_header = ctx.model.tokenize('<|end_header_id|>', { encodeSpecial: true });
 
     const sys = _.first(chatHistory)?.type === 'system' ? _.first(chatHistory) as ChatSystemMessage : undefined;
     const history = sys ? _.drop(chatHistory, 1) : chatHistory;
