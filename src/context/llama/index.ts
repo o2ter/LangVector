@@ -360,7 +360,7 @@ export class LlamaContext extends LLMContext<LlamaDevice, LlamaModel> {
     type Result = Awaited<ReturnType<LlamaContext['_evaluate']>>;
     const iterator = EventIterator(async (
       push: (item: { token: number; time: number; }) => void,
-      resolve: (result?: { [K in keyof Result]: Result[K] }) => void,
+      resolve: (result: { [K in keyof Result]: Result[K] }) => void,
     ) => {
       resolve(await this._evaluate(value, options, (token, time) => push({ token, time })));
     });
