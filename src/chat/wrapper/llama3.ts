@@ -107,7 +107,7 @@ export class Llama3ChatWrapper implements ChatWrapper {
               }
               return [
                 role('assistant'),
-                '||call: ', response.name, '(', JSON.stringify(response.params), ')',
+                `||call: ${response.name}(${JSON.stringify(response.params)})`,
                 SpecialToken('<|eot_id|>'),
                 role('function_call_result'),
                 JSON.stringify(response.result),
