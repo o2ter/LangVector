@@ -123,6 +123,13 @@ export class Llama3ChatWrapper implements ChatWrapper {
     return result;
   }
   generateChatHistory(ctx: LlamaContext, tokens: Uint32Array): ChatHistoryItem[] {
+
+    const beginOfText = ctx.model.tokenize(SpecialToken('<|begin_of_text|>'));
+
+    if (beginOfText.every((v, i) => tokens[i] === v)) {
+      tokens = tokens.subarray(beginOfText.length);
+    }
+
     throw new Error('Method not implemented.');
   }
 
