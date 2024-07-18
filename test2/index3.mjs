@@ -21,8 +21,6 @@ const tokens = [
   '<|end_header_id|>',
   '<|eot_id|>',
   '<|end_of_text|>',
-  '<|eot_id|>', ,
-  '<|end_of_text|>',
 ];
 
 for (const token of tokens) {
