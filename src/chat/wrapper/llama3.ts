@@ -38,6 +38,11 @@ const find = (tokens: Uint32Array, pattern: Uint32Array) => {
   return -1;
 };
 
+const startsWith = (tokens: Uint32Array, pattern: Uint32Array) => {
+  if (tokens.length < pattern.length) return false;
+  return pattern.every((v, i) => tokens[i] === v);
+};
+
 const endsWith = (tokens: Uint32Array, pattern: Uint32Array) => {
   if (tokens.length < pattern.length) return false;
   const offset = tokens.length - pattern.length;
@@ -167,17 +172,14 @@ export class Llama3ChatWrapper implements ChatWrapper {
     const endHeaderId = ctx.model.tokenize(SpecialToken('<|end_header_id|>'));
     const eotId = ctx.model.tokenize(SpecialToken('<|eot_id|>'));
 
-    if (!beginOfText.every((v, i) => tokens[i] === v)) throw Error('Invalid chat history');
+    if (!startsWith(tokens, beginOfText)) throw Error('Invalid chat history');
     tokens = tokens.subarray(beginOfText.length);
 
     const result: ChatHistoryItem[] = [];
 
     while (tokens.length > 0) {
 
-      if (!startHeaderId.every((v, i) => tokens[i] === v)) {
-        console.log(ctx.model.detokenize(tokens, {decodeSpecial: true}))
-        throw Error('Invalid chat history');
-      }
+      if (!startsWith(tokens, startHeaderId)) throw Error('Invalid chat history');
       tokens = tokens.subarray(startHeaderId.length);
 
       const endHeaderIdx = find(tokens, endHeaderId);
@@ -186,10 +188,9 @@ export class Llama3ChatWrapper implements ChatWrapper {
       const type = tokens.subarray(0, endHeaderIdx);
       tokens = tokens.subarray(endHeaderIdx + endHeaderId.length);
 
-      const eotIdIdx = find(tokens, eotId);
-
-      const content = eotIdIdx === -1 ? tokens : tokens.subarray(0, eotIdIdx);
-      tokens = eotIdIdx === -1 ? new Uint32Array : tokens.subarray(eotIdIdx + eotId.length);
+      const _end = find(tokens, eotId);
+      const content = _end === -1 ? tokens : tokens.subarray(0, _end);
+      tokens = _end === -1 ? new Uint32Array : tokens.subarray(_end + eotId.length);
 
       switch (ctx.model.detokenize(type)) {
         case 'system':
