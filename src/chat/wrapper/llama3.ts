@@ -186,11 +186,10 @@ export class Llama3ChatWrapper implements ChatWrapper {
       const type = tokens.subarray(0, endHeaderIdx);
       tokens = tokens.subarray(endHeaderIdx + endHeaderId.length);
 
-      const eotIdx = find(tokens, eotId);
-      if (eotIdx === -1) throw Error('Invalid chat history');
+      const eotIdIdx = find(tokens, eotId);
 
-      const content = tokens.subarray(0, eotIdx);
-      tokens = tokens.subarray(eotIdx + eotId.length);
+      const content = eotIdIdx === -1 ? tokens : tokens.subarray(0, eotIdIdx);
+      tokens = eotIdIdx === -1 ? new Uint32Array : tokens.subarray(eotIdIdx + eotId.length);
 
       switch (ctx.model.detokenize(type)) {
         case 'system':
