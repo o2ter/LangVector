@@ -64,7 +64,7 @@ export class Llama3ChatWrapper implements ChatWrapper {
       'You are a helpful AI assistant for travel tips and recommendations',
     ]).join('\n');
 
-    const role = (role: string) => [SpecialToken('<|start_header_id|>'), 'system', SpecialToken('<|end_header_id|>'), '\n\n'];
+    const role = (role: string) => [SpecialToken('<|start_header_id|>'), role, SpecialToken('<|end_header_id|>'), '\n\n'];
 
     const result: {
       item: ChatHistoryItem;
