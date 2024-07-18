@@ -211,10 +211,17 @@ export class Llama3ChatWrapper implements ChatWrapper {
           });
           break;
         case 'assistant':
-          result.push({
-            type: 'model',
-            response: [ctx.model.detokenize(content)],
-          });
+          {
+            const last = _.last(result);
+            if (last?.type === 'model') {
+              last.response.push(ctx.model.detokenize(content));
+            } else {
+              result.push({
+                type: 'model',
+                response: [ctx.model.detokenize(content)],
+              });
+            }
+          }
           break;
         // case 'function_call_result':
         //   result.push({
