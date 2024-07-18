@@ -16,7 +16,9 @@ const model = await LlamaDevice.loadModel({
 
 const context = model.createContext({
   contextSize: 512,
-  chatWrapper: new Llama3ChatWrapper,
+  chatOptions: {
+    chatWrapper: new Llama3ChatWrapper,
+  },
 });
 
 const tokenBias = new Map;
