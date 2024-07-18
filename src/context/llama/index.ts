@@ -357,9 +357,10 @@ export class LlamaContext extends LLMContext<LlamaDevice, LlamaModel> {
   }
 
   prompt(value: LLMTextValue, options: LLamaChatPromptOptions = {}) {
+    type Result = Awaited<ReturnType<LlamaContext['_evaluate']>>;
     const iterator = EventIterator(async (
       push: (item: { token: number; time: number; }) => void,
-      resolve: (result?: Awaited<ReturnType<LlamaContext['_evaluate']>>) => void,
+      resolve: (result?: { [K in keyof Result]: Result[K] }) => void,
     ) => {
       resolve(await this._evaluate(value, options, (token, time) => push({ token, time })));
     });
@@ -367,9 +368,13 @@ export class LlamaContext extends LLMContext<LlamaDevice, LlamaModel> {
       const response: number[] = [];
       while (true) {
         const { value, done } = await iterator.next();
-        if (!done) response.push(value.token);
-        yield { done, response: new Uint32Array(response), ...value };
-        if (done) return value;
+        if (done) {
+          yield { done: true, response: new Uint32Array(response), ...value } as const;
+          return value;
+        } else {
+          response.push(value.token);
+          yield { done: false, response: new Uint32Array(response), ...value } as const;
+        }
       }
     })();
   }
