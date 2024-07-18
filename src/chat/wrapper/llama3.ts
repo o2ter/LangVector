@@ -148,6 +148,42 @@ export class Llama3ChatWrapper implements ChatWrapper {
       tokens = tokens.subarray(startHeaderId.length);
 
       const endHeaderIdx = find_pattern(tokens, endHeaderId);
+      if (endHeaderIdx === -1) throw Error('Invalid chat history');
+
+      const type = tokens.subarray(0, endHeaderIdx);
+      tokens = tokens.subarray(endHeaderIdx);
+
+      const eotIdx = find_pattern(tokens, eotId);
+      if (eotIdx === -1) throw Error('Invalid chat history');
+
+      const content = tokens.subarray(0, eotIdx);
+      tokens = tokens.subarray(eotIdx);
+
+      switch (ctx.model.detokenize(type)) {
+        case 'system':
+          result.push({
+            type: 'system',
+            text: content,
+          });
+        case 'user':
+          result.push({
+            type: 'user',
+            text: ctx.model.detokenize(content),
+          });
+        case 'assistant':
+          result.push({
+            type: 'model',
+            response: [ctx.model.detokenize(content)],
+          });
+        // case 'function_call_result':
+        //   result.push({
+        //     type: 'model',
+        //     response: [{
+        //       type: 'functionCall',
+        //     }],
+        //   });
+        default: throw Error('Invalid chat history');
+      }
     }
 
     return result;
