@@ -287,6 +287,8 @@ export class LlamaContext extends LLMContext<LlamaDevice, LlamaModel> {
     onToken: (token: number, time: number) => void,
   ) {
 
+    const totalTime = clock();
+
     const chatWrapper = this._options.chatOptions?.chatWrapper;
     const grammar = options.grammar ? this._grammarEvaluationState(options.grammar) : null;
     const stopTriggers = _.map(
@@ -299,8 +301,6 @@ export class LlamaContext extends LLMContext<LlamaDevice, LlamaModel> {
     return await this._worker.sync(async () => {
 
       if (_.isNil(this._ctx)) throw new DisposedError();
-
-      const totalTime = clock();
 
       await this._decodeTokens(value);
 
