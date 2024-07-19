@@ -280,6 +280,12 @@ export class Llama3ChatWrapper implements ChatWrapper {
       params: any;
     }[] = [];
 
+    for (const line of tokens.split('\n')) {
+      const _line = line.trim();
+      if (_.isEmpty(_line)) continue;
+      if (!_.startsWith(_line, functionCallPrefix)) throw Error('Invalid function call format');
+    }
+
     return result;
   }
 
