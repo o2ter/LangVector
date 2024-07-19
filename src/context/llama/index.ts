@@ -330,6 +330,9 @@ export class LlamaContext extends LLMContext<LlamaDevice, LlamaModel> {
           if (!_grammar && functionGrammar && tokenStartsWith(records, functionGrammar.beginTrigger)) {
             _stopTriggers = functionGrammar.stopGenerationTriggers;
             _grammar = functionGrammar.grammar();
+            for (const token of records) {
+              _grammar.acceptToken(token);
+            }
           }
           if (_grammar) {
             _grammar.sampleToken(candidates);
