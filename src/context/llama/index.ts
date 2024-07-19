@@ -313,7 +313,8 @@ export class LlamaContext extends LLMContext<LlamaDevice, LlamaModel> {
         }
 
         const records: number[] = [];
-        let _stopTriggers = stopTriggers;
+        let _stopTriggers: Uint32List[] = stopTriggers;
+        let _grammar = grammar;
         let functionCallEnabled = false;
 
         let maxTokens = options.maxTokens ?? -1;
@@ -327,14 +328,17 @@ export class LlamaContext extends LLMContext<LlamaDevice, LlamaModel> {
           const time = clock();
           let candidates = this._sampleCandidates(options);
 
-          if (grammar) {
-            grammar.sampleToken(candidates);
+          if (_grammar) {
+            _grammar.sampleToken(candidates);
             if (!candidates.isValid()) {
               // logit biases caused grammar sampling to fail, so sampling again without logit biases
               candidates = this._sampleCandidates(_.omit(options, 'tokenBias'));
-              grammar.sampleToken(candidates);
+              _grammar.sampleToken(candidates);
             }
           } else if (functionGrammar && !functionCallEnabled && tokenStartsWith(records, functionGrammar.beginTrigger)) {
+            _stopTriggers = functionGrammar.stopGenerationTriggers;
+            _grammar = functionGrammar.grammar();
+            functionCallEnabled = true;
           }
 
           const sample = await this._ctx.sampleToken(candidates, _.pickBy({
