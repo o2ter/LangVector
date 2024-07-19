@@ -62,20 +62,16 @@ export class Llama3ChatWrapper implements ChatWrapper {
   }
 
   generateSystemMessage(ctx: LlamaContext) {
-
-    const msgs = [
+    return [
       'You are a helpful, respectful and honest assistant. Always answer as helpfully as possible.',
       'If a question does not make any sense, or is not factually coherent, explain why instead of answering something not correct.',
       'If you don\'t know the answer to a question, please don\'t share false information.',
-    ];
+    ].join('\n');
+  }
 
-    if (_.isEmpty(ctx.chatOptions?.functions)) {
-      return msgs.join('\n');
-    }
-
+  generateAvailableFunctionsSystemText(ctx: LlamaContext) {
+    if (_.isEmpty(ctx.chatOptions?.functions)) return '';
     return [
-      ...msgs,
-      '',
       'The assistant calls the provided functions as needed to retrieve information instead of relying on existing knowledge.',
       'To fulfill a request, the assistant calls relevant functions in advance when needed before responding to the request, and does not tell the user prior to calling a function.',
       'Provided functions:',
@@ -93,13 +89,17 @@ export class Llama3ChatWrapper implements ChatWrapper {
     ].join('\n');
   }
 
+  _defaultSystemMessage(ctx: LlamaContext) {
+    return _.compact([this.generateSystemMessage(ctx), this.generateAvailableFunctionsSystemText(ctx)]).join('\n\n');
+  }
+
   encodeNextContextState(ctx: LlamaContext, value: LLMTextValue) {
     const eot = ctx.model.tokenize(SpecialToken('<|eot_id|>'));
     return _.compact([
       _.isEmpty(ctx._tokens) && [
         SpecialToken('<|begin_of_text|>'),
         role('system'),
-        this.generateSystemMessage(ctx),
+        this._defaultSystemMessage(ctx),
         SpecialToken('<|eot_id|>'),
       ],
       !_.isEmpty(ctx._tokens) && !endsWith(ctx.tokens, eot) && eot,
@@ -115,7 +115,7 @@ export class Llama3ChatWrapper implements ChatWrapper {
     const sys = _.first(chatHistory)?.type === 'system' ? _.first(chatHistory) as ChatSystemMessage : undefined;
     const history = sys ? _.drop(chatHistory, 1) : chatHistory;
 
-    const sysMsg = sys?.text ?? this.generateSystemMessage(ctx);
+    const sysMsg = sys?.text ?? this._defaultSystemMessage(ctx);
 
     const result: {
       item: ChatHistoryItem;
