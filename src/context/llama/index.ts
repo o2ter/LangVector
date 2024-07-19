@@ -296,13 +296,19 @@ export class LlamaContext extends LLMContext<LlamaDevice, LlamaModel> {
       x => this.model.tokenize(x)
     );
 
-    if (chatWrapper) value = chatWrapper.encodeNextContextState(this, 'user', value);
+    const inputs: LLMTextValue[] = [
+      chatWrapper ? chatWrapper.encodeNextContextState(this, 'user', value) : value,
+    ];
 
     return await this._worker.sync(async () => {
 
       if (_.isNil(this._ctx)) throw new DisposedError();
 
-      await this._decodeTokens(value);
+      while (true) {
+        const value = inputs.shift();
+        if (!value) break;
+        await this._decodeTokens(value);
+      }
 
       let maxTokens = options.maxTokens ?? -1;
       while (maxTokens--) {
