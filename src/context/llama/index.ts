@@ -350,17 +350,21 @@ export class LlamaContext extends LLMContext<LlamaDevice, LlamaModel> {
             topP: options.topP,
           }, v => !_.isNil(v)));
 
-          if (this.model.isEogToken(sample)) return {
-            stopReason: 'eogToken',
-            totalTime: clock() - totalTime,
-          } as const;
+          if (this.model.isEogToken(sample)) {
+            return {
+              stopReason: 'eogToken',
+              totalTime: clock() - totalTime,
+            } as const;
+          }
 
           for (const trigger of _stopTriggers) {
             let offset = this._tokens.length - trigger.length;
-            if (offset >= 0 && trigger.every((v, i) => v === this._tokens[i + offset])) return {
-              stopReason: 'stopTrigger',
-              totalTime: clock() - totalTime,
-            } as const;
+            if (offset >= 0 && trigger.every((v, i) => v === this._tokens[i + offset])) {
+              return {
+                stopReason: 'stopTrigger',
+                totalTime: clock() - totalTime,
+              } as const;
+            }
           }
 
           records.push(sample);
