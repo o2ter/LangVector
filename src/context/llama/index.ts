@@ -328,6 +328,11 @@ export class LlamaContext extends LLMContext<LlamaDevice, LlamaModel> {
           const time = clock();
           let candidates = this._sampleCandidates(options);
 
+          if (!_grammar && functionGrammar && !functionCallEnabled && tokenStartsWith(records, functionGrammar.beginTrigger)) {
+            _stopTriggers = functionGrammar.stopGenerationTriggers;
+            _grammar = functionGrammar.grammar();
+            functionCallEnabled = true;
+          }
           if (_grammar) {
             _grammar.sampleToken(candidates);
             if (!candidates.isValid()) {
@@ -335,10 +340,6 @@ export class LlamaContext extends LLMContext<LlamaDevice, LlamaModel> {
               candidates = this._sampleCandidates(_.omit(options, 'tokenBias'));
               _grammar.sampleToken(candidates);
             }
-          } else if (functionGrammar && !functionCallEnabled && tokenStartsWith(records, functionGrammar.beginTrigger)) {
-            _stopTriggers = functionGrammar.stopGenerationTriggers;
-            _grammar = functionGrammar.grammar();
-            functionCallEnabled = true;
           }
 
           const sample = await this._ctx.sampleToken(candidates, _.pickBy({
