@@ -356,11 +356,16 @@ export class LlamaContext extends LLMContext<LlamaDevice, LlamaModel> {
     });
   }
 
-  prompt(value: LLMTextValue, options: LLamaChatPromptOptions = {}) {
+  /** @internal */
+  private _evaluate_iterator(value: LLMTextValue, options: LLamaChatPromptOptions = {}) {
     type Result = Awaited<ReturnType<LlamaContext['_evaluate']>>;
-    const iterator = EventIterator(async (push, resolve) => {
+    return EventIterator(async (push, resolve) => {
       resolve(await this._evaluate(value, options, (token, time) => push({ token, time })));
-    }) as AsyncGenerator<{ token: number; time: number; }, { [K in keyof Result]: Result[K] }, undefined>;
+    }) as AsyncGenerator<{ token: number; time: number; }, { [K in keyof Result]: Result[K] }, undefined>;;
+  }
+
+  prompt(value: LLMTextValue, options: LLamaChatPromptOptions = {}) {
+    const iterator = this._evaluate_iterator(value, options);
     return (async function* () {
       const response: number[] = [];
       while (true) {
@@ -377,10 +382,10 @@ export class LlamaContext extends LLMContext<LlamaDevice, LlamaModel> {
   }
 
   async evaluate(value: LLMTextValue) {
-    for await (const result of this.prompt(value, { maxTokens: 0 })) {
-      if (result.done) {
-        return result.totalTime;
-      }
+    const iterator = this._evaluate_iterator(value, { maxTokens: 0 });
+    while (true) {
+      const { value, done } = await iterator.next();
+      if (done) return value.totalTime;
     }
   }
 }
