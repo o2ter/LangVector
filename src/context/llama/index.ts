@@ -296,7 +296,7 @@ export class LlamaContext extends LLMContext<LlamaDevice, LlamaModel> {
       x => this.model.tokenize(x)
     );
 
-    if (chatWrapper) value = chatWrapper.encodeNextContextState(this, value);
+    if (chatWrapper) value = chatWrapper.encodeNextContextState(this, 'user', value);
 
     return await this._worker.sync(async () => {
 
