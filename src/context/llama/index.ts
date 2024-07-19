@@ -367,6 +367,7 @@ export class LlamaContext extends LLMContext<LlamaDevice, LlamaModel> {
               for (const token of records) {
                 _grammar.acceptToken(token);
               }
+              break;
             }
           }
 
