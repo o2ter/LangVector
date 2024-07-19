@@ -316,8 +316,13 @@ export class LlamaContext extends LLMContext<LlamaDevice, LlamaModel> {
         let _stopTriggers: Uint32List[] = stopTriggers;
         let _grammar = grammar;
         let functionCallEnabled = false;
-
         let maxTokens = options.maxTokens ?? -1;
+
+        const excute_function = async () => {
+          if (!chatWrapper) return;
+          const calls = chatWrapper.decodeFunctionCalls(this, this.model.detokenize(records));
+        };
+
         loop: while (maxTokens--) {
 
           if (options.signal?.aborted) return {
@@ -354,6 +359,7 @@ export class LlamaContext extends LLMContext<LlamaDevice, LlamaModel> {
 
           if (this.model.isEogToken(sample)) {
             if (functionCallEnabled) {
+              await excute_function();
               break loop;
             }
             return {
@@ -366,6 +372,7 @@ export class LlamaContext extends LLMContext<LlamaDevice, LlamaModel> {
             let offset = this._tokens.length - trigger.length;
             if (offset >= 0 && trigger.every((v, i) => v === this._tokens[i + offset])) {
               if (functionCallEnabled) {
+                await excute_function();
                 break loop;
               }
               return {
