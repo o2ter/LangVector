@@ -61,7 +61,7 @@ export type ChatWrapper = {
     responseEncoder: (result: any) => string;
   } | undefined;
 
-  encodeNextContextState(ctx: LlamaContext, value: LLMTextValue): LLMTextValue;
+  encodeNextContextState(ctx: LlamaContext, role: string, value: LLMTextValue): LLMTextValue;
 
   encodeContextState: (
     ctx: LlamaContext,

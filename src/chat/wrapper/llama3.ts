@@ -35,7 +35,7 @@ const endOfTextToken = SpecialToken('<|end_of_text|>');
 const startHeaderToken = SpecialToken('<|start_header_id|>');
 const endHeaderToken = SpecialToken('<|end_header_id|>');
 
-const role = (role: string) => [startHeaderToken, role, endHeaderToken, '\n\n'];
+const roleHeader = (role: string) => [startHeaderToken, role, endHeaderToken, '\n\n'];
 
 const find = (tokens: Uint32Array, pattern: Uint32Array) => {
   for (let offset = 0; offset < tokens.length; ++offset) {
@@ -100,20 +100,20 @@ export class Llama3ChatWrapper implements ChatWrapper {
     return _.compact([this.generateSystemMessage(ctx), this.generateAvailableFunctionsSystemText(ctx)]).join('\n\n');
   }
 
-  encodeNextContextState(ctx: LlamaContext, value: LLMTextValue) {
+  encodeNextContextState(ctx: LlamaContext, role: string, value: LLMTextValue) {
     const eot = ctx.model.tokenize(eotToken);
     return _.compact([
       _.isEmpty(ctx._tokens) && [
         beginOfTextToken,
-        role('system'),
+        roleHeader('system'),
         this._defaultSystemMessage(ctx),
         eotToken,
       ],
       !_.isEmpty(ctx._tokens) && !endsWith(ctx.tokens, eot) && eot,
-      role('user'),
+      roleHeader(role),
       value,
       eotToken,
-      role('assistant'),
+      roleHeader('assistant'),
     ]);
   }
 
@@ -134,7 +134,7 @@ export class Llama3ChatWrapper implements ChatWrapper {
       },
       tokens: ctx.model.tokenize([
         beginOfTextToken,
-        role('system'),
+        roleHeader('system'),
         sysMsg,
         eotToken,
       ]),
@@ -146,7 +146,7 @@ export class Llama3ChatWrapper implements ChatWrapper {
           result.push({
             item,
             tokens: ctx.model.tokenize([
-              role('user'),
+              roleHeader('user'),
               item.text,
               eotToken,
             ]),
@@ -158,16 +158,16 @@ export class Llama3ChatWrapper implements ChatWrapper {
             tokens: ctx.model.tokenize(_.flatMap(item.response, response => {
               if (_.isString(response)) {
                 return [
-                  role('assistant'),
+                  roleHeader('assistant'),
                   response,
                   eotToken,
                 ];
               }
               return [
-                role('assistant'),
+                roleHeader('assistant'),
                 `${functionCallPrefix}${response.name}(${JSON.stringify(response.params)})`,
                 eotToken,
-                role('function_call_result'),
+                roleHeader('function_call_result'),
                 JSON.stringify(response.result),
                 eotToken,
               ];
