@@ -253,7 +253,6 @@ export class Llama3ChatWrapper implements ChatWrapper {
             const results = _.filter(last.response, x => !_.isString(x) && x.type === 'functionCall') as ChatModelFunctionCall[];
 
             if (calls.length <= results.length) throw Error('Invalid chat history');
-
             const current = calls[results.length];
 
             result.push({
