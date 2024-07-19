@@ -359,7 +359,7 @@ export class LlamaContext extends LLMContext<LlamaDevice, LlamaModel> {
           const time = clock();
           let candidates = this._sampleCandidates(options);
 
-          if (!module && records) {
+          if (!_grammar && !module && records) {
             let not_match = 0;
             for (const _module of modules) {
               if (!tokenStartsWith(_.map(records, ([x]) => x), _module.beginTrigger)) {
