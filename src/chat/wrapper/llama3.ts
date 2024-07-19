@@ -24,7 +24,7 @@
 //
 
 import _ from 'lodash';
-import { ChatHistoryItem, ChatSystemMessage, ChatWrapper } from './../types';
+import { ChatHistoryItem, ChatModelFunctionCall, ChatSystemMessage, ChatWrapper } from './../types';
 import { LlamaContext } from '../../context/llama';
 import { LLMTextValue, SpecialToken } from '../../types';
 
@@ -231,14 +231,22 @@ export class Llama3ChatWrapper implements ChatWrapper {
             }
           }
           break;
-        // case 'function_call_result':
-        //   result.push({
-        //     type: 'model',
-        //     response: [{
-        //       type: 'functionCall',
-        //     }],
-        //   });
-        //   break;
+        case 'function_call_result':
+          {
+            const last = _.last(result);
+            if (last?.type !== 'model') throw Error('Invalid chat history');
+
+            const calls = _.filter(last.response, x => _.isString(x) && _.startsWith(x, '||call: ')) as string[];
+            const results = _.filter(last.response, x => !_.isString(x) && x.type === 'functionCall') as ChatModelFunctionCall[];
+
+              // result.push({
+              //   type: 'model',
+              //   response: [{
+              //     type: 'functionCall',
+              //   }],
+              // });
+          }
+          break;
         default: throw Error('Invalid chat history');
       }
     }
