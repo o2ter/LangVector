@@ -27,6 +27,7 @@ import _ from 'lodash';
 import { ChatHistoryItem, ChatModelFunctionCall, ChatSystemMessage, ChatWrapper } from './../types';
 import { LlamaContext } from '../../context/llama';
 import { LLMTextValue, SpecialToken } from '../../types';
+import { tokenEndsWith, tokenFind, tokenStartsWith } from '../../utils';
 
 const functionCallPrefix = '||call: ';
 const eotToken = SpecialToken('<|eot_id|>');
@@ -36,25 +37,6 @@ const startHeaderToken = SpecialToken('<|start_header_id|>');
 const endHeaderToken = SpecialToken('<|end_header_id|>');
 
 const roleHeader = (role: string) => [startHeaderToken, role, endHeaderToken, '\n\n'];
-
-const find = (tokens: Uint32Array, pattern: Uint32Array) => {
-  for (let offset = 0; offset < tokens.length; ++offset) {
-    if (offset + pattern.length > tokens.length) return -1;
-    if (pattern.every((v, i) => tokens[i + offset] === v)) return offset;
-  }
-  return -1;
-};
-
-const startsWith = (tokens: Uint32Array, pattern: Uint32Array) => {
-  if (tokens.length < pattern.length) return false;
-  return pattern.every((v, i) => tokens[i] === v);
-};
-
-const endsWith = (tokens: Uint32Array, pattern: Uint32Array) => {
-  if (tokens.length < pattern.length) return false;
-  const offset = tokens.length - pattern.length;
-  return pattern.every((v, i) => tokens[i + offset] === v);
-};
 
 export class Llama3ChatWrapper implements ChatWrapper {
 
@@ -109,7 +91,7 @@ export class Llama3ChatWrapper implements ChatWrapper {
         this._defaultSystemMessage(ctx),
         eotToken,
       ],
-      !_.isEmpty(ctx._tokens) && !endsWith(ctx.tokens, eot) && eot,
+      !_.isEmpty(ctx._tokens) && !tokenEndsWith(ctx.tokens, eot) && eot,
       roleHeader(role),
       value,
       eotToken,
@@ -188,27 +170,27 @@ export class Llama3ChatWrapper implements ChatWrapper {
     const endHeaderId = ctx.model.tokenize(endHeaderToken);
     const eotId = ctx.model.tokenize(eotToken);
 
-    if (!startsWith(tokens, beginOfText)) throw Error('Invalid chat history');
+    if (!tokenStartsWith(tokens, beginOfText)) throw Error('Invalid chat history');
     tokens = tokens.subarray(beginOfText.length);
 
     const result: ChatHistoryItem[] = [];
 
     while (tokens.length > 0) {
 
-      if (!startsWith(tokens, startHeaderId)) throw Error('Invalid chat history');
+      if (!tokenStartsWith(tokens, startHeaderId)) throw Error('Invalid chat history');
       tokens = tokens.subarray(startHeaderId.length);
 
-      const endHeaderIdx = find(tokens, endHeaderId);
+      const endHeaderIdx = tokenFind(tokens, endHeaderId);
       if (endHeaderIdx === -1) throw Error('Invalid chat history');
 
       const type = tokens.subarray(0, endHeaderIdx);
       tokens = tokens.subarray(endHeaderIdx + endHeaderId.length);
 
-      while (startsWith(tokens, newline)) {
+      while (tokenStartsWith(tokens, newline)) {
         tokens = tokens.subarray(newline.length);
       }
 
-      const _end = find(tokens, eotId);
+      const _end = tokenFind(tokens, eotId);
       const content = _end === -1 ? tokens : tokens.subarray(0, _end);
       tokens = _end === -1 ? new Uint32Array : tokens.subarray(_end + eotId.length);
 

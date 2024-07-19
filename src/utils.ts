@@ -29,3 +29,22 @@ export const clock = () => {
   const [seconds, nanoseconds] = process.hrtime();
   return seconds + nanoseconds / 1000000000;
 };
+
+export const tokenFind = (tokens: Uint32List, pattern: Uint32List) => {
+  for (let offset = 0; offset < tokens.length; ++offset) {
+    if (offset + pattern.length > tokens.length) return -1;
+    if (pattern.every((v, i) => tokens[i + offset] === v)) return offset;
+  }
+  return -1;
+};
+
+export const tokenStartsWith = (tokens: Uint32List, pattern: Uint32List) => {
+  if (tokens.length < pattern.length) return false;
+  return pattern.every((v, i) => tokens[i] === v);
+};
+
+export const tokenEndsWith = (tokens: Uint32List, pattern: Uint32List) => {
+  if (tokens.length < pattern.length) return false;
+  const offset = tokens.length - pattern.length;
+  return pattern.every((v, i) => tokens[i + offset] === v);
+};
