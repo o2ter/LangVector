@@ -293,13 +293,12 @@ export class LlamaContext extends LLMContext<LlamaDevice, LlamaModel> {
     const chatWrapper = this._options.chatOptions?.chatWrapper;
     const functions = this._options.chatOptions?.functions;
     const functionGrammar = chatWrapper?.generateFunctionGrammar?.(this);
-    if (functionGrammar) {
+    if (chatWrapper && functionGrammar && functions) {
       modules.push({
         beginTrigger: functionGrammar.beginTrigger,
         grammar: functionGrammar.grammar,
         stopGenerationTriggers: functionGrammar.stopGenerationTriggers,
         handle: async (tokens) => {
-          if (!chatWrapper || !functionGrammar || !functions) return [];
           const calls = chatWrapper.decodeFunctionCalls(this, this.model.detokenize(tokens));
           const results = await Promise.all(_.map(calls, ({ name, params }) => functions[name]?.handler(params)));
           return _.map(results, v => chatWrapper.encodeNextContextState(
