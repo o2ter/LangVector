@@ -63,25 +63,33 @@ export class Llama3ChatWrapper implements ChatWrapper {
 
   generateSystemMessage(ctx: LlamaContext) {
 
+    const msgs = [
+      'You are a helpful, respectful and honest assistant. Always answer as helpfully as possible.',
+      'If a question does not make any sense, or is not factually coherent, explain why instead of answering something not correct.',
+      'If you don\'t know the answer to a question, please don\'t share false information.',
+    ];
+
     if (_.isEmpty(ctx.chatOptions?.functions)) {
-      return 'You are a helpful AI assistant for travel tips and recommendations';
+      return msgs.join('\n');
     }
 
     return [
-      "The assistant calls the provided functions as needed to retrieve information instead of relying on existing knowledge.",
-      "To fulfill a request, the assistant calls relevant functions in advance when needed before responding to the request, and does not tell the user prior to calling a function.",
-      "Provided functions:",
-      "```typescript",
+      ...msgs,
+      '',
+      'The assistant calls the provided functions as needed to retrieve information instead of relying on existing knowledge.',
+      'To fulfill a request, the assistant calls relevant functions in advance when needed before responding to the request, and does not tell the user prior to calling a function.',
+      'Provided functions:',
+      '```typescript',
 
-      "```",
-      "",
-      "Calling any of the provided functions can be done like this:",
-      "||call: getSomeInfo({ someKey: \"someValue\" })",
-      "",
-      "Note that the ||call: prefix is mandatory",
-      "The assistant does not inform the user about using functions and does not explain anything before calling a function.",
-      "After calling a function, the raw result appears afterwards and is not part of the conversation",
-      "To make information be part of the conversation, the assistant paraphrases and repeats the information without the function syntax.",
+      '```',
+      '',
+      'Calling any of the provided functions can be done like this:',
+      '||call: getSomeInfo({ someKey: \"someValue\" })',
+      '',
+      'Note that the ||call: prefix is mandatory',
+      'The assistant does not inform the user about using functions and does not explain anything before calling a function.',
+      'After calling a function, the raw result appears afterwards and is not part of the conversation',
+      'To make information be part of the conversation, the assistant paraphrases and repeats the information without the function syntax.',
     ].join('\n');
   }
 
