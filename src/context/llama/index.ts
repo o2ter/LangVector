@@ -388,7 +388,7 @@ export class LlamaContext extends LLMContext<LlamaDevice, LlamaModel> {
 
           if (this.model.isEogToken(sample)) {
             if (module) {
-              await module.handle(records);
+              inputs.push(...await module.handle(records));
               break loop;
             }
             return {
@@ -401,7 +401,7 @@ export class LlamaContext extends LLMContext<LlamaDevice, LlamaModel> {
             let offset = this._tokens.length - trigger.length;
             if (offset >= 0 && trigger.every((v, i) => v === this._tokens[i + offset])) {
               if (module) {
-                await module.handle(records);
+                inputs.push(...await module.handle(records));
                 break loop;
               }
               return {
