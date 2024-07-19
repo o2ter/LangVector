@@ -78,6 +78,7 @@ export class Llama3ChatWrapper implements ChatWrapper {
     ].join('\n');
   }
 
+  /** @internal */
   _defaultSystemMessage(ctx: LlamaContext) {
     return _.compact([this.generateSystemMessage(ctx), this.generateAvailableFunctionsSystemText(ctx)]).join('\n\n');
   }
