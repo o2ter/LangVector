@@ -31,7 +31,7 @@ import { LlamaDevice } from '../../device/llama';
 import { LLamaChatPromptOptions, LlamaContextOptions } from './types';
 import { DisposedError, LLMTextValue } from '../../types';
 import { Worker } from './worker';
-import { clock } from '../../utils';
+import { clock, tokenStartsWith } from '../../utils';
 import { ChatHistoryItem } from '../../chat/types';
 import { LlamaGrammar } from '../../device/llama/grammar';
 import * as llamaCpp from '../../plugins/llamaCpp';
@@ -312,6 +312,10 @@ export class LlamaContext extends LLMContext<LlamaDevice, LlamaModel> {
           await this._decodeTokens(value);
         }
 
+        const records: number[] = [];
+        let _stopTriggers = stopTriggers;
+        let functionCallEnabled = false;
+
         let maxTokens = options.maxTokens ?? -1;
         while (maxTokens--) {
 
@@ -330,6 +334,7 @@ export class LlamaContext extends LLMContext<LlamaDevice, LlamaModel> {
               candidates = this._sampleCandidates(_.omit(options, 'tokenBias'));
               grammar.sampleToken(candidates);
             }
+          } else if (functionGrammar && !functionCallEnabled && tokenStartsWith(records, functionGrammar.beginTrigger)) {
           }
 
           const sample = await this._ctx.sampleToken(candidates, _.pickBy({
@@ -344,13 +349,15 @@ export class LlamaContext extends LLMContext<LlamaDevice, LlamaModel> {
             totalTime: clock() - totalTime,
           } as const;
 
-          for (const trigger of stopTriggers) {
+          for (const trigger of _stopTriggers) {
             let offset = this._tokens.length - trigger.length;
             if (offset >= 0 && trigger.every((v, i) => v === this._tokens[i + offset])) return {
               stopReason: 'stopTrigger',
               totalTime: clock() - totalTime,
             } as const;
           }
+
+          records.push(sample);
 
           if (grammar) grammar.acceptToken(sample);
           await this._decodeTokens([sample]);
