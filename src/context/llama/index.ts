@@ -345,7 +345,8 @@ export class LlamaContext extends LLMContext<LlamaDevice, LlamaModel> {
         }
 
         let module_records: [number, number][] | undefined = [];
-        let module: typeof modules[number] | undefined;
+        let _modules = modules;
+        let _selected_module: typeof modules[number] | undefined;
         let _grammar = grammar;
         let maxTokens = options.maxTokens ?? -1;
 
@@ -359,23 +360,22 @@ export class LlamaContext extends LLMContext<LlamaDevice, LlamaModel> {
           const time = clock();
           let candidates = this._sampleCandidates(options);
 
-          if (!_grammar && !module && module_records) {
-            let not_match = 0;
-            for (const _module of modules) {
-              if (!tokenStartsWith(_.map(module_records, ([x]) => x), _module.beginTrigger)) {
-                if (module_records.length >= _module.beginTrigger.length) {
-                  not_match += 1;
+          if (!_grammar && !_selected_module && module_records) {
+            for (const module of _modules) {
+              if (!tokenStartsWith(_.map(module_records, ([x]) => x), module.beginTrigger)) {
+                if (module_records.length >= module.beginTrigger.length) {
+                  _modules = _.filter(_modules, x => x !== module);
                 }
                 continue;
               }
-              module = _module;
-              _grammar = _module.grammar();
+              _selected_module = module;
+              _grammar = _selected_module.grammar();
               for (const token of module_records) {
                 _grammar.acceptToken(token);
               }
               break;
             }
-            if (not_match === modules.length) {
+            if (_.isEmpty(_modules)) {
               for (const [sample, time] of module_records) {
                 onToken(sample, time);
               }
@@ -400,8 +400,8 @@ export class LlamaContext extends LLMContext<LlamaDevice, LlamaModel> {
           }, v => !_.isNil(v)));
 
           if (this.model.isEogToken(sample)) {
-            if (module && module_records) {
-              inputs.push(...await module.handle(_.map(module_records, ([x]) => x)));
+            if (_selected_module && module_records) {
+              inputs.push(...await _selected_module.handle(_.map(module_records, ([x]) => x)));
               break loop;
             }
             return {
@@ -410,11 +410,11 @@ export class LlamaContext extends LLMContext<LlamaDevice, LlamaModel> {
             } as const;
           }
 
-          for (const trigger of module?.stopGenerationTriggers ?? stopTriggers) {
+          for (const trigger of _selected_module?.stopGenerationTriggers ?? stopTriggers) {
             let offset = this._tokens.length - trigger.length;
             if (offset >= 0 && trigger.every((v, i) => v === this._tokens[i + offset])) {
-              if (module && module_records) {
-                inputs.push(...await module.handle(_.map(module_records, ([x]) => x)));
+              if (_selected_module && module_records) {
+                inputs.push(...await _selected_module.handle(_.map(module_records, ([x]) => x)));
                 break loop;
               }
               return {
