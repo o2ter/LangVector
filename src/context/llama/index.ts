@@ -357,8 +357,6 @@ export class LlamaContext extends LLMContext<LlamaDevice, LlamaModel> {
             totalTime: clock() - totalTime,
           } as const;
 
-          const time = clock();
-
           if (!_grammar && !_selected_module && !_.isNil(module_records)) {
             for (const module of _modules) {
               if (tokenStartsWith(_.map(module_records, ([x]) => x), module.beginTrigger)) {
@@ -376,6 +374,7 @@ export class LlamaContext extends LLMContext<LlamaDevice, LlamaModel> {
             }
           }
 
+          const time = clock();
           let candidates = this._sampleCandidates(options);
 
           if (_grammar) {
