@@ -40,7 +40,7 @@ const roleHeader = (role: string) => [startHeaderToken, role, endHeaderToken, '\
 
 export class Llama3ChatWrapper implements ChatWrapper {
 
-  stopGenerationTriggers(ctx: LlamaContext) {
+  stopGenerationTriggers(ctx: LlamaContext): LLMTextValue[] {
     const { eot, eos } = ctx.model.tokens;
     return _.filter([
       _.compact([eot]),
@@ -83,7 +83,7 @@ export class Llama3ChatWrapper implements ChatWrapper {
     return _.compact([this.generateSystemMessage(ctx), this.generateAvailableFunctionsSystemText(ctx)]).join('\n\n');
   }
 
-  encodeNextContextState(ctx: LlamaContext, role: string, value: LLMTextValue) {
+  encodeNextContextState(ctx: LlamaContext, role: string, value: LLMTextValue): LLMTextValue {
     const eot = ctx.model.tokenize(eotToken);
     return _.compact([
       _.isEmpty(ctx._tokens) && [
