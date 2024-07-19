@@ -358,7 +358,6 @@ export class LlamaContext extends LLMContext<LlamaDevice, LlamaModel> {
           } as const;
 
           const time = clock();
-          let candidates = this._sampleCandidates(options);
 
           if (!_grammar && !_selected_module && !_.isNil(module_records)) {
             for (const module of _modules) {
@@ -376,6 +375,8 @@ export class LlamaContext extends LLMContext<LlamaDevice, LlamaModel> {
               module_records = undefined;
             }
           }
+
+          let candidates = this._sampleCandidates(options);
 
           if (_grammar) {
             _grammar.sampleToken(candidates);
