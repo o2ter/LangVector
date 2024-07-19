@@ -293,7 +293,7 @@ export class LlamaContext extends LLMContext<LlamaDevice, LlamaModel> {
     const chatWrapper = this._options.chatOptions?.chatWrapper;
     const functions = this._options.chatOptions?.functions;
     const functionGrammar = chatWrapper?.generateFunctionGrammar?.(this);
-    if (chatWrapper && functionGrammar && functions) {
+    if (chatWrapper && functions && functionGrammar) {
       modules.push({
         beginTrigger: functionGrammar.beginTrigger,
         grammar: functionGrammar.grammar,
