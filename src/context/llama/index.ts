@@ -321,13 +321,13 @@ export class LlamaContext extends LLMContext<LlamaDevice, LlamaModel> {
 
     const totalTime = clock();
 
+    const modules = this._evaluate_modules();
     const chatWrapper = this._options.chatOptions?.chatWrapper;
     const grammar = options.grammar ? this._grammarEvaluationState(options.grammar) : null;
     const stopTriggers = _.map(
       options.stopTriggers ?? chatWrapper?.stopGenerationTriggers(this),
       x => this.model.tokenize(x)
     );
-    const modules = this._evaluate_modules();
 
     const inputs: LLMTextValue[] = [
       chatWrapper ? chatWrapper.encodeNextContextState(this, 'user', value) : value,
