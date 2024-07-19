@@ -315,9 +315,10 @@ export class LlamaContext extends LLMContext<LlamaDevice, LlamaModel> {
         const records: number[] = [];
         let _stopTriggers: Uint32List[] = stopTriggers;
         let _grammar = grammar;
+        let functionCallEnabled = false;
 
         let maxTokens = options.maxTokens ?? -1;
-        while (maxTokens--) {
+        loop: while (maxTokens--) {
 
           if (options.signal?.aborted) return {
             stopReason: 'abort',
@@ -330,6 +331,7 @@ export class LlamaContext extends LLMContext<LlamaDevice, LlamaModel> {
           if (!_grammar && functionGrammar && tokenStartsWith(records, functionGrammar.beginTrigger)) {
             _stopTriggers = functionGrammar.stopGenerationTriggers;
             _grammar = functionGrammar.grammar();
+            functionCallEnabled = true;
             for (const token of records) {
               _grammar.acceptToken(token);
             }
@@ -351,6 +353,9 @@ export class LlamaContext extends LLMContext<LlamaDevice, LlamaModel> {
           }, v => !_.isNil(v)));
 
           if (this.model.isEogToken(sample)) {
+            if (functionCallEnabled) {
+              break loop;
+            }
             return {
               stopReason: 'eogToken',
               totalTime: clock() - totalTime,
@@ -360,6 +365,9 @@ export class LlamaContext extends LLMContext<LlamaDevice, LlamaModel> {
           for (const trigger of _stopTriggers) {
             let offset = this._tokens.length - trigger.length;
             if (offset >= 0 && trigger.every((v, i) => v === this._tokens[i + offset])) {
+              if (functionCallEnabled) {
+                break loop;
+              }
               return {
                 stopReason: 'stopTrigger',
                 totalTime: clock() - totalTime,
