@@ -291,6 +291,7 @@ export class LlamaContext extends LLMContext<LlamaDevice, LlamaModel> {
 
     const chatWrapper = this._options.chatOptions?.chatWrapper;
     const grammar = options.grammar ? this._grammarEvaluationState(options.grammar) : null;
+    const functions = this._options.chatOptions?.functions;
     const functionGrammar = chatWrapper?.generateFunctionGrammar?.(this);
     const stopTriggers = _.map(
       options.stopTriggers ?? chatWrapper?.stopGenerationTriggers(this),
@@ -319,8 +320,10 @@ export class LlamaContext extends LLMContext<LlamaDevice, LlamaModel> {
         let maxTokens = options.maxTokens ?? -1;
 
         const excute_function = async () => {
-          if (!chatWrapper) return;
+          if (!chatWrapper || !functions) return;
           const calls = chatWrapper.decodeFunctionCalls(this, this.model.detokenize(records));
+          const results = await Promise.all(_.map(calls, ({ name, params }) => functions[name]?.handler(params)));
+
         };
 
         loop: while (maxTokens--) {
