@@ -400,7 +400,7 @@ export class LlamaContext extends LLMContext<LlamaDevice, LlamaModel> {
           }, v => !_.isNil(v)));
 
           if (this.model.isEogToken(sample)) {
-            if (_selected_module && module_records) {
+            if (_selected_module && !_.isNil(module_records)) {
               inputs.push(...await _selected_module.handle(_.map(module_records, ([x]) => x)));
               break loop;
             }
@@ -413,7 +413,7 @@ export class LlamaContext extends LLMContext<LlamaDevice, LlamaModel> {
           for (const trigger of _selected_module?.stopGenerationTriggers ?? stopTriggers) {
             let offset = this._tokens.length - trigger.length;
             if (offset >= 0 && trigger.every((v, i) => v === this._tokens[i + offset])) {
-              if (_selected_module && module_records) {
+              if (_selected_module && !_.isNil(module_records)) {
                 inputs.push(...await _selected_module.handle(_.map(module_records, ([x]) => x)));
                 break loop;
               }
@@ -427,7 +427,7 @@ export class LlamaContext extends LLMContext<LlamaDevice, LlamaModel> {
           if (grammar) grammar.acceptToken(sample);
           await this._decodeTokens([sample]);
 
-          if (module_records) {
+          if (!_.isNil(module_records)) {
             module_records.push([sample, clock() - time]);
           } else {
             onToken(sample, clock() - time);
