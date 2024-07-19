@@ -362,18 +362,19 @@ export class LlamaContext extends LLMContext<LlamaDevice, LlamaModel> {
 
           if (!_grammar && !_selected_module && !_.isNil(module_records)) {
             for (const module of _modules) {
-              if (!tokenStartsWith(_.map(module_records, ([x]) => x), module.beginTrigger)) {
-                if (module_records.length >= module.beginTrigger.length) {
-                  _modules = _.filter(_modules, x => x !== module);
+              if (tokenStartsWith(_.map(module_records, ([x]) => x), module.beginTrigger)) {
+
+                _selected_module = module;
+                _grammar = _selected_module.grammar();
+                for (const token of module_records) {
+                  _grammar.acceptToken(token);
                 }
-                continue;
+
+                break;
+
+              } else if (module_records.length >= module.beginTrigger.length) {
+                _modules = _.filter(_modules, x => x !== module);
               }
-              _selected_module = module;
-              _grammar = _selected_module.grammar();
-              for (const token of module_records) {
-                _grammar.acceptToken(token);
-              }
-              break;
             }
             if (_.isEmpty(_modules)) {
               for (const [sample, time] of module_records) {
