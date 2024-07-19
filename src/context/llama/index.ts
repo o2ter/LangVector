@@ -315,7 +315,6 @@ export class LlamaContext extends LLMContext<LlamaDevice, LlamaModel> {
         const records: number[] = [];
         let _stopTriggers: Uint32List[] = stopTriggers;
         let _grammar = grammar;
-        let functionCallEnabled = false;
 
         let maxTokens = options.maxTokens ?? -1;
         while (maxTokens--) {
@@ -328,10 +327,9 @@ export class LlamaContext extends LLMContext<LlamaDevice, LlamaModel> {
           const time = clock();
           let candidates = this._sampleCandidates(options);
 
-          if (!_grammar && functionGrammar && !functionCallEnabled && tokenStartsWith(records, functionGrammar.beginTrigger)) {
+          if (!_grammar && functionGrammar && tokenStartsWith(records, functionGrammar.beginTrigger)) {
             _stopTriggers = functionGrammar.stopGenerationTriggers;
             _grammar = functionGrammar.grammar();
-            functionCallEnabled = true;
           }
           if (_grammar) {
             _grammar.sampleToken(candidates);
