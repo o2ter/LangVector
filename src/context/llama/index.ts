@@ -304,55 +304,57 @@ export class LlamaContext extends LLMContext<LlamaDevice, LlamaModel> {
 
       if (_.isNil(this._ctx)) throw new DisposedError();
 
-      while (true) {
-        const value = inputs.shift();
-        if (!value) break;
-        await this._decodeTokens(value);
-      }
+      while (inputs.length) {
 
-      let maxTokens = options.maxTokens ?? -1;
-      while (maxTokens--) {
-
-        if (options.signal?.aborted) return {
-          stopReason: 'abort',
-          totalTime: clock() - totalTime,
-        } as const;
-
-        const time = clock();
-        let candidates = this._sampleCandidates(options);
-
-        if (grammar) {
-          grammar.sampleToken(candidates);
-          if (!candidates.isValid()) {
-            // logit biases caused grammar sampling to fail, so sampling again without logit biases
-            candidates = this._sampleCandidates(_.omit(options, 'tokenBias'));
-            grammar.sampleToken(candidates);
-          }
+        while (inputs.length) {
+          const value = inputs.shift()!;
+          await this._decodeTokens(value);
         }
 
-        const sample = await this._ctx.sampleToken(candidates, _.pickBy({
-          temperature: options.temperature,
-          minP: options.minP,
-          topK: options.topK,
-          topP: options.topP,
-        }, v => !_.isNil(v)));
+        let maxTokens = options.maxTokens ?? -1;
+        while (maxTokens--) {
 
-        if (this.model.isEogToken(sample)) return {
-          stopReason: 'eogToken',
-          totalTime: clock() - totalTime,
-        } as const;
-
-        for (const trigger of stopTriggers) {
-          let offset = this._tokens.length - trigger.length;
-          if (offset >= 0 && trigger.every((v, i) => v === this._tokens[i + offset])) return {
-            stopReason: 'stopTrigger',
+          if (options.signal?.aborted) return {
+            stopReason: 'abort',
             totalTime: clock() - totalTime,
           } as const;
-        }
 
-        if (grammar) grammar.acceptToken(sample);
-        await this._decodeTokens([sample]);
-        onToken(sample, clock() - time);
+          const time = clock();
+          let candidates = this._sampleCandidates(options);
+
+          if (grammar) {
+            grammar.sampleToken(candidates);
+            if (!candidates.isValid()) {
+              // logit biases caused grammar sampling to fail, so sampling again without logit biases
+              candidates = this._sampleCandidates(_.omit(options, 'tokenBias'));
+              grammar.sampleToken(candidates);
+            }
+          }
+
+          const sample = await this._ctx.sampleToken(candidates, _.pickBy({
+            temperature: options.temperature,
+            minP: options.minP,
+            topK: options.topK,
+            topP: options.topP,
+          }, v => !_.isNil(v)));
+
+          if (this.model.isEogToken(sample)) return {
+            stopReason: 'eogToken',
+            totalTime: clock() - totalTime,
+          } as const;
+
+          for (const trigger of stopTriggers) {
+            let offset = this._tokens.length - trigger.length;
+            if (offset >= 0 && trigger.every((v, i) => v === this._tokens[i + offset])) return {
+              stopReason: 'stopTrigger',
+              totalTime: clock() - totalTime,
+            } as const;
+          }
+
+          if (grammar) grammar.acceptToken(sample);
+          await this._decodeTokens([sample]);
+          onToken(sample, clock() - time);
+        }
       }
 
       return {
