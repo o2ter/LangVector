@@ -329,7 +329,7 @@ export class LlamaContext extends LLMContext<LlamaDevice, LlamaModel> {
       x => this.model.tokenize(x)
     );
 
-    const inputs: LLMTextValue[] = [
+    let inputs: LLMTextValue[] = [
       chatWrapper ? chatWrapper.encodeNextContextState(this, 'user', value) : value,
     ];
 
@@ -339,10 +339,8 @@ export class LlamaContext extends LLMContext<LlamaDevice, LlamaModel> {
 
       while (inputs.length) {
 
-        while (inputs.length) {
-          const value = inputs.shift()!;
-          await this._decodeTokens(value);
-        }
+        await this._decodeTokens(inputs);
+        inputs = [];
 
         let maxTokens = options.maxTokens ?? -1;
         let _modules = modules;
@@ -395,7 +393,7 @@ export class LlamaContext extends LLMContext<LlamaDevice, LlamaModel> {
 
           if (this.model.isEogToken(sample)) {
             if (_selected_module && !_.isNil(module_records)) {
-              inputs.push(...await _selected_module.handle(_.map(module_records, ([x]) => x)));
+              inputs = await _selected_module.handle(_.map(module_records, ([x]) => x));
               break loop;
             }
             return {
@@ -408,7 +406,7 @@ export class LlamaContext extends LLMContext<LlamaDevice, LlamaModel> {
             let offset = this._tokens.length - trigger.length;
             if (offset >= 0 && trigger.every((v, i) => v === this._tokens[i + offset])) {
               if (_selected_module && !_.isNil(module_records)) {
-                inputs.push(...await _selected_module.handle(_.map(module_records, ([x]) => x)));
+                inputs = await _selected_module.handle(_.map(module_records, ([x]) => x));
                 break loop;
               }
               return {
