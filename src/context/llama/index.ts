@@ -357,7 +357,7 @@ export class LlamaContext extends LLMContext<LlamaDevice, LlamaModel> {
   }
 
   /** @internal */
-  private _evaluate_iterator(value: LLMTextValue, options: LLamaChatPromptOptions = {}) {
+  private _evaluate_iterator(value: LLMTextValue, options: LLamaChatPromptOptions) {
     type Result = Awaited<ReturnType<LlamaContext['_evaluate']>>;
     return EventIterator(async (push, resolve) => {
       resolve(await this._evaluate(value, options, (token, time) => push({ token, time })));
