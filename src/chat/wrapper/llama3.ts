@@ -275,15 +275,27 @@ export class Llama3ChatWrapper implements ChatWrapper {
 
   decodeFunctionCalls(ctx: LlamaContext, tokens: string) {
 
+    const functions = ctx.chatOptions?.functions;
+    if (!functions) return [];
+
     const result: {
       name: string;
       params: any;
     }[] = [];
 
     for (const line of tokens.split('\n')) {
-      const _line = line.trim();
-      if (_.isEmpty(_line)) continue;
-      if (!_.startsWith(_line, functionCallPrefix)) throw Error('Invalid function call format');
+      const str = line.trim();
+      if (_.isEmpty(str)) continue;
+      if (!_.startsWith(str, functionCallPrefix)) throw Error('Invalid function call format');
+      if (!_.endsWith(str, ')')) throw Error('Invalid function call format');
+      for (const name of _.keys(functions)) {
+        const prefix = `${functionCallPrefix}${name}(`;
+        if (!_.startsWith(str, prefix)) continue;
+        result.push({
+          name,
+          params: JSON.parse(str.substring(prefix.length, str.length - 1)),
+        });
+      }
     }
 
     return result;
