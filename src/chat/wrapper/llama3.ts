@@ -28,6 +28,7 @@ import { ChatHistoryItem, ChatModelFunctionCall, ChatSystemMessage, ChatWrapper 
 import { LlamaContext } from '../../context/llama';
 import { LLMTextValue, SpecialToken } from '../../types';
 import { tokenEndsWith, tokenFind, tokenStartsWith } from '../../utils';
+import { LlamaDevice } from '../../device/llama';
 
 const functionCallPrefix = '||call: ';
 const eotToken = SpecialToken('<|eot_id|>');
@@ -48,6 +49,24 @@ export class Llama3ChatWrapper implements ChatWrapper {
       eotToken,
       endOfTextToken,
     ], x => !_.isEmpty(x));
+  }
+  generateFunctionGrammar(ctx: LlamaContext) {
+    const functions = ctx.chatOptions?.functions;
+    if (_.isEmpty(functions)) return undefined;
+    return {
+      beginTrigger: ctx.model.tokenize(functionCallPrefix),
+      grammar: () => {
+        return new LlamaDevice.Grammar('');
+      },
+      stopGenerationTriggers: _.map(
+        this.stopGenerationTriggers(ctx),
+        x => ctx.model.tokenize(x),
+      ),
+      responseRole: 'function_call_result',
+      responseEncoder: (result: any) => {
+        return JSON.stringify(result);
+      },
+    };
   }
 
   generateSystemMessage(ctx: LlamaContext) {
