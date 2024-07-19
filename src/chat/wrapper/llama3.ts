@@ -240,26 +240,46 @@ export class Llama3ChatWrapper implements ChatWrapper {
           break;
         case 'function_call_result':
           {
+            const functions = ctx.chatOptions?.functions;
+            if (!functions) throw Error('Invalid chat history');
+
             const last = _.last(result);
             if (last?.type !== 'model') throw Error('Invalid chat history');
 
             const calls = _.flatMap(
               _.filter(last.response, x => _.isString(x) && _.startsWith(x, functionCallPrefix)) as string[],
-              x => x.split('\n'),
+              x => this.decodeFunctionCalls(ctx, x),
             );
             const results = _.filter(last.response, x => !_.isString(x) && x.type === 'functionCall') as ChatModelFunctionCall[];
 
-              // result.push({
-              //   type: 'model',
-              //   response: [{
-              //     type: 'functionCall',
-              //   }],
-              // });
+            if (calls.length <= results.length) throw Error('Invalid chat history');
+
+            const current = calls[results.length];
+
+            result.push({
+              type: 'model',
+              response: [{
+                type: 'functionCall',
+                result: JSON.parse(ctx.model.detokenize(content)),
+                description: functions[current.name]?.description,
+                ...current,
+              }],
+            });
           }
           break;
         default: throw Error('Invalid chat history');
       }
     }
+
+    return result;
+  }
+
+  decodeFunctionCalls(ctx: LlamaContext, tokens: string) {
+
+    const result: {
+      name: string;
+      params: any;
+    }[] = [];
 
     return result;
   }

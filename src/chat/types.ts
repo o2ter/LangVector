@@ -71,4 +71,10 @@ export type ChatWrapper = {
     ctx: LlamaContext,
     tokens: Uint32Array,
   ) => ChatHistoryItem[];
+
+  decodeFunctionCalls(
+    ctx: LlamaContext,
+    tokens: string,
+  ): { name: string; params: any; }[];
+
 };
