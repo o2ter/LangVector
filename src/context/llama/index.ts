@@ -287,7 +287,7 @@ export class LlamaContext extends LLMContext<LlamaDevice, LlamaModel> {
       beginTrigger: Uint32List;
       grammar: () => LlamaGrammar;
       stopGenerationTriggers: Uint32List[];
-      handler: (tokens: number[]) => Awaitable<LLMTextValue[]>;
+      handle: (tokens: number[]) => Awaitable<LLMTextValue[]>;
     }[] = [];
 
     const chatWrapper = this._options.chatOptions?.chatWrapper;
@@ -298,7 +298,7 @@ export class LlamaContext extends LLMContext<LlamaDevice, LlamaModel> {
         beginTrigger: functionGrammar.beginTrigger,
         grammar: functionGrammar.grammar,
         stopGenerationTriggers: functionGrammar.stopGenerationTriggers,
-        handler: async (tokens) => {
+        handle: async (tokens) => {
           if (!chatWrapper || !functionGrammar || !functions) return [];
           const calls = chatWrapper.decodeFunctionCalls(this, this.model.detokenize(tokens));
           const results = await Promise.all(_.map(calls, ({ name, params }) => functions[name]?.handler(params)));
@@ -388,7 +388,7 @@ export class LlamaContext extends LLMContext<LlamaDevice, LlamaModel> {
 
           if (this.model.isEogToken(sample)) {
             if (module) {
-              await module.handler(records);
+              await module.handle(records);
               break loop;
             }
             return {
@@ -401,7 +401,7 @@ export class LlamaContext extends LLMContext<LlamaDevice, LlamaModel> {
             let offset = this._tokens.length - trigger.length;
             if (offset >= 0 && trigger.every((v, i) => v === this._tokens[i + offset])) {
               if (module) {
-                await module.handler(records);
+                await module.handle(records);
                 break loop;
               }
               return {
