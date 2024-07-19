@@ -24,7 +24,7 @@
 //
 
 import _ from 'lodash';
-import { EventIterator } from '@o2ter/utils-js';
+import { Awaitable, EventIterator } from '@o2ter/utils-js';
 import { LLMContext } from '../base';
 import { LlamaModel } from '../../model/llama';
 import { LlamaDevice } from '../../device/llama';
@@ -281,6 +281,38 @@ export class LlamaContext extends LLMContext<LlamaDevice, LlamaModel> {
   }
 
   /** @internal */
+  private _evaluate_modules() {
+
+    const modules: {
+      beginTrigger: Uint32List;
+      grammar: () => LlamaGrammar;
+      stopGenerationTriggers: Uint32List[];
+      handler: (tokens: number[]) => Awaitable<LLMTextValue[]>;
+    }[] = [];
+
+    const chatWrapper = this._options.chatOptions?.chatWrapper;
+    const functions = this._options.chatOptions?.functions;
+    const functionGrammar = chatWrapper?.generateFunctionGrammar?.(this);
+    if (functionGrammar) {
+      modules.push({
+        beginTrigger: functionGrammar.beginTrigger,
+        grammar: functionGrammar.grammar,
+        stopGenerationTriggers: functionGrammar.stopGenerationTriggers,
+        handler: async (tokens) => {
+          if (!chatWrapper || !functionGrammar || !functions) return [];
+          const calls = chatWrapper.decodeFunctionCalls(this, this.model.detokenize(tokens));
+          const results = await Promise.all(_.map(calls, ({ name, params }) => functions[name]?.handler(params)));
+          return _.map(results, v => chatWrapper.encodeNextContextState(
+            this, functionGrammar.responseRole, functionGrammar.responseEncoder(v)
+          ))
+        },
+      });
+    }
+
+    return modules;
+  }
+
+  /** @internal */
   private async _evaluate(
     value: LLMTextValue,
     options: LLamaChatPromptOptions,
@@ -291,12 +323,11 @@ export class LlamaContext extends LLMContext<LlamaDevice, LlamaModel> {
 
     const chatWrapper = this._options.chatOptions?.chatWrapper;
     const grammar = options.grammar ? this._grammarEvaluationState(options.grammar) : null;
-    const functions = this._options.chatOptions?.functions;
-    const functionGrammar = chatWrapper?.generateFunctionGrammar?.(this);
     const stopTriggers = _.map(
       options.stopTriggers ?? chatWrapper?.stopGenerationTriggers(this),
       x => this.model.tokenize(x)
     );
+    const modules = this._evaluate_modules();
 
     const inputs: LLMTextValue[] = [
       chatWrapper ? chatWrapper.encodeNextContextState(this, 'user', value) : value,
@@ -314,21 +345,9 @@ export class LlamaContext extends LLMContext<LlamaDevice, LlamaModel> {
         }
 
         const records: number[] = [];
-        let _stopTriggers: Uint32List[] = stopTriggers;
+        let module: typeof modules[number] | undefined;
         let _grammar = grammar;
-        let functionCallEnabled = false;
         let maxTokens = options.maxTokens ?? -1;
-
-        const excute_function = async () => {
-          if (!chatWrapper || !functionGrammar || !functions) return;
-          const calls = chatWrapper.decodeFunctionCalls(this, this.model.detokenize(records));
-          const results = await Promise.all(_.map(calls, ({ name, params }) => functions[name]?.handler(params)));
-          for (const result of results) {
-            inputs.push(chatWrapper.encodeNextContextState(
-              this, functionGrammar.responseRole, functionGrammar.responseEncoder(result)
-            ));
-          }
-        };
 
         loop: while (maxTokens--) {
 
@@ -340,14 +359,17 @@ export class LlamaContext extends LLMContext<LlamaDevice, LlamaModel> {
           const time = clock();
           let candidates = this._sampleCandidates(options);
 
-          if (!_grammar && functionGrammar && tokenStartsWith(records, functionGrammar.beginTrigger)) {
-            _stopTriggers = functionGrammar.stopGenerationTriggers;
-            _grammar = functionGrammar.grammar();
-            functionCallEnabled = true;
-            for (const token of records) {
-              _grammar.acceptToken(token);
+          if (!module) {
+            for (const _module of modules) {
+              if (!tokenStartsWith(records, _module.beginTrigger)) continue;
+              module = _module;
+              _grammar = _module.grammar();
+              for (const token of records) {
+                _grammar.acceptToken(token);
+              }
             }
           }
+
           if (_grammar) {
             _grammar.sampleToken(candidates);
             if (!candidates.isValid()) {
@@ -365,8 +387,8 @@ export class LlamaContext extends LLMContext<LlamaDevice, LlamaModel> {
           }, v => !_.isNil(v)));
 
           if (this.model.isEogToken(sample)) {
-            if (functionCallEnabled) {
-              await excute_function();
+            if (module) {
+              await module.handler(records);
               break loop;
             }
             return {
@@ -375,11 +397,11 @@ export class LlamaContext extends LLMContext<LlamaDevice, LlamaModel> {
             } as const;
           }
 
-          for (const trigger of _stopTriggers) {
+          for (const trigger of module?.stopGenerationTriggers ?? stopTriggers) {
             let offset = this._tokens.length - trigger.length;
             if (offset >= 0 && trigger.every((v, i) => v === this._tokens[i + offset])) {
-              if (functionCallEnabled) {
-                await excute_function();
+              if (module) {
+                await module.handler(records);
                 break loop;
               }
               return {
