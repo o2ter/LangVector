@@ -372,9 +372,7 @@ export class LlamaContext extends LLMContext<LlamaDevice, LlamaModel> {
               }
             }
             if (_.isEmpty(_modules)) {
-              for (const [sample, time] of module_records) {
-                onToken(sample, time);
-              }
+              for (const [sample, time] of module_records) onToken(sample, time);
               module_records = undefined;
             }
           }
