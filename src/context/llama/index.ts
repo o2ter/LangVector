@@ -344,11 +344,11 @@ export class LlamaContext extends LLMContext<LlamaDevice, LlamaModel> {
           await this._decodeTokens(value);
         }
 
-        let module_records: [number, number][] | undefined = [];
-        let _modules = modules;
-        let _selected_module: typeof modules[number] | undefined;
-        let _grammar = grammar;
         let maxTokens = options.maxTokens ?? -1;
+        let _modules = modules;
+        let _grammar = grammar;
+        let _selected_module: typeof modules[number] | undefined;
+        let module_records: [number, number][] | undefined = [];
 
         loop: while (maxTokens--) {
 
