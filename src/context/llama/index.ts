@@ -376,7 +376,11 @@ export class LlamaContext extends LLMContext<LlamaDevice, LlamaModel> {
     })();
   }
 
-  evaluate(value: LLMTextValue) {
-    return this.prompt(value, { maxTokens: 0 });
+  async evaluate(value: LLMTextValue) {
+    for await (const result of this.prompt(value, { maxTokens: 0 })) {
+      if (result.done) {
+        return result.totalTime;
+      }
+    }
   }
 }
