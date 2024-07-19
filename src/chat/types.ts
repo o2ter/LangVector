@@ -58,6 +58,7 @@ export type ChatWrapper = {
     beginTrigger: LLMTextValue;
     grammar: LlamaGrammar;
     stopGenerationTriggers: LLMTextValue[];
+    responseEncoder: () => string;
   } | undefined;
 
   encodeNextContextState(ctx: LlamaContext, value: LLMTextValue): LLMTextValue;
