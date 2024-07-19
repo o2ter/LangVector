@@ -28,7 +28,14 @@ import { ChatHistoryItem, ChatModelFunctionCall, ChatSystemMessage, ChatWrapper 
 import { LlamaContext } from '../../context/llama';
 import { LLMTextValue, SpecialToken } from '../../types';
 
-const role = (role: string) => [SpecialToken('<|start_header_id|>'), role, SpecialToken('<|end_header_id|>'), '\n\n'];
+const functionCallPrefix = '||call: ';
+const eotToken = SpecialToken('<|eot_id|>');
+const beginOfTextToken = SpecialToken('<|begin_of_text|>');
+const endOfTextToken = SpecialToken('<|end_of_text|>');
+const startHeaderToken = SpecialToken('<|start_header_id|>');
+const endHeaderToken = SpecialToken('<|end_header_id|>');
+
+const role = (role: string) => [startHeaderToken, role, endHeaderToken, '\n\n'];
 
 const find = (tokens: Uint32Array, pattern: Uint32Array) => {
   for (let offset = 0; offset < tokens.length; ++offset) {
@@ -56,8 +63,8 @@ export class Llama3ChatWrapper implements ChatWrapper {
     return _.filter([
       _.compact([eot]),
       _.compact([eos]),
-      SpecialToken('<|eot_id|>'),
-      SpecialToken('<|end_of_text|>'),
+      eotToken,
+      endOfTextToken,
     ], x => !_.isEmpty(x));
   }
 
@@ -94,18 +101,18 @@ export class Llama3ChatWrapper implements ChatWrapper {
   }
 
   encodeNextContextState(ctx: LlamaContext, value: LLMTextValue) {
-    const eot = ctx.model.tokenize(SpecialToken('<|eot_id|>'));
+    const eot = ctx.model.tokenize(eotToken);
     return _.compact([
       _.isEmpty(ctx._tokens) && [
-        SpecialToken('<|begin_of_text|>'),
+        beginOfTextToken,
         role('system'),
         this._defaultSystemMessage(ctx),
-        SpecialToken('<|eot_id|>'),
+        eotToken,
       ],
       !_.isEmpty(ctx._tokens) && !endsWith(ctx.tokens, eot) && eot,
       role('user'),
       value,
-      SpecialToken('<|eot_id|>'),
+      eotToken,
       role('assistant'),
     ]);
   }
@@ -126,10 +133,10 @@ export class Llama3ChatWrapper implements ChatWrapper {
         text: sysMsg,
       },
       tokens: ctx.model.tokenize([
-        SpecialToken('<|begin_of_text|>'),
+        beginOfTextToken,
         role('system'),
         sysMsg,
-        SpecialToken('<|eot_id|>'),
+        eotToken,
       ]),
     }];
 
@@ -141,7 +148,7 @@ export class Llama3ChatWrapper implements ChatWrapper {
             tokens: ctx.model.tokenize([
               role('user'),
               item.text,
-              SpecialToken('<|eot_id|>'),
+              eotToken,
             ]),
           });
           break;
@@ -153,16 +160,16 @@ export class Llama3ChatWrapper implements ChatWrapper {
                 return [
                   role('assistant'),
                   response,
-                  SpecialToken('<|eot_id|>'),
+                  eotToken,
                 ];
               }
               return [
                 role('assistant'),
-                `||call: ${response.name}(${JSON.stringify(response.params)})`,
-                SpecialToken('<|eot_id|>'),
+                `${functionCallPrefix}${response.name}(${JSON.stringify(response.params)})`,
+                eotToken,
                 role('function_call_result'),
                 JSON.stringify(response.result),
-                SpecialToken('<|eot_id|>'),
+                eotToken,
               ];
             })),
           });
@@ -176,10 +183,10 @@ export class Llama3ChatWrapper implements ChatWrapper {
   decodeChatHistory(ctx: LlamaContext, tokens: Uint32Array): ChatHistoryItem[] {
 
     const newline = ctx.model.tokenize('\n\n');
-    const beginOfText = ctx.model.tokenize(SpecialToken('<|begin_of_text|>'));
-    const startHeaderId = ctx.model.tokenize(SpecialToken('<|start_header_id|>'));
-    const endHeaderId = ctx.model.tokenize(SpecialToken('<|end_header_id|>'));
-    const eotId = ctx.model.tokenize(SpecialToken('<|eot_id|>'));
+    const beginOfText = ctx.model.tokenize(beginOfTextToken);
+    const startHeaderId = ctx.model.tokenize(startHeaderToken);
+    const endHeaderId = ctx.model.tokenize(endHeaderToken);
+    const eotId = ctx.model.tokenize(eotToken);
 
     if (!startsWith(tokens, beginOfText)) throw Error('Invalid chat history');
     tokens = tokens.subarray(beginOfText.length);
@@ -237,7 +244,7 @@ export class Llama3ChatWrapper implements ChatWrapper {
             if (last?.type !== 'model') throw Error('Invalid chat history');
 
             const calls = _.flatMap(
-              _.filter(last.response, x => _.isString(x) && _.startsWith(x, '||call: ')) as string[],
+              _.filter(last.response, x => _.isString(x) && _.startsWith(x, functionCallPrefix)) as string[],
               x => x.split('\n'),
             );
             const results = _.filter(last.response, x => !_.isString(x) && x.type === 'functionCall') as ChatModelFunctionCall[];
