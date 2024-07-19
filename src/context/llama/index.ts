@@ -320,10 +320,14 @@ export class LlamaContext extends LLMContext<LlamaDevice, LlamaModel> {
         let maxTokens = options.maxTokens ?? -1;
 
         const excute_function = async () => {
-          if (!chatWrapper || !functions) return;
+          if (!chatWrapper || !functionGrammar || !functions) return;
           const calls = chatWrapper.decodeFunctionCalls(this, this.model.detokenize(records));
           const results = await Promise.all(_.map(calls, ({ name, params }) => functions[name]?.handler(params)));
-
+          for (const result of results) {
+            inputs.push(chatWrapper.encodeNextContextState(
+              this, functionGrammar.responseRole, functionGrammar.responseEncoder(result)
+            ));
+          }
         };
 
         loop: while (maxTokens--) {
