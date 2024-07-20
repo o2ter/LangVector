@@ -31,9 +31,8 @@ import ProtoRoute from 'proto.io';
 import { Proto } from './proto';
 import './cloud/main';
 
-import { Token } from '../../src';
-import { LlamaSession } from '../../src/llm/session/llama';
 import { defaultOptions, createContext, modelsDir } from './session';
+import { LlamaContext } from '../../src';
 
 const walkDirAsync = async function* (dir: string): AsyncGenerator<string, void> {
   const files = await fs.readdir(dir, { withFileTypes: true });
@@ -91,12 +90,12 @@ export default async (app: Server, env: Record<string, any>) => {
     let currentModel = 'meta-llama/Meta-Llama-3-8B-Instruct/ggml-model-q3_k_m.gguf';
     let session = currentModel ? await createContext(currentModel) : null;
 
-    const defaultResponse = (session: LlamaSession) => ({
+    const defaultResponse = (session: LlamaContext) => ({
       models,
       currentModel,
       options,
       history: session.chatHistory,
-      raw: session.model.detokenize(session.tokens, true),
+      raw: session.model.detokenize(session.tokens, { decodeSpecial: true }),
     });
 
     if (session) {
@@ -106,8 +105,9 @@ export default async (app: Server, env: Record<string, any>) => {
       });
     }
 
-    socket.on('reset', () => {
-      session?.clearHistory();
+    socket.on('reset', async () => {
+      session?.dispose();
+      session = await createContext(currentModel);
     });
 
     socket.on('sync', (opts: any) => {
