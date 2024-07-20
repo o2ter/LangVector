@@ -29,69 +29,70 @@ import { defineChatSessionFunction, Llama3ChatWrapper, LlamaDevice, LlamaModel }
 
 export const modelsDir = path.join(__dirname, '../../models');
 
-export const defaultOptions = {
-  functions: {
-    datetime: defineChatSessionFunction({
-      description: "Get current datetime",
-      handler() {
-        return new Date();
-      }
-    }),
-    randomInt: defineChatSessionFunction({
-      description: "Generates a random integer between maximum and minimum inclusively",
-      params: {
-        type: 'object',
-        properties: {
-          maximum: { type: 'integer' },
-          minimum: { type: 'integer' },
-        },
-        required: ['maximum', 'minimum'],
+export const functions = {
+  datetime: defineChatSessionFunction({
+    description: "Get current datetime",
+    handler() {
+      return new Date();
+    }
+  }),
+  randomInt: defineChatSessionFunction({
+    description: "Generates a random integer between maximum and minimum inclusively",
+    params: {
+      type: 'object',
+      properties: {
+        maximum: { type: 'integer' },
+        minimum: { type: 'integer' },
       },
-      handler({ maximum, minimum }) {
-        return Math.floor(Math.random() * (maximum - minimum + 1)) + minimum;
-      }
-    }),
-    randomFloat: defineChatSessionFunction({
-      description: "Generates a random floating number between maximum and minimum",
-      params: {
-        type: 'object',
-        properties: {
-          maximum: { type: 'number' },
-          minimum: { type: 'number' },
-        },
-        required: ['maximum', 'minimum'],
+      required: ['maximum', 'minimum'],
+    },
+    handler({ maximum, minimum }) {
+      return Math.floor(Math.random() * (maximum - minimum + 1)) + minimum;
+    }
+  }),
+  randomFloat: defineChatSessionFunction({
+    description: "Generates a random floating number between maximum and minimum",
+    params: {
+      type: 'object',
+      properties: {
+        maximum: { type: 'number' },
+        minimum: { type: 'number' },
       },
-      handler({ maximum, minimum }) {
-        return Math.random() * (maximum - minimum) + minimum;
-      }
-    }),
-    todayMenu: defineChatSessionFunction({
-      description: "A list of today’s special menu",
-      handler() {
-        return {
-          totalCount: 3,
-          menus: [
-            {
-              name: 'Pizza',
-              price: 75,
-            },
-            {
-              name: 'Hamburger',
-              price: 80,
-            },
-            {
-              name: 'Fish And Chips',
-              price: 75,
-            },
-          ],
-        };
-      }
-    }),
-  }
+      required: ['maximum', 'minimum'],
+    },
+    handler({ maximum, minimum }) {
+      return Math.random() * (maximum - minimum) + minimum;
+    }
+  }),
+  todayMenu: defineChatSessionFunction({
+    description: "A list of today’s special menu",
+    handler() {
+      return {
+        totalCount: 3,
+        menus: [
+          {
+            name: 'Pizza',
+            price: 75,
+          },
+          {
+            name: 'Hamburger',
+            price: 80,
+          },
+          {
+            name: 'Fish And Chips',
+            price: 75,
+          },
+        ],
+      };
+    }
+  }),
 };
 
 const models: Record<string, LlamaModel> = {};
-const chatOptions = { chatWrapper: new Llama3ChatWrapper };
+const chatOptions = {
+  chatWrapper: new Llama3ChatWrapper,
+  functions,
+};
 
 export const createModel = async (name: string) => {
   if (models[name]) return models[name];

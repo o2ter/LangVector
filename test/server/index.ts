@@ -31,7 +31,7 @@ import ProtoRoute from 'proto.io';
 import { Proto } from './proto';
 import './cloud/main';
 
-import { defaultOptions, createContext, modelsDir } from './session';
+import { createContext, modelsDir } from './session';
 import { LlamaContext } from '../../src';
 
 const walkDirAsync = async function* (dir: string): AsyncGenerator<string, void> {
@@ -144,7 +144,6 @@ export default async (app: Server, env: Record<string, any>) => {
       let partial: Token[] = [];
 
       const { responseText } = await _session.prompt(msg, {
-        ...defaultOptions,
         ...options,
         signal: abort.signal,
         stopOnAbortSignal: true,
