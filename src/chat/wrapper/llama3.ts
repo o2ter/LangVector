@@ -60,7 +60,7 @@ export class Llama3ChatWrapper implements ChatWrapper {
     const functions = ctx.chatOptions?.functions;
     if (_.isEmpty(functions)) throw Error('Unknown error');
 
-    const functionCalls = _.mapValues(functions, (v, k) => {
+    const calls = _.mapValues(functions, (v, k) => {
       const result: GrammarRuleSet = {
         root: new GrammarRule(v.params ? `"${k}(" params ")"` : `"${k}()"`, v.params ? ['params'] : []),
       };
