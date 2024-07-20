@@ -76,10 +76,9 @@ export class Llama3ChatWrapper implements ChatWrapper {
   generateFunctionGrammar(ctx: LlamaContext) {
     const functions = ctx.chatOptions?.functions;
     if (_.isEmpty(functions)) return undefined;
-    const grammar = this._generateFunctionGrammar(ctx);
     return {
       beginTrigger: ctx.model.tokenize(functionCallPrefix),
-      grammar: () => new LlamaDevice.Grammar(grammar),
+      grammar: new LlamaDevice.Grammar(this._generateFunctionGrammar(ctx)),
       stopGenerationTriggers: _.map(
         this.stopGenerationTriggers(ctx),
         x => ctx.model.tokenize(x),

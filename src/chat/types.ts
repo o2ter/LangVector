@@ -56,7 +56,7 @@ export type ChatWrapper = {
     ctx: LlamaContext,
   ) => {
     beginTrigger: Uint32List;
-    grammar: () => LlamaGrammar;
+    grammar: LlamaGrammar;
     stopGenerationTriggers: Uint32List[];
     responseRole: string;
     responseEncoder: (result: any) => string;
