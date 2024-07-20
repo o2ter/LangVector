@@ -63,7 +63,7 @@ export const schemaToJsonGrammarRules = (schema: Schema, allowedNewline = false)
               ([k, v], i) => {
                 let s = gbnf`${JSON.stringify(k)} ${SPACE} ":" ${SPACE} ${v} ${SPACE}`;
                 if (i !== 0) s = gbnf`"," ${SPACE} ${s}`;
-                return _.includes(schema.required, k) ? s : gbnf`( ${s} )?`;
+                return _.includes(schema.required, k) ? s : gbnf`${s}?`;
               }
             ),
           )} "}"`
