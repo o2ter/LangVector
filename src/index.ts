@@ -23,6 +23,7 @@
 //  THE SOFTWARE.
 //
 
+export { defineChatSessionFunction } from './context/llama/types';
 export * from './types';
 
 export * from './device/base';
