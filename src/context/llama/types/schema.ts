@@ -25,7 +25,7 @@
 
 import _ from 'lodash';
 
-export type Schema = PrimitiveSchema | ConstSchema | EnumSchema | OneOfSchema | ObjectSchema | ArraySchema;
+export type Schema = PrimitiveSchema | ConstSchema | OneOfSchema | ObjectSchema | ArraySchema;
 
 type PrimitiveType = 'string' | 'number' | 'integer' | 'boolean' | 'null';
 export type PrimitiveSchema = {
