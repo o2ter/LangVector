@@ -54,8 +54,8 @@ const STRING_FORMAT_RULES = {
   'uuid-string': new BuiltinRule('"\\"" uuid "\\"" space', ['uuid']),
 };
 
-const schemaToJsonBuiltinRules = (schema: Schema): BuiltinRule[] => {
+export const schemaToJsonBuiltinRules = (schema: Schema): Record<string, BuiltinRule> => {
 
 
-  return [];
+  return {};
 }

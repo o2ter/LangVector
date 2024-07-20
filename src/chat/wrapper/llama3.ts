@@ -29,6 +29,8 @@ import { LlamaContext } from '../../context/llama';
 import { LLMTextValue, SpecialToken } from '../../types';
 import { tokenEndsWith, tokenFind, tokenStartsWith } from '../../utils';
 import { LlamaDevice } from '../../device/llama';
+import { BuiltinRule } from '../grammar/rule';
+import { schemaToJsonBuiltinRules } from '../grammar/json';
 
 const functionCallPrefix = '||call: ';
 const eotToken = SpecialToken('<|eot_id|>');
@@ -53,6 +55,19 @@ export class Llama3ChatWrapper implements ChatWrapper {
   generateFunctionGrammar(ctx: LlamaContext) {
     const functions = ctx.chatOptions?.functions;
     if (_.isEmpty(functions)) return undefined;
+
+    const functionCalls = _.mapValues(functions, (v, k) => { 
+      const result: Record<string, BuiltinRule> = {
+        root: new BuiltinRule(v.params ? `"${k}(" params ")"` : `"${k}()"`),
+      };
+      if (v.params) {
+        for (const [key, value] of _.entries(schemaToJsonBuiltinRules(v.params))) {
+          result[key === 'root' ? 'params' : key] = value;
+        }
+      }
+      return result;
+    });
+
     return {
       beginTrigger: ctx.model.tokenize(functionCallPrefix),
       grammar: () => {
