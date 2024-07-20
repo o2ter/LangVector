@@ -55,7 +55,7 @@ const STRING_FORMAT_RULES = {
   'uuid-string': new GrammarRule('"\\"" uuid "\\"" space', ['uuid']),
 };
 
-export const schemaToJsonBuiltinRules = (schema: Schema, allowedNewline = false): GrammarRuleSet => {
+export const schemaToJsonGrammarRules = (schema: Schema, allowedNewline = false): GrammarRuleSet => {
 
   const space = allowedNewline ? SPACE_AND_NEWLINE_RULE : SPACE_RULE;
 

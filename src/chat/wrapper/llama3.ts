@@ -30,7 +30,7 @@ import { LLMTextValue, SpecialToken } from '../../types';
 import { tokenEndsWith, tokenFind, tokenStartsWith } from '../../utils';
 import { LlamaDevice } from '../../device/llama';
 import { GrammarRule, GrammarRuleSet } from '../grammar/utils';
-import { schemaToJsonBuiltinRules } from '../grammar/json';
+import { schemaToJsonGrammarRules } from '../grammar/json';
 import { Schema } from '../../context/llama/types/schema';
 import { _typeScriptFunctionSignatures } from '../grammar/typescript';
 
@@ -65,7 +65,7 @@ export class Llama3ChatWrapper implements ChatWrapper {
         root: new GrammarRule(v.params ? `"${k}(" params ")"` : `"${k}()"`, v.params ? ['params'] : []),
       };
       if (v.params) {
-        result.params = schemaToJsonBuiltinRules(v.params);
+        result.params = schemaToJsonGrammarRules(v.params);
       }
       return result;
     });
