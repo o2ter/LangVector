@@ -40,10 +40,10 @@ class GBNF {
   toString() {
     const map = new Map<GBNF, string>();
     let counter = 0;
-    const stringOf = (x: GBNF) => {
+    const parse = (x: GBNF) => {
       return '';
     }
-    return stringOf(this);
+    return parse(this);
   }
 }
 
