@@ -25,7 +25,7 @@
 
 import _ from 'lodash';
 
-export class BuiltinRule {
+class BuiltinRule {
 
   content: string;
   deps: string[];
@@ -36,9 +36,9 @@ export class BuiltinRule {
   }
 }
 
-export const SPACE_RULE = new BuiltinRule('| " " | "\\n" [ \\t]{0,20}');
+const SPACE_RULE = new BuiltinRule('| " " | "\\n" [ \\t]{0,20}');
 
-export const PRIMITIVE_RULES = {
+const PRIMITIVE_RULES = {
   boolean: new BuiltinRule('("true" | "false") space'),
   'decimal-part': new BuiltinRule('[0-9]{1,16}'),
   'integral-part': new BuiltinRule('[0] | [1-9] [0-9]{0,15}'),
@@ -53,7 +53,7 @@ export const PRIMITIVE_RULES = {
   null: new BuiltinRule('"null" space'),
 };
 
-export const STRING_FORMAT_RULES = {
+const STRING_FORMAT_RULES = {
   'date': new BuiltinRule('[0-9]{4} "-" ( "0" [1-9] | "1" [0-2] ) "-" ( \"0\" [1-9] | [1-2] [0-9] | "3" [0-1] )'),
   'time': new BuiltinRule('([01] [0-9] | "2" [0-3]) ":" [0-5] [0-9] ":" [0-5] [0-9] ( "." [0-9]{3} )? ( "Z" | ( "+" | "-" ) ( [01] [0-9] | "2" [0-3] ) ":" [0-5] [0-9] )'),
   'date-time': new BuiltinRule('date "T" time', ['date', 'time']),
