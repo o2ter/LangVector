@@ -48,8 +48,15 @@ class GBNF {
       let result = prefix;
       for (const [v, suffix] of _.zip(x.values, remain)) {
         const value = _.isFunction(v) ? v() : v!;
+        if (_.isBoolean(value)) {
+          result += value ? '"true"' : '"false"';
+        } else if (_.isNumber(value)) {
+          result += `"${value}"`;
+        } else if (_.isString(value)) {
+          result += `${JSON.stringify(value)}`;
+        } else {
 
-
+        }
         result += suffix;
       }
       return result;
