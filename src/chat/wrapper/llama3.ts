@@ -58,12 +58,11 @@ export class Llama3ChatWrapper implements ChatWrapper {
   _generateFunctionGrammar(ctx: LlamaContext): string {
     const functions = ctx.chatOptions?.functions;
     if (_.isEmpty(functions)) throw Error('Unknown error');
-
-    const calls = _.mapValues(functions, (v, k) => {
-      return v.params ? gbnf`"${k}(" ${schemaToJsonGrammarRules(v.params)} ")"` : gbnf`"${k}()"`;
+    const calls = _.map(functions, ({ params }, k) => {
+      return params ? gbnf`"${k}(" ${schemaToJsonGrammarRules(params)} ")"` : gbnf`"${k}()"`;
     });
-
-    return '';
+    const result = gbnf`"||call: " ${gbnf.join(calls, ' | ')}`;
+    return result.toString();
   }
 
   generateFunctionGrammar(ctx: LlamaContext) {
