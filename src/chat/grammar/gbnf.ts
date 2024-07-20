@@ -48,6 +48,9 @@ class GBNF {
       let result = prefix;
       for (const [v, suffix] of _.zip(x.values, remain)) {
         const value = _.isFunction(v) ? v() : v!;
+
+
+        result += suffix;
       }
       return result;
     }
