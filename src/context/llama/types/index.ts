@@ -37,6 +37,8 @@ export type ChatModelFunctionOptions = {
   handler: (params: any) => any;
 };
 
+export const defineChatSessionFunction = (x: ChatModelFunctionOptions) => x;
+
 export type LlamaContextOptions = {
   seed?: number;
   /**
