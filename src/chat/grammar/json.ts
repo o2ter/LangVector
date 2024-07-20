@@ -25,37 +25,37 @@
 
 import _ from 'lodash';
 import { Schema } from '../../context/llama/types/schema';
-import { BuiltinRule } from './utils';
+import { GrammarRule } from './utils';
 
-const SPACE_RULE = new BuiltinRule('| " "');
-const SPACE_AND_NEWLINE_RULE = new BuiltinRule('| " " | "\\n" [ \\t]{0,20}');
+const SPACE_RULE = new GrammarRule('| " "');
+const SPACE_AND_NEWLINE_RULE = new GrammarRule('| " " | "\\n" [ \\t]{0,20}');
 
 const PRIMITIVE_RULES = {
-  boolean: new BuiltinRule('("true" | "false") space'),
-  'decimal-part': new BuiltinRule('[0-9]{1,16}'),
-  'integral-part': new BuiltinRule('[0] | [1-9] [0-9]{0,15}'),
-  number: new BuiltinRule('("-"? integral-part) ("." decimal-part)? ([eE] [-+]? integral-part)? space', ['integral-part', 'decimal-part']),
-  integer: new BuiltinRule('("-"? integral-part) space', ['integral-part']),
-  value: new BuiltinRule('object | array | string | number | boolean | null', ['object', 'array', 'string', 'number', 'boolean', 'null']),
-  object: new BuiltinRule('"{" space ( string ":" space value ("," space string ":" space value)* )? "}" space', ['string', 'value']),
-  array: new BuiltinRule('"[" space ( value ("," space value)* )? "]" space', ['value']),
-  char: new BuiltinRule(`[^"\\\\\\x7F\\x00-\\x1F] | [\\\\] (["\\\\bfnrt] | "u" [0-9a-fA-F]{4})`),
-  string: new BuiltinRule(`"\\"" char* "\\"" space`, ['char']),
-  null: new BuiltinRule('"null" space'),
+  boolean: new GrammarRule('("true" | "false") space'),
+  'decimal-part': new GrammarRule('[0-9]{1,16}'),
+  'integral-part': new GrammarRule('[0] | [1-9] [0-9]{0,15}'),
+  number: new GrammarRule('("-"? integral-part) ("." decimal-part)? ([eE] [-+]? integral-part)? space', ['integral-part', 'decimal-part']),
+  integer: new GrammarRule('("-"? integral-part) space', ['integral-part']),
+  value: new GrammarRule('object | array | string | number | boolean | null', ['object', 'array', 'string', 'number', 'boolean', 'null']),
+  object: new GrammarRule('"{" space ( string ":" space value ("," space string ":" space value)* )? "}" space', ['string', 'value']),
+  array: new GrammarRule('"[" space ( value ("," space value)* )? "]" space', ['value']),
+  char: new GrammarRule(`[^"\\\\\\x7F\\x00-\\x1F] | [\\\\] (["\\\\bfnrt] | "u" [0-9a-fA-F]{4})`),
+  string: new GrammarRule(`"\\"" char* "\\"" space`, ['char']),
+  null: new GrammarRule('"null" space'),
 };
 
 const STRING_FORMAT_RULES = {
-  'date': new BuiltinRule('[0-9]{4} "-" ( "0" [1-9] | "1" [0-2] ) "-" ( \"0\" [1-9] | [1-2] [0-9] | "3" [0-1] )'),
-  'time': new BuiltinRule('([01] [0-9] | "2" [0-3]) ":" [0-5] [0-9] ":" [0-5] [0-9] ( "." [0-9]{3} )? ( "Z" | ( "+" | "-" ) ( [01] [0-9] | "2" [0-3] ) ":" [0-5] [0-9] )'),
-  'date-time': new BuiltinRule('date "T" time', ['date', 'time']),
-  'date-string': new BuiltinRule('"\\"" date "\\"" space', ['date']),
-  'time-string': new BuiltinRule('"\\"" time "\\"" space', ['time']),
-  'date-time-string': new BuiltinRule('"\\"" date-time "\\"" space', ['date-time']),
-  'uuid': new BuiltinRule('[0-9a-fA-F]{8} "-" [0-9a-fA-F]{4} "-" [0-9a-fA-F]{4} "-" [0-9a-fA-F]{4} "-" [0-9a-fA-F]{12}'),
-  'uuid-string': new BuiltinRule('"\\"" uuid "\\"" space', ['uuid']),
+  'date': new GrammarRule('[0-9]{4} "-" ( "0" [1-9] | "1" [0-2] ) "-" ( \"0\" [1-9] | [1-2] [0-9] | "3" [0-1] )'),
+  'time': new GrammarRule('([01] [0-9] | "2" [0-3]) ":" [0-5] [0-9] ":" [0-5] [0-9] ( "." [0-9]{3} )? ( "Z" | ( "+" | "-" ) ( [01] [0-9] | "2" [0-3] ) ":" [0-5] [0-9] )'),
+  'date-time': new GrammarRule('date "T" time', ['date', 'time']),
+  'date-string': new GrammarRule('"\\"" date "\\"" space', ['date']),
+  'time-string': new GrammarRule('"\\"" time "\\"" space', ['time']),
+  'date-time-string': new GrammarRule('"\\"" date-time "\\"" space', ['date-time']),
+  'uuid': new GrammarRule('[0-9a-fA-F]{8} "-" [0-9a-fA-F]{4} "-" [0-9a-fA-F]{4} "-" [0-9a-fA-F]{4} "-" [0-9a-fA-F]{12}'),
+  'uuid-string': new GrammarRule('"\\"" uuid "\\"" space', ['uuid']),
 };
 
-export const schemaToJsonBuiltinRules = (schema: Schema, allowedNewline = false): Record<string, BuiltinRule> => {
+export const schemaToJsonBuiltinRules = (schema: Schema, allowedNewline = false): Record<string, GrammarRule> => {
 
   const space = allowedNewline ? SPACE_AND_NEWLINE_RULE : SPACE_RULE;
 

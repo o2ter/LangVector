@@ -25,7 +25,7 @@
 
 import _ from 'lodash';
 
-export class BuiltinRule {
+export class GrammarRule {
 
   content: string;
   deps: string[];
