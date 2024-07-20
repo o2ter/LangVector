@@ -25,13 +25,11 @@
 
 import _ from 'lodash';
 import path from 'path';
-import { defineChatSessionFunction, LLMDevice, llamaCpp } from '../../src';
-import { LlamaContext } from '../../src/llm/context/llama';
+import { defineChatSessionFunction, Llama3ChatWrapper, LlamaDevice, LlamaModel } from '../../src';
 
 export const modelsDir = path.join(__dirname, '../../models');
 
 export const defaultOptions = {
-  documentFunctionParams: true,
   functions: {
     datetime: defineChatSessionFunction({
       description: "Get current datetime",
@@ -92,34 +90,19 @@ export const defaultOptions = {
   }
 };
 
-class ChatWrapper extends llamaCpp.Llama3ChatWrapper {
+const models: Record<string, LlamaModel> = {};
+const chatOptions = { chatWrapper: new Llama3ChatWrapper };
 
-  generateAvailableFunctionsSystemText(
-    availableFunctions: llamaCpp.ChatModelFunctions,
-    { documentParams = true },
-  ) {
-    const result = super.generateAvailableFunctionsSystemText(availableFunctions, { documentParams });
-    return result.mapValues(s => _.isString(s) ? s.replace('Note that the || prefix is mandatory', 'Note that the ||call: prefix is mandatory') : s);
-  }
+export const createModel = async (name: string) => {
+  if (models[name]) return models[name];
+  const model = await LlamaDevice.loadModel({
+    modelPath: path.join(modelsDir, name),
+  });
+  models[name] = model;
+  return model;
 }
-
-const _device = LLMDevice.llama();
-const contexts: Record<string, LlamaContext> = {};
-const chatOptions = { chatWrapper: new ChatWrapper };
 
 export const createContext = async (name: string) => {
-  if (contexts[name]) return contexts[name];
-  const device = await _device;
-  const model = await device.loadModel({
-    modelPath: path.join(modelsDir, name),
-    ignoreMemorySafetyChecks: true,
-  });
-  const context = await model.createContext({ ignoreMemorySafetyChecks: true });
-  contexts[name] = context;
-  return context;
-}
-
-export const createSession = async (name: string) => {
-  const context = await createContext(name);
-  return context.createSession({ chatOptions });
+  const model = await createModel(name);
+  return model.createContext({ chatOptions });
 }

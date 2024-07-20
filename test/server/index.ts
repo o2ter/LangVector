@@ -33,7 +33,7 @@ import './cloud/main';
 
 import { Token } from '../../src';
 import { LlamaSession } from '../../src/llm/session/llama';
-import { defaultOptions, createSession, modelsDir } from './session';
+import { defaultOptions, createContext, modelsDir } from './session';
 
 const walkDirAsync = async function* (dir: string): AsyncGenerator<string, void> {
   const files = await fs.readdir(dir, { withFileTypes: true });
@@ -89,7 +89,7 @@ export default async (app: Server, env: Record<string, any>) => {
     const abort = new AbortController;
 
     let currentModel = 'meta-llama/Meta-Llama-3-8B-Instruct/ggml-model-q3_k_m.gguf';
-    let session = currentModel ? await createSession(currentModel) : null;
+    let session = currentModel ? await createContext(currentModel) : null;
 
     const defaultResponse = (session: LlamaSession) => ({
       models,
