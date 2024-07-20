@@ -27,7 +27,8 @@ import _ from 'lodash';
 import { Schema } from '../../context/llama/types/schema';
 import { BuiltinRule } from './utils';
 
-const SPACE_RULE = new BuiltinRule('| " " | "\\n" [ \\t]{0,20}');
+const SPACE_RULE = new BuiltinRule('| " "');
+const SPACE_AND_NEWLINE_RULE = new BuiltinRule('| " " | "\\n" [ \\t]{0,20}');
 
 const PRIMITIVE_RULES = {
   boolean: new BuiltinRule('("true" | "false") space'),
