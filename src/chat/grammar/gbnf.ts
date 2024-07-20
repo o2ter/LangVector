@@ -41,25 +41,25 @@ class GBNF {
     const rules: string[] = [];
     const map = new Map<GBNF, string>();
     let counter = 0;
-    const parse = (x: GBNF) => {
-      const found = map.get(x);
+    const parse = (x: _Value) => {
+      const value = _.isFunction(x) ? x() : x!;
+      if (_.isBoolean(value)) {
+        return value ? '"true"' : '"false"';
+      } else if (_.isNumber(value)) {
+        return `"${value}"`;
+      } else if (_.isString(value)) {
+        return `${JSON.stringify(value)}`;
+      }
+      const found = map.get(value);
       if (found) return found;
-      const [prefix, ...remain] = x.strings;
+      if (_.isEqual(value.strings, ['', ''])) return parse(value.values[0]);
+      const [prefix, ...remain] = value.strings;
       let result = prefix;
-      for (const [v, suffix] of _.zip(x.values, remain)) {
-        const value = _.isFunction(v) ? v() : v!;
-        if (_.isBoolean(value)) {
-          result += value ? '"true"' : '"false"';
-        } else if (_.isNumber(value)) {
-          result += `"${value}"`;
-        } else if (_.isString(value)) {
-          result += `${JSON.stringify(value)}`;
-        } else {
-          const name = `r${counter++}`;
-          rules.push(`${name} ::= ${parse(value)}`);
-          map.set(value, name);
-          result += name;
-        }
+      for (const [v, suffix] of _.zip(value.values, remain)) {
+        const name = `r${counter++}`;
+        rules.push(`${name} ::= ${parse(_.isFunction(v) ? v() : v!)}`);
+        map.set(value, name);
+        result += name;
         result += suffix;
       }
       return result;
