@@ -73,6 +73,11 @@ export class Llama3ChatWrapper implements ChatWrapper {
     return '';
   }
 
+  /** @internal */
+  _typeScriptFunctionSignatures(ctx: LlamaContext): string {
+    return '';
+  }
+
   generateFunctionGrammar(ctx: LlamaContext) {
     const functions = ctx.chatOptions?.functions;
     if (_.isEmpty(functions)) return undefined;
@@ -103,7 +108,7 @@ export class Llama3ChatWrapper implements ChatWrapper {
       'To fulfill a request, the assistant calls relevant functions in advance when needed before responding to the request, and does not tell the user prior to calling a function.',
       'Provided functions:',
       '```typescript',
-
+      this._typeScriptFunctionSignatures(ctx),
       '```',
       '',
       'Calling any of the provided functions can be done like this:',
