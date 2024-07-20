@@ -60,14 +60,10 @@ export const schemaToJsonGrammarRules = (schema: Schema, allowedNewline = false)
           return gbnf`"{" ${SPACE} ${gbnf.join(
             _.map(
               _.entries(props),
-              ([k, v], i) => { 
-                if (_.includes(schema.required, k)) {
-                  if (i === 0) return gbnf`( ${JSON.stringify(k)} ":" ${SPACE} ${v} ${SPACE} )?`;
-                  else return gbnf`( "," ${SPACE} ${JSON.stringify(k)} ":" ${SPACE} ${v} ${SPACE} )?`;
-                } else {
-                  if (i === 0) return gbnf`${JSON.stringify(k)} ":" ${SPACE} ${v} ${SPACE}`;
-                  else return gbnf`"," ${SPACE} ${JSON.stringify(k)} ":" ${SPACE} ${v} ${SPACE}`;
-                }
+              ([k, v], i) => {
+                let s = gbnf`${JSON.stringify(k)} ":" ${SPACE} ${v} ${SPACE}`;
+                if (i !== 0) s = gbnf`"," ${SPACE} ${s}`;
+                return _.includes(schema.required, k) ? s : gbnf`( ${s} )?`;
               }
             ),
           )} "}"`
