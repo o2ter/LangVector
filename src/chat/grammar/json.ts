@@ -42,7 +42,7 @@ const NULL = gbnf`"null"`;
 
 export const schemaToJsonGrammarRules = (schema: Schema, allowedNewline = false) => {
 
-  const SPACE = allowedNewline ? gbnf`| " " | "\\n" [ \\t]{0,20}` : gbnf`| " "`;
+  const SPACE = allowedNewline ? gbnf`| " " | "\\n" [ \\t]*` : gbnf`| " "`;
 
   const convert = (schema: Schema): ReturnType<typeof gbnf> => {
     if ('type' in schema) {
