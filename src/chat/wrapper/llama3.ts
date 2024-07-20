@@ -52,11 +52,13 @@ export class Llama3ChatWrapper implements ChatWrapper {
       endOfTextToken,
     ], x => !_.isEmpty(x));
   }
-  generateFunctionGrammar(ctx: LlamaContext) {
-    const functions = ctx.chatOptions?.functions;
-    if (_.isEmpty(functions)) return undefined;
 
-    const functionCalls = _.mapValues(functions, (v, k) => { 
+  /** @internal */
+  _generateFunctionGrammar(ctx: LlamaContext): string {
+    const functions = ctx.chatOptions?.functions;
+    if (_.isEmpty(functions)) return '';
+
+    const functionCalls = _.mapValues(functions, (v, k) => {
       const result: Record<string, BuiltinRule> = {
         root: new BuiltinRule(v.params ? `"${k}(" params ")"` : `"${k}()"`, v.params ? ['params'] : []),
       };
@@ -68,19 +70,22 @@ export class Llama3ChatWrapper implements ChatWrapper {
       return result;
     });
 
+    return '';
+  }
+
+  generateFunctionGrammar(ctx: LlamaContext) {
+    const functions = ctx.chatOptions?.functions;
+    if (_.isEmpty(functions)) return undefined;
+    const grammar = this._generateFunctionGrammar(ctx);
     return {
       beginTrigger: ctx.model.tokenize(functionCallPrefix),
-      grammar: () => {
-        return new LlamaDevice.Grammar('');
-      },
+      grammar: () => new LlamaDevice.Grammar(grammar),
       stopGenerationTriggers: _.map(
         this.stopGenerationTriggers(ctx),
         x => ctx.model.tokenize(x),
       ),
       responseRole: 'function_call_result',
-      responseEncoder: (result: any) => {
-        return JSON.stringify(result);
-      },
+      responseEncoder: (result: any) => JSON.stringify(result),
     };
   }
 
