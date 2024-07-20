@@ -47,7 +47,6 @@ const PRIMITIVE_RULES = {
   value: new BuiltinRule('object | array | string | number | boolean | null', ['object', 'array', 'string', 'number', 'boolean', 'null']),
   object: new BuiltinRule('"{" space ( string ":" space value ("," space string ":" space value)* )? "}" space', ['string', 'value']),
   array: new BuiltinRule('"[" space ( value ("," space value)* )? "]" space', ['value']),
-  uuid: new BuiltinRule('"\\"" [0-9a-fA-F]{8} "-" [0-9a-fA-F]{4} "-" [0-9a-fA-F]{4} "-" [0-9a-fA-F]{4} "-" [0-9a-fA-F]{12} "\\"" space'),
   char: new BuiltinRule(`[^"\\\\\\x7F\\x00-\\x1F] | [\\\\] (["\\\\bfnrt] | "u" [0-9a-fA-F]{4})`),
   string: new BuiltinRule(`"\\"" char* "\\"" space`, ['char']),
   null: new BuiltinRule('"null" space'),
@@ -60,5 +59,7 @@ const STRING_FORMAT_RULES = {
   'date-string': new BuiltinRule('"\\"" date "\\"" space', ['date']),
   'time-string': new BuiltinRule('"\\"" time "\\"" space', ['time']),
   'date-time-string': new BuiltinRule('"\\"" date-time "\\"" space', ['date-time']),
+  'uuid': new BuiltinRule('[0-9a-fA-F]{8} "-" [0-9a-fA-F]{4} "-" [0-9a-fA-F]{4} "-" [0-9a-fA-F]{4} "-" [0-9a-fA-F]{12}'),
+  'uuid-string': new BuiltinRule('"\\"" uuid "\\"" space', ['uuid']),
 };
 
