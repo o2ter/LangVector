@@ -37,10 +37,6 @@ export type ConstSchema = {
   const: ValueType;
 };
 
-export type EnumSchema = {
-  enum: ValueType[];
-};
-
 export type OneOfSchema = {
   oneOf: Schema[];
 };
