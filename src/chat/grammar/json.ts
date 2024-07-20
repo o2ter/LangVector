@@ -57,6 +57,15 @@ export const schemaToJsonGrammarRules = (schema: Schema, allowedNewline = false)
           return gbnf`"[" ${SPACE} ( ${value} ("," ${SPACE} ${value})* ${SPACE} )? "]"`;
         case 'object':
           const props = _.mapValues(schema.properties, v => convert(v));
+          return gbnf`"{" ${SPACE} ${gbnf.join(
+            _.map(
+              props,
+              (v, k) => _.includes(schema.required, k)
+                ? gbnf`( ${JSON.stringify(k)} ":" ${SPACE} ${v} ${SPACE} )?`
+                : gbnf`${JSON.stringify(k)} ":" ${SPACE} ${v} ${SPACE}`
+            ),
+            ' "," ',
+          )} "}"`
         default: throw Error('Invalid schema');
       }
     }
