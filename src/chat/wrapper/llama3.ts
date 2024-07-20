@@ -56,7 +56,7 @@ export class Llama3ChatWrapper implements ChatWrapper {
   /** @internal */
   _generateFunctionGrammar(ctx: LlamaContext): string {
     const functions = ctx.chatOptions?.functions;
-    if (_.isEmpty(functions)) return '';
+    if (_.isEmpty(functions)) throw Error('Unknown error');
 
     const functionCalls = _.mapValues(functions, (v, k) => {
       const result: Record<string, BuiltinRule> = {
@@ -75,6 +75,10 @@ export class Llama3ChatWrapper implements ChatWrapper {
 
   /** @internal */
   _typeScriptFunctionSignatures(ctx: LlamaContext): string {
+    const functions = ctx.chatOptions?.functions;
+    if (_.isEmpty(functions)) throw Error('Unknown error');
+
+
     return '';
   }
 
