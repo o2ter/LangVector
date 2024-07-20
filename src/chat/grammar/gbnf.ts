@@ -56,8 +56,8 @@ class GBNF {
           result += `${JSON.stringify(value)}`;
         } else {
           const name = `r${counter++}`;
-          map.set(value, name);
           rules.push(`${name} ::= ${parse(value)}`);
+          map.set(value, name);
           result += name;
         }
         result += suffix;
