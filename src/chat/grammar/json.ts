@@ -65,7 +65,7 @@ export const schemaToJsonGrammarRules = (schema: Schema, allowedNewline = false)
       return gbnf`${schema.const}`;
     }
     if ('oneOf' in schema) {
-      return gbnf.oneOf(..._.map(schema.oneOf, x => convert(x)));
+      return gbnf.join(_.map(schema.oneOf, x => convert(x)), ' | ');
     }
     throw Error('Invalid schema');
   };

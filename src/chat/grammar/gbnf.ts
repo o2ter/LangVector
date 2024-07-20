@@ -42,5 +42,8 @@ export const gbnf = _.assign((
   templates: TemplateStringsArray,
   ...values: (_Value | (() => _Value))[]
 ) => new GBNF(templates.raw, values), {
-  oneOf: (...values: _Value[]) => new GBNF(['', ...Array(values.length - 1).fill(' | '), ''], values)
+  join: (
+    values: _Value[],
+    separator: string = ' ',
+  ) => new GBNF(['', ...Array(values.length - 1).fill(separator), ''], values),
 });
