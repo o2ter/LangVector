@@ -31,7 +31,6 @@ import { tokenEndsWith, tokenFind, tokenStartsWith } from '../../utils';
 import { LlamaDevice } from '../../device/llama';
 import { GrammarRule, GrammarRuleSet } from '../grammar/utils';
 import { schemaToJsonGrammarRules } from '../grammar/json';
-import { Schema } from '../../context/llama/types/schema';
 import { _typeScriptFunctionSignatures } from '../grammar/typescript';
 
 const functionCallPrefix = '||call: ';
