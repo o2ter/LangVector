@@ -60,8 +60,7 @@ export class Llama3ChatWrapper implements ChatWrapper {
     if (_.isEmpty(functions)) throw Error('Unknown error');
 
     const calls = _.mapValues(functions, (v, k) => {
-      const call = v.params ? gbnf`"${k}(" ${schemaToJsonGrammarRules(v.params)} ")"` : gbnf`"${k}()"`;
-      return v.resultType ? gbnf`${call} ": " ${schemaToJsonGrammarRules(v.resultType)}` : call;
+      return v.params ? gbnf`"${k}(" ${schemaToJsonGrammarRules(v.params)} ")"` : gbnf`"${k}()"`;
     });
 
     return '';
