@@ -25,17 +25,7 @@
 
 import _ from 'lodash';
 import { Schema } from '../../context/llama/types/schema';
-
-class BuiltinRule {
-
-  content: string;
-  deps: string[];
-
-  constructor(content: string, deps: string[] = []) {
-    this.content = content;
-    this.deps = deps;
-  }
-}
+import { BuiltinRule } from './rule';
 
 const SPACE_RULE = new BuiltinRule('| " " | "\\n" [ \\t]{0,20}');
 
@@ -64,8 +54,8 @@ const STRING_FORMAT_RULES = {
   'uuid-string': new BuiltinRule('"\\"" uuid "\\"" space', ['uuid']),
 };
 
-const schemaToJsonGrammar = (schema: Schema) => {
+const schemaToJsonBuiltinRules = (schema: Schema): BuiltinRule[] => {
 
 
-  return '';
+  return [];
 }
