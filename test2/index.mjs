@@ -29,6 +29,10 @@ for await (const { response, ...rest } of context.prompt('hi', { temperature: 0.
   console.log({ ...rest, text: model.detokenize(response, { decodeSpecial: true }) });
 }
 
+for await (const { response, ...rest } of context.prompt('請你提供一個json 例子', { temperature: 0.8, maxTokens: 500 })) {
+  console.log({ ...rest, text: model.detokenize(response, { decodeSpecial: true }) });
+}
+
 console.log('------------------------------------------');
 console.log(model.detokenize(context.tokens, { decodeSpecial: true }));
 console.log('------------------------------------------');
