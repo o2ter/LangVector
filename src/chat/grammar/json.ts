@@ -52,10 +52,11 @@ export const schemaToJsonGrammarRules = (schema: Schema, allowedNewline = false)
         case 'integer': return INTEGER;
         case 'boolean': return BOOLEAN;
         case 'null': return NULL;
-        case 'array': 
-          
+        case 'array':
+          const value = convert(schema.items);
+          return gbnf`"[" ${SPACE} ( ${value} ("," ${SPACE} ${value})* ${SPACE} )? "]"`;
         case 'object':
-          
+          const props = _.mapValues(schema.properties, v => convert(v));
         default: throw Error('Invalid schema');
       }
     }
