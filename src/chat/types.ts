@@ -29,19 +29,19 @@ import type { LlamaContext } from '../context/llama';
 
 export type ChatHistoryItem = ChatSystemMessage | ChatUserMessage | ChatModelResponse;
 export type ChatSystemMessage = {
-  type: "system";
+  type: 'system';
   text: LLMTextValue;
 };
 export type ChatUserMessage = {
-  type: "user";
+  type: 'user';
   text: string;
 };
 export type ChatModelResponse = {
-  type: "model";
+  type: 'model';
   response: (string | ChatModelFunctionCall)[];
 };
 export type ChatModelFunctionCall = {
-  type: "functionCall";
+  type: 'functionCall';
   name: string;
   description?: string;
   params: any;
