@@ -25,7 +25,7 @@
 
 import _ from 'lodash';
 import { Schema } from '../../context/llama/types/schema';
-import { GrammarRule } from './utils';
+import { GrammarRule, GrammarRuleSet } from './utils';
 
 const SPACE_RULE = new GrammarRule('| " "');
 const SPACE_AND_NEWLINE_RULE = new GrammarRule('| " " | "\\n" [ \\t]{0,20}');
@@ -55,7 +55,7 @@ const STRING_FORMAT_RULES = {
   'uuid-string': new GrammarRule('"\\"" uuid "\\"" space', ['uuid']),
 };
 
-export const schemaToJsonBuiltinRules = (schema: Schema, allowedNewline = false): Record<string, GrammarRule> => {
+export const schemaToJsonBuiltinRules = (schema: Schema, allowedNewline = false): GrammarRuleSet => {
 
   const space = allowedNewline ? SPACE_AND_NEWLINE_RULE : SPACE_RULE;
 

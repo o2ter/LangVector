@@ -35,3 +35,8 @@ export class GrammarRule {
     this.deps = deps;
   }
 }
+
+export type GrammarRuleSet = {
+  [x: string]: GrammarRule | GrammarRuleSet;
+  root: GrammarRule;
+};

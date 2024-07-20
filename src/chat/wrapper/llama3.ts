@@ -29,7 +29,7 @@ import { LlamaContext } from '../../context/llama';
 import { LLMTextValue, SpecialToken } from '../../types';
 import { tokenEndsWith, tokenFind, tokenStartsWith } from '../../utils';
 import { LlamaDevice } from '../../device/llama';
-import { GrammarRule } from '../grammar/utils';
+import { GrammarRule, GrammarRuleSet } from '../grammar/utils';
 import { schemaToJsonBuiltinRules } from '../grammar/json';
 import { Schema } from '../../context/llama/types/schema';
 import { _typeScriptFunctionSignatures } from '../grammar/typescript';
@@ -61,13 +61,11 @@ export class Llama3ChatWrapper implements ChatWrapper {
     if (_.isEmpty(functions)) throw Error('Unknown error');
 
     const functionCalls = _.mapValues(functions, (v, k) => {
-      const result: Record<string, GrammarRule> = {
+      const result: GrammarRuleSet = {
         root: new GrammarRule(v.params ? `"${k}(" params ")"` : `"${k}()"`, v.params ? ['params'] : []),
       };
       if (v.params) {
-        for (const [key, value] of _.entries(schemaToJsonBuiltinRules(v.params))) {
-          result[key === 'root' ? 'params' : key] = value;
-        }
+        result.params = schemaToJsonBuiltinRules(v.params);
       }
       return result;
     });
