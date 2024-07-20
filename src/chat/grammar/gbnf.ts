@@ -32,7 +32,7 @@ class GBNF {
   strings: readonly string[];
   values: (_Value | (() => _Value))[];
 
-  constructor(templates: readonly string[], values: (string | _Value | (() => _Value))[]) {
+  constructor(templates: readonly string[], values: (_Value | (() => _Value))[]) {
     this.strings = templates;
     this.values = values;
   }
