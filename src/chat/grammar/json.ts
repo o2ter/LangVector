@@ -54,7 +54,7 @@ export const schemaToJsonGrammarRules = (schema: Schema, allowedNewline = false)
         case 'null': return NULL;
         case 'array':
           const value = convert(schema.items);
-          return gbnf`"[" ${SPACE} ( ${value} ${SPACE} ( "," ${SPACE} ${value})* ${SPACE} )? "]"`;
+          return gbnf`"[" ${SPACE} (${value} ${SPACE} ("," ${SPACE} ${value})* ${SPACE})? "]"`;
         case 'object':
           const props = _.mapValues(schema.properties, v => convert(v));
           return gbnf`"{" ${SPACE} ${gbnf.join(
