@@ -24,13 +24,24 @@
 //
 
 import _ from 'lodash';
-import { schemaToJsonGrammarRules } from './dist/index.mjs';
+import { LlamaDevice, schemaToJsonGrammarRules } from './dist/index.mjs';
 
-console.log(schemaToJsonGrammarRules({
-  type: 'object',
-  properties: {
-    maximum: { type: 'integer' },
-    minimum: { type: 'integer' },
-  },
-  required: ['maximum', 'minimum'],
-}).toString())
+const grammars = [
+  schemaToJsonGrammarRules({
+    type: 'object',
+    properties: {
+      maximum: { type: 'integer' },
+      minimum: { type: 'integer' },
+    },
+    required: ['maximum', 'minimum'],
+  })
+];
+
+for (const grammar of grammars) {
+
+  console.log(grammar.toString());
+  console.log('');
+  console.log((new LlamaDevice.Grammar(grammar.toString())).description);
+  console.log('');
+
+}
