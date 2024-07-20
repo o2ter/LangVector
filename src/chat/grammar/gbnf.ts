@@ -36,6 +36,10 @@ class GBNF {
     this.strings = templates;
     this.values = values;
   }
+
+  toString() {
+    return '';
+  }
 }
 
 export const gbnf = _.assign((
