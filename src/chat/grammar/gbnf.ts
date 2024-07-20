@@ -46,9 +46,9 @@ class GBNF {
       if (_.isBoolean(value)) return value ? '"true"' : '"false"';
       if (_.isNumber(value)) return `"${value}"`;
       if (_.isString(value)) return `${JSON.stringify(value)}`;
+      if (_.isEqual(value.strings, ['', ''])) return parse(value.values[0]);
       const found = map.get(value);
       if (found) return found;
-      if (_.isEqual(value.strings, ['', ''])) return parse(value.values[0]);
       const [prefix, ...remain] = value.strings;
       let result = prefix;
       for (const [v, suffix] of _.zip(value.values, remain)) {
