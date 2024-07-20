@@ -58,7 +58,7 @@ export class Llama3ChatWrapper implements ChatWrapper {
 
     const functionCalls = _.mapValues(functions, (v, k) => { 
       const result: Record<string, BuiltinRule> = {
-        root: new BuiltinRule(v.params ? `"${k}(" params ")"` : `"${k}()"`),
+        root: new BuiltinRule(v.params ? `"${k}(" params ")"` : `"${k}()"`, v.params ? ['params'] : []),
       };
       if (v.params) {
         for (const [key, value] of _.entries(schemaToJsonBuiltinRules(v.params))) {
