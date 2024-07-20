@@ -76,7 +76,34 @@ export class Llama3ChatWrapper implements ChatWrapper {
 
   /** @internal */
   _typeScriptSchemaString(schema: Schema): string {
-    return ''
+    if ('type' in schema) {
+      switch (schema.type) {
+        case 'string': return 'string';
+        case 'number': return 'number';
+        case 'integer': return 'bigint';
+        case 'boolean': return 'boolean';
+        case 'null': return 'null';
+        case 'array': return `${this._typeScriptSchemaString(schema.items)}[]`;
+        case 'object':
+          const props: string[] = [];
+          for (const [key, value] of _.entries(schema.properties)) {
+            if (_.includes(schema.required, key)) {
+              props.push(`${key}: ${this._typeScriptSchemaString(value)};`);
+            } else {
+              props.push(`${key}?: ${this._typeScriptSchemaString(value)};`);
+            }
+          }
+          return `{ ${props.join(' ')} }`;
+        default: throw Error('Invalid schema');
+      }
+    }
+    if ('const' in schema) {
+      return JSON.stringify(schema.const);
+    }
+    if ('oneOf' in schema) {
+      return _.map(schema.oneOf, x => this._typeScriptSchemaString(x)).join(' | ');
+    }
+    throw Error('Invalid schema');
   }
 
   /** @internal */
