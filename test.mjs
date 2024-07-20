@@ -31,66 +31,66 @@ import { Llama3ChatWrapper, LlamaDevice, defineChatSessionFunction } from './dis
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
 
-// const defaultOptions = {
-//   functions: {
-//     datetime: defineChatSessionFunction({
-//       description: "Get current ISO datetime in UTC",
-//       handler() {
-//         return new Date();
-//       }
-//     }),
-//     randomInt: defineChatSessionFunction({
-//       description: "Generates a random integer between maximum and minimum inclusively",
-//       params: {
-//         type: 'object',
-//         properties: {
-//           maximum: { type: 'integer' },
-//           minimum: { type: 'integer' },
-//         },
-//         required: ['maximum', 'minimum'],
-//       },
-//       handler({ maximum, minimum }) {
-//         return Math.floor(Math.random() * (maximum - minimum + 1)) + minimum;
-//       }
-//     }),
-//     randomFloat: defineChatSessionFunction({
-//       description: "Generates a random floating number between maximum and minimum",
-//       params: {
-//         type: 'object',
-//         properties: {
-//           maximum: { type: 'number' },
-//           minimum: { type: 'number' },
-//         },
-//         required: ['maximum', 'minimum'],
-//       },
-//       handler({ maximum, minimum }) {
-//         return Math.random() * (maximum - minimum) + minimum;
-//       }
-//     }),
-//     todayMenu: defineChatSessionFunction({
-//       description: "A list of today’s special menu",
-//       handler() {
-//         return {
-//           totalCount: 3,
-//           menus: [
-//             {
-//               name: 'Pizza',
-//               price: 75,
-//             },
-//             {
-//               name: 'Hamburger',
-//               price: 80,
-//             },
-//             {
-//               name: 'Fish And Chips',
-//               price: 75,
-//             },
-//           ],
-//         };
-//       }
-//     }),
-//   }
-// };
+const defaultOptions = {
+  functions: {
+    datetime: defineChatSessionFunction({
+      description: "Get current ISO datetime in UTC",
+      handler() {
+        return new Date();
+      }
+    }),
+    randomInt: defineChatSessionFunction({
+      description: "Generates a random integer between maximum and minimum inclusively",
+      params: {
+        type: 'object',
+        properties: {
+          maximum: { type: 'integer' },
+          minimum: { type: 'integer' },
+        },
+        required: ['maximum', 'minimum'],
+      },
+      handler({ maximum, minimum }) {
+        return Math.floor(Math.random() * (maximum - minimum + 1)) + minimum;
+      }
+    }),
+    randomFloat: defineChatSessionFunction({
+      description: "Generates a random floating number between maximum and minimum",
+      params: {
+        type: 'object',
+        properties: {
+          maximum: { type: 'number' },
+          minimum: { type: 'number' },
+        },
+        required: ['maximum', 'minimum'],
+      },
+      handler({ maximum, minimum }) {
+        return Math.random() * (maximum - minimum) + minimum;
+      }
+    }),
+    todayMenu: defineChatSessionFunction({
+      description: "A list of today’s special menu",
+      handler() {
+        return {
+          totalCount: 3,
+          menus: [
+            {
+              name: 'Pizza',
+              price: 75,
+            },
+            {
+              name: 'Hamburger',
+              price: 80,
+            },
+            {
+              name: 'Fish And Chips',
+              price: 75,
+            },
+          ],
+        };
+      }
+    }),
+  }
+};
 
 const model = await LlamaDevice.loadModel({
   modelPath: path.join(__dirname, 'models', 'meta-llama/Meta-Llama-3-8B-Instruct/ggml-model-q3_k_m.gguf'),
@@ -126,7 +126,7 @@ const quests = [
 for (const quest of quests) {
 
   const generator = context.prompt(quest, {
-    // ...defaultOptions,
+    ...defaultOptions,
     ...options,
   });
   for await (const { response, ...rest } of generator) {
