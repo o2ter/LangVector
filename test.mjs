@@ -136,4 +136,4 @@ for (const quest of quests) {
   console.log('');
 }
 
-console.log(model.detokenize(context.tokens, true));
+console.log(model.detokenize(context.tokens, { decodeSpecial: true }));
