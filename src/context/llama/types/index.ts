@@ -30,7 +30,7 @@ import { LlamaGrammar } from '../../../device/llama/grammar';
 import { Schema } from './schema';
 import type { LlamaContext } from '../index';
 
-type ChatModelFunctionOptions = {
+export type ChatModelFunctionOptions = {
   description?: string;
   params?: Schema;
   resultType?: Schema;

@@ -32,6 +32,7 @@ import { LlamaDevice } from '../../device/llama';
 import { BuiltinRule } from '../grammar/utils';
 import { schemaToJsonBuiltinRules } from '../grammar/json';
 import { Schema } from '../../context/llama/types/schema';
+import { _typeScriptFunctionSignatures } from '../grammar/typescript';
 
 const functionCallPrefix = '||call: ';
 const eotToken = SpecialToken('<|eot_id|>');
@@ -74,55 +75,6 @@ export class Llama3ChatWrapper implements ChatWrapper {
     return '';
   }
 
-  /** @internal */
-  _typeScriptSchemaString(schema: Schema): string {
-    if ('type' in schema) {
-      switch (schema.type) {
-        case 'string': return 'string';
-        case 'number': return 'number';
-        case 'integer': return 'bigint';
-        case 'boolean': return 'boolean';
-        case 'null': return 'null';
-        case 'array': return `${this._typeScriptSchemaString(schema.items)}[]`;
-        case 'object':
-          const props: string[] = [];
-          for (const [key, value] of _.entries(schema.properties)) {
-            if (_.includes(schema.required, key)) {
-              props.push(`${key}: ${this._typeScriptSchemaString(value)};`);
-            } else {
-              props.push(`${key}?: ${this._typeScriptSchemaString(value)};`);
-            }
-          }
-          return `{ ${props.join(' ')} }`;
-        default: throw Error('Invalid schema');
-      }
-    }
-    if ('const' in schema) {
-      return JSON.stringify(schema.const);
-    }
-    if ('oneOf' in schema) {
-      return _.map(schema.oneOf, x => this._typeScriptSchemaString(x)).join(' | ');
-    }
-    throw Error('Invalid schema');
-  }
-
-  /** @internal */
-  _typeScriptFunctionSignatures(ctx: LlamaContext): string {
-    const functions = ctx.chatOptions?.functions;
-    if (_.isEmpty(functions)) throw Error('Unknown error');
-    const result: string[] = [];
-    for (const [name, options] of _.entries(functions)) {
-      const desc = options.description?.split(/\r\n|\r|\n/).map(x => `// ${x.trim()}`) ?? [];
-      const func = options.params ? `${name}(params: ${this._typeScriptSchemaString(options.params)})` : `${name}()`;
-      const res = options.resultType ? `: ${this._typeScriptSchemaString(options.resultType)}` : '';
-      result.push([
-        ...desc,
-        `${func}${res}`,
-      ].join('\n'));
-    }
-    return result.join('\n\n');
-  }
-
   generateFunctionGrammar(ctx: LlamaContext) {
     const functions = ctx.chatOptions?.functions;
     if (_.isEmpty(functions)) return undefined;
@@ -147,13 +99,14 @@ export class Llama3ChatWrapper implements ChatWrapper {
   }
 
   generateAvailableFunctionsSystemText(ctx: LlamaContext) {
-    if (_.isEmpty(ctx.chatOptions?.functions)) return '';
+    const functions = ctx.chatOptions?.functions;
+    if (_.isEmpty(functions)) return '';
     return [
       'The assistant calls the provided functions as needed to retrieve information instead of relying on existing knowledge.',
       'To fulfill a request, the assistant calls relevant functions in advance when needed before responding to the request, and does not tell the user prior to calling a function.',
       'Provided functions:',
       '```typescript',
-      this._typeScriptFunctionSignatures(ctx),
+      _typeScriptFunctionSignatures(functions),
       '```',
       '',
       'Calling any of the provided functions can be done like this:',
