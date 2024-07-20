@@ -38,12 +38,16 @@ class GBNF {
   }
 
   toString() {
+    const rules: string[] = [];
     const map = new Map<GBNF, string>();
     let counter = 0;
     const parse = (x: GBNF) => {
       return '';
     }
-    return parse(this);
+    return [
+      `root ::= ${parse(this)}`,
+      ...rules,
+    ].join('\n');
   }
 }
 
