@@ -31,6 +31,7 @@ import { tokenEndsWith, tokenFind, tokenStartsWith } from '../../utils';
 import { LlamaDevice } from '../../device/llama';
 import { BuiltinRule } from '../grammar/utils';
 import { schemaToJsonBuiltinRules } from '../grammar/json';
+import { Schema } from '../../context/llama/types/schema';
 
 const functionCallPrefix = '||call: ';
 const eotToken = SpecialToken('<|eot_id|>');
@@ -74,12 +75,25 @@ export class Llama3ChatWrapper implements ChatWrapper {
   }
 
   /** @internal */
+  _typeScriptSchemaString(schema: Schema): string {
+    return ''
+  }
+
+  /** @internal */
   _typeScriptFunctionSignatures(ctx: LlamaContext): string {
     const functions = ctx.chatOptions?.functions;
     if (_.isEmpty(functions)) throw Error('Unknown error');
-
-
-    return '';
+    const result: string[] = [];
+    for (const [name, options] of _.entries(functions)) {
+      const desc = options.description?.split(/\r\n|\r|\n/).map(x => `// ${x.trim()}`) ?? [];
+      const func = options.params ? `${name}(params: ${this._typeScriptSchemaString(options.params)})` : `${name}()`;
+      const res = options.resultType ? `: ${this._typeScriptSchemaString(options.resultType)}` : '';
+      result.push([
+        ...desc,
+        `${func}${res}`,
+      ].join('\n'));
+    }
+    return result.join('\n\n');
   }
 
   generateFunctionGrammar(ctx: LlamaContext) {
@@ -313,7 +327,7 @@ export class Llama3ChatWrapper implements ChatWrapper {
       params: any;
     }[] = [];
 
-    for (const line of tokens.split('\n')) {
+    for (const line of tokens.split(/\r\n|\r|\n/)) {
       const str = line.trim();
       if (_.isEmpty(str)) continue;
       if (!_.startsWith(str, functionCallPrefix)) throw Error('Invalid function call format');
