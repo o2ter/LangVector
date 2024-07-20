@@ -29,7 +29,7 @@ import { LlamaContext } from '../../context/llama';
 import { LLMTextValue, SpecialToken } from '../../types';
 import { tokenEndsWith, tokenFind, tokenStartsWith } from '../../utils';
 import { LlamaDevice } from '../../device/llama';
-import { BuiltinRule } from '../grammar/rule';
+import { BuiltinRule } from '../grammar/utils';
 import { schemaToJsonBuiltinRules } from '../grammar/json';
 
 const functionCallPrefix = '||call: ';

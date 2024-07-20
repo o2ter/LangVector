@@ -25,7 +25,7 @@
 
 import _ from 'lodash';
 import { Schema } from '../../context/llama/types/schema';
-import { BuiltinRule } from './rule';
+import { BuiltinRule } from './utils';
 
 const SPACE_RULE = new BuiltinRule('| " " | "\\n" [ \\t]{0,20}');
 
