@@ -26,94 +26,83 @@
 import _ from 'lodash';
 import path from 'path';
 import { fileURLToPath } from 'url';
-import { defineChatSessionFunction, llamaCpp, LLMDevice } from './dist/index.mjs';
+import { Llama3ChatWrapper, LlamaDevice } from './dist/index.mjs';
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
 
-const defaultOptions = {
-  documentFunctionParams: true,
-  functions: {
-    datetime: defineChatSessionFunction({
-      description: "Get current ISO datetime in UTC",
-      handler() {
-        return new Date();
-      }
-    }),
-    randomInt: defineChatSessionFunction({
-      description: "Generates a random integer between maximum and minimum inclusively",
-      params: {
-        type: 'object',
-        properties: {
-          maximum: { type: 'integer' },
-          minimum: { type: 'integer' },
-        },
-        required: ['maximum', 'minimum'],
-      },
-      handler({ maximum, minimum }) {
-        return Math.floor(Math.random() * (maximum - minimum + 1)) + minimum;
-      }
-    }),
-    randomFloat: defineChatSessionFunction({
-      description: "Generates a random floating number between maximum and minimum",
-      params: {
-        type: 'object',
-        properties: {
-          maximum: { type: 'number' },
-          minimum: { type: 'number' },
-        },
-        required: ['maximum', 'minimum'],
-      },
-      handler({ maximum, minimum }) {
-        return Math.random() * (maximum - minimum) + minimum;
-      }
-    }),
-    todayMenu: defineChatSessionFunction({
-      description: "A list of today’s special menu",
-      handler() {
-        return {
-          totalCount: 3,
-          menus: [
-            {
-              name: 'Pizza',
-              price: 75,
-            },
-            {
-              name: 'Hamburger',
-              price: 80,
-            },
-            {
-              name: 'Fish And Chips',
-              price: 75,
-            },
-          ],
-        };
-      }
-    }),
-  }
-};
+// const defaultOptions = {
+//   documentFunctionParams: true,
+//   functions: {
+//     datetime: defineChatSessionFunction({
+//       description: "Get current ISO datetime in UTC",
+//       handler() {
+//         return new Date();
+//       }
+//     }),
+//     randomInt: defineChatSessionFunction({
+//       description: "Generates a random integer between maximum and minimum inclusively",
+//       params: {
+//         type: 'object',
+//         properties: {
+//           maximum: { type: 'integer' },
+//           minimum: { type: 'integer' },
+//         },
+//         required: ['maximum', 'minimum'],
+//       },
+//       handler({ maximum, minimum }) {
+//         return Math.floor(Math.random() * (maximum - minimum + 1)) + minimum;
+//       }
+//     }),
+//     randomFloat: defineChatSessionFunction({
+//       description: "Generates a random floating number between maximum and minimum",
+//       params: {
+//         type: 'object',
+//         properties: {
+//           maximum: { type: 'number' },
+//           minimum: { type: 'number' },
+//         },
+//         required: ['maximum', 'minimum'],
+//       },
+//       handler({ maximum, minimum }) {
+//         return Math.random() * (maximum - minimum) + minimum;
+//       }
+//     }),
+//     todayMenu: defineChatSessionFunction({
+//       description: "A list of today’s special menu",
+//       handler() {
+//         return {
+//           totalCount: 3,
+//           menus: [
+//             {
+//               name: 'Pizza',
+//               price: 75,
+//             },
+//             {
+//               name: 'Hamburger',
+//               price: 80,
+//             },
+//             {
+//               name: 'Fish And Chips',
+//               price: 75,
+//             },
+//           ],
+//         };
+//       }
+//     }),
+//   }
+// };
 
-class ChatWrapper extends llamaCpp.Llama3ChatWrapper {
-
-  generateAvailableFunctionsSystemText(
-    availableFunctions,
-    { documentParams = true },
-  ) {
-    const result = super.generateAvailableFunctionsSystemText(availableFunctions, { documentParams });
-    return result.mapValues(s => _.isString(s) ? s.replace('Note that the || prefix is mandatory', 'Note that the ||call: prefix is mandatory') : s);
-  }
-}
-
-const device = await LLMDevice.llama();
-
-const model = await device.loadModel({
+const model = await LlamaDevice.loadModel({
   modelPath: path.join(__dirname, 'models', 'meta-llama/Meta-Llama-3-8B-Instruct/ggml-model-q3_k_m.gguf'),
-  ignoreMemorySafetyChecks: true,
+  useMmap: true,
 });
 
-const context = await model.createContext({ ignoreMemorySafetyChecks: true });
-const session = await context.createSession({
-  chatOptions: { chatWrapper: new ChatWrapper }
+const context = await model.createContext({
+  contextSize: 512,
+  chatOptions: {
+    chatWrapper: new Llama3ChatWrapper,
+  },
 });
 
 const options = {
@@ -137,18 +126,15 @@ const quests = [
 
 for (const quest of quests) {
 
-  let partial = [];
-  const { responseText } = await session.prompt(quest, {
-    ...defaultOptions,
+  const generator = context.prompt(quest, {
+    // ...defaultOptions,
     ...options,
-    onToken: (token) => {
-      partial.push(...token);
-      console.log(model.detokenize(partial, true));
-    }
   });
+  for await (const { response, ...rest } of generator) {
+    console.log({ ...rest, text: model.detokenize(response, { decodeSpecial: true }) });
+  }
 
-  console.log(responseText);
   console.log('');
 }
 
-console.log(model.detokenize(session.tokens, true));
+console.log(model.detokenize(context.tokens, true));
