@@ -29,9 +29,9 @@ import { LlamaContext } from '../../context/llama';
 import { LLMTextValue, SpecialToken } from '../../types';
 import { tokenEndsWith, tokenFind, tokenStartsWith } from '../../utils';
 import { LlamaDevice } from '../../device/llama';
-import { GrammarRule, GrammarRuleSet } from '../grammar/utils';
 import { schemaToJsonGrammarRules } from '../grammar/json';
 import { _typeScriptFunctionSignatures } from '../grammar/typescript';
+import { gbnf } from '../grammar/gbnf';
 
 const functionCallPrefix = '||call: ';
 const eotToken = SpecialToken('<|eot_id|>');
@@ -59,15 +59,15 @@ export class Llama3ChatWrapper implements ChatWrapper {
     const functions = ctx.chatOptions?.functions;
     if (_.isEmpty(functions)) throw Error('Unknown error');
 
-    const calls = _.mapValues(functions, (v, k) => {
-      const result: GrammarRuleSet = {
-        root: new GrammarRule(v.params ? `"${k}(" params ")"` : `"${k}()"`, v.params ? ['params'] : []),
-      };
-      if (v.params) {
-        result.params = schemaToJsonGrammarRules(v.params);
-      }
-      return result;
-    });
+    // const calls = _.mapValues(functions, (v, k) => {
+    //   const result: GrammarRuleSet = {
+    //     root: new GrammarRule(v.params ? `"${k}(" params ")"` : `"${k}()"`, v.params ? ['params'] : []),
+    //   };
+    //   if (v.params) {
+    //     result.params = schemaToJsonGrammarRules(v.params);
+    //   }
+    //   return result;
+    // });
 
     return '';
   }

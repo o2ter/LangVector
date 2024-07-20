@@ -25,42 +25,49 @@
 
 import _ from 'lodash';
 import { Schema } from '../../context/llama/types/schema';
-import { GrammarRule, GrammarRuleSet } from './utils';
+import { gbnf } from './gbnf';
 
-const SPACE_RULE = new GrammarRule('| " "');
-const SPACE_AND_NEWLINE_RULE = new GrammarRule('| " " | "\\n" [ \\t]{0,20}');
+// object: new GrammarRule('"{" space ( string ":" space value ("," space string ":" space value)* )? "}" space', ['string', 'value']),
+//   array: new GrammarRule('"[" space ( value ("," space value)* )? "]" space', ['value']),
 
-const PRIMITIVE_RULES = {
-  boolean: new GrammarRule('("true" | "false") space'),
-  'decimal-part': new GrammarRule('[0-9]{1,16}'),
-  'integral-part': new GrammarRule('[0] | [1-9] [0-9]{0,15}'),
-  number: new GrammarRule('("-"? integral-part) ("." decimal-part)? ([eE] [-+]? integral-part)? space', ['integral-part', 'decimal-part']),
-  integer: new GrammarRule('("-"? integral-part) space', ['integral-part']),
-  value: new GrammarRule('object | array | string | number | boolean | null', ['object', 'array', 'string', 'number', 'boolean', 'null']),
-  object: new GrammarRule('"{" space ( string ":" space value ("," space string ":" space value)* )? "}" space', ['string', 'value']),
-  array: new GrammarRule('"[" space ( value ("," space value)* )? "]" space', ['value']),
-  char: new GrammarRule(`[^"\\\\\\x7F\\x00-\\x1F] | [\\\\] (["\\\\bfnrt] | "u" [0-9a-fA-F]{4})`),
-  string: new GrammarRule(`"\\"" char* "\\"" space`, ['char']),
-  null: new GrammarRule('"null" space'),
-};
+const DECIMAL_PART = gbnf`[0-9]{1,16}`;
+const INTEGRAL_PART = gbnf`[0] | [1-9] [0-9]{0,15}`;
 
-const STRING_FORMAT_RULES = {
-  'date': new GrammarRule('[0-9]{4} "-" ( "0" [1-9] | "1" [0-2] ) "-" ( \"0\" [1-9] | [1-2] [0-9] | "3" [0-1] )'),
-  'time': new GrammarRule('([01] [0-9] | "2" [0-3]) ":" [0-5] [0-9] ":" [0-5] [0-9] ( "." [0-9]{3} )? ( "Z" | ( "+" | "-" ) ( [01] [0-9] | "2" [0-3] ) ":" [0-5] [0-9] )'),
-  'date-time': new GrammarRule('date "T" time', ['date', 'time']),
-  'date-string': new GrammarRule('"\\"" date "\\"" space', ['date']),
-  'time-string': new GrammarRule('"\\"" time "\\"" space', ['time']),
-  'date-time-string': new GrammarRule('"\\"" date-time "\\"" space', ['date-time']),
-  'uuid': new GrammarRule('[0-9a-fA-F]{8} "-" [0-9a-fA-F]{4} "-" [0-9a-fA-F]{4} "-" [0-9a-fA-F]{4} "-" [0-9a-fA-F]{12}'),
-  'uuid-string': new GrammarRule('"\\"" uuid "\\"" space', ['uuid']),
-};
+const BOOLEAN = gbnf`"true" | "false"`;
+const NUMBER = gbnf`"-"? ${INTEGRAL_PART} ("." ${DECIMAL_PART})? ([eE] [-+]? ${INTEGRAL_PART})?`;
+const INTEGER = gbnf`"-"? ${INTEGRAL_PART}`;
+const CHAR = gbnf`[^"\\\\\\x7F\\x00-\\x1F] | [\\\\] (["\\\\bfnrt] | "u" [0-9a-fA-F]{4})`;
+const STRING = gbnf`"\\"" ${CHAR}* "\\""`;
+const NULL = gbnf`"null"`;
 
-export const schemaToJsonGrammarRules = (schema: Schema, allowedNewline = false): GrammarRuleSet => {
+export const schemaToJsonGrammarRules = (schema: Schema, allowedNewline = false) => {
 
-  const space = allowedNewline ? SPACE_AND_NEWLINE_RULE : SPACE_RULE;
+  const SPACE = allowedNewline ? gbnf`| " " | "\\n" [ \\t]{0,20}` : gbnf`| " "`;
 
-
-  return {
-    space,
+  const convert = (schema: Schema): ReturnType<typeof gbnf> => {
+    if ('type' in schema) {
+      switch (schema.type) {
+        case 'string': return STRING;
+        case 'number': return NUMBER;
+        case 'integer': return INTEGER;
+        case 'boolean': return BOOLEAN;
+        case 'null': return NULL;
+        case 'array': 
+          
+        case 'object':
+          
+        default: throw Error('Invalid schema');
+      }
+    }
+    if ('const' in schema) {
+      if (_.isNil(schema.const)) return NULL;
+      return gbnf`${schema.const}`;
+    }
+    if ('oneOf' in schema) {
+      return gbnf.oneOf(..._.map(schema.oneOf, x => convert(x)));
+    }
+    throw Error('Invalid schema');
   };
+  
+  return convert(schema);
 }

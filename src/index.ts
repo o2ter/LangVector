@@ -23,6 +23,7 @@
 //  THE SOFTWARE.
 //
 
+export { gbnf } from './chat/grammar/gbnf';
 export { defineChatSessionFunction } from './context/llama/types';
 export * from './types';
 

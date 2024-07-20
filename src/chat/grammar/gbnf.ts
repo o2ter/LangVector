@@ -1,5 +1,5 @@
 //
-//  utils.ts
+//  gbnf.ts
 //
 //  The MIT License
 //  Copyright (c) 2021 - 2024 O2ter Limited. All rights reserved.
@@ -25,18 +25,22 @@
 
 import _ from 'lodash';
 
-export class GrammarRule {
+type _Value = boolean | number | string | GBNF;
 
-  content: string;
-  deps: string[];
+class GBNF {
 
-  constructor(content: string, deps: string[] = []) {
-    this.content = content;
-    this.deps = deps;
+  strings: readonly string[];
+  values: (_Value | (() => _Value))[];
+
+  constructor(templates: readonly string[], values: (string | _Value | (() => _Value))[]) {
+    this.strings = templates;
+    this.values = values;
   }
 }
 
-export type GrammarRuleSet = {
-  [x: string]: GrammarRule | GrammarRuleSet;
-  root: GrammarRule;
-};
+export const gbnf = _.assign((
+  templates: TemplateStringsArray,
+  ...values: (_Value | (() => _Value))[]
+) => new GBNF(templates.raw, values), {
+  oneOf: (...values: _Value[]) => new GBNF(['', ...Array(values.length - 1).fill(' | '), ''], values)
+});
