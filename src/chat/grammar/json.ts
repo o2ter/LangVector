@@ -55,8 +55,12 @@ const STRING_FORMAT_RULES = {
   'uuid-string': new BuiltinRule('"\\"" uuid "\\"" space', ['uuid']),
 };
 
-export const schemaToJsonBuiltinRules = (schema: Schema): Record<string, BuiltinRule> => {
+export const schemaToJsonBuiltinRules = (schema: Schema, allowedNewline = false): Record<string, BuiltinRule> => {
+
+  const space = allowedNewline ? SPACE_AND_NEWLINE_RULE : SPACE_RULE;
 
 
-  return {};
+  return {
+    space,
+  };
 }
