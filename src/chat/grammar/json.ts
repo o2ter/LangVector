@@ -27,9 +27,6 @@ import _ from 'lodash';
 import { Schema } from '../../context/llama/types/schema';
 import { gbnf } from './gbnf';
 
-// object: new GrammarRule('"{" space ( string ":" space value ("," space string ":" space value)* )? "}" space', ['string', 'value']),
-//   array: new GrammarRule('"[" space ( value ("," space value)* )? "]" space', ['value']),
-
 const DECIMAL_PART = gbnf`[0-9]{1,16}`;
 const INTEGRAL_PART = gbnf`[0] | [1-9] [0-9]{0,15}`;
 
