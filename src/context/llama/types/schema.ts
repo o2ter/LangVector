@@ -32,9 +32,8 @@ export type PrimitiveSchema = {
   type: PrimitiveType | PrimitiveType[];
 };
 
-type ValueType = string | number | boolean | null;
 export type ConstSchema = {
-  const: ValueType;
+  const: string | number | boolean | null;
 };
 
 export type OneOfSchema = {
