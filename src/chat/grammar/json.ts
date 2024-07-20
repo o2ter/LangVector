@@ -54,17 +54,22 @@ export const schemaToJsonGrammarRules = (schema: Schema, allowedNewline = false)
         case 'null': return NULL;
         case 'array':
           const value = convert(schema.items);
-          return gbnf`"[" ${SPACE} ( ${value} ("," ${SPACE} ${value})* ${SPACE} )? "]"`;
+          return gbnf`"[" ${SPACE} ( ${value} ${SPACE} ("," ${SPACE} ${value})* ${SPACE} )? "]"`;
         case 'object':
           const props = _.mapValues(schema.properties, v => convert(v));
           return gbnf`"{" ${SPACE} ${gbnf.join(
             _.map(
-              props,
-              (v, k) => _.includes(schema.required, k)
-                ? gbnf`( ${JSON.stringify(k)} ":" ${SPACE} ${v} ${SPACE} )?`
-                : gbnf`${JSON.stringify(k)} ":" ${SPACE} ${v} ${SPACE}`
+              _.entries(props),
+              ([k, v], i) => { 
+                if (_.includes(schema.required, k)) {
+                  if (i === 0) return gbnf`( ${JSON.stringify(k)} ":" ${SPACE} ${v} ${SPACE} )?`;
+                  else return gbnf`( "," ${SPACE} ${JSON.stringify(k)} ":" ${SPACE} ${v} ${SPACE} )?`;
+                } else {
+                  if (i === 0) return gbnf`( ${JSON.stringify(k)} ":" ${SPACE} ${v} ${SPACE} )?`;
+                  else return gbnf`( "," ${SPACE} ${JSON.stringify(k)} ":" ${SPACE} ${v} ${SPACE} )?`;
+                }
+              }
             ),
-            ' "," ',
           )} "}"`
         default: throw Error('Invalid schema');
       }
