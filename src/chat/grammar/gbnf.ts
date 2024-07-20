@@ -38,7 +38,10 @@ class GBNF {
   }
 
   toString() {
-    return '';
+    const stringOf = (x: GBNF) => {
+      return '';
+    }
+    return stringOf(this);
   }
 }
 
