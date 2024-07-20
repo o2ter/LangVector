@@ -26,13 +26,12 @@
 import _ from 'lodash';
 import path from 'path';
 import { fileURLToPath } from 'url';
-import { Llama3ChatWrapper, LlamaDevice } from './dist/index.mjs';
+import { Llama3ChatWrapper, LlamaDevice, defineChatSessionFunction } from './dist/index.mjs';
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
 
 // const defaultOptions = {
-//   documentFunctionParams: true,
 //   functions: {
 //     datetime: defineChatSessionFunction({
 //       description: "Get current ISO datetime in UTC",
