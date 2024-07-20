@@ -25,7 +25,7 @@
 
 import _ from 'lodash';
 
-export type Schema = PrimitiveSchema | ConstSchema | OneOfSchema | ObjectSchema | ArraySchema;
+export type Schema = PrimitiveSchema | ConstSchema | OneOfSchema | ArraySchema | ObjectSchema;
 
 type PrimitiveType = 'string' | 'number' | 'integer' | 'boolean' | 'null';
 export type PrimitiveSchema = {
@@ -40,13 +40,13 @@ export type OneOfSchema = {
   oneOf: Schema[];
 };
 
+export type ArraySchema = {
+  type: 'array';
+  items: Schema;
+};
+
 export type ObjectSchema = {
   type: 'object';
   properties: Record<string, Schema>;
   required?: string[];
-};
-
-export type ArraySchema = {
-  type: 'array';
-  items: Schema;
 };
