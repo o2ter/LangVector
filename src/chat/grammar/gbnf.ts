@@ -44,7 +44,12 @@ class GBNF {
     const parse = (x: GBNF) => {
       const found = map.get(x);
       if (found) return found;
-      return '';
+      const [prefix, ...remain] = x.strings;
+      let result = prefix;
+      for (const [v, suffix] of _.zip(x.values, remain)) {
+
+      }
+      return result;
     }
     return [
       `root ::= ${parse(this)}`,
