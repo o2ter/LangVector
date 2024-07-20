@@ -43,13 +43,9 @@ class GBNF {
     let counter = 0;
     const parse = (x: _Value) => {
       const value = _.isFunction(x) ? x() : x!;
-      if (_.isBoolean(value)) {
-        return value ? '"true"' : '"false"';
-      } else if (_.isNumber(value)) {
-        return `"${value}"`;
-      } else if (_.isString(value)) {
-        return `${JSON.stringify(value)}`;
-      }
+      if (_.isBoolean(value)) return value ? '"true"' : '"false"';
+      if (_.isNumber(value)) return `"${value}"`;
+      if (_.isString(value)) return `${JSON.stringify(value)}`;
       const found = map.get(value);
       if (found) return found;
       if (_.isEqual(value.strings, ['', ''])) return parse(value.values[0]);
