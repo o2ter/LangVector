@@ -55,7 +55,10 @@ class GBNF {
         } else if (_.isString(value)) {
           result += `${JSON.stringify(value)}`;
         } else {
-
+          const name = `r${counter++}`;
+          map.set(value, name);
+          rules.push(`${name} ::= ${parse(value)}`);
+          result += name;
         }
         result += suffix;
       }
