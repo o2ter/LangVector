@@ -42,6 +42,8 @@ class GBNF {
     const map = new Map<GBNF, string>();
     let counter = 0;
     const parse = (x: GBNF) => {
+      const found = map.get(x);
+      if (found) return found;
       return '';
     }
     return [
