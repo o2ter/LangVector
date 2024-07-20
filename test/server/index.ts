@@ -155,7 +155,7 @@ export default async (app: Server, env: Record<string, any>) => {
             ...defaultResponse(_session),
             partial: true,
             message: msg,
-            responseText: _session.model.detokenize(partial, true),
+            responseText: _session.model.detokenize(partial, { decodeSpecial: true }),
           });
         }
       });
