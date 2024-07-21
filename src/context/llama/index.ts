@@ -343,10 +343,10 @@ export class LlamaContext extends LLMContext<LlamaDevice, LlamaModel> {
           inputs = [];
 
           let maxTokens = options.maxTokens ?? -1;
-          let _modules = modules;
           let _grammar = grammar;
+          let _modules: typeof modules = [];
           let _selected_module: typeof modules[number] | undefined;
-          let module_records: [number, number][] | undefined = [];
+          let _module_records: [number, number][] | undefined;
 
           loop: while (maxTokens--) {
 
@@ -354,24 +354,6 @@ export class LlamaContext extends LLMContext<LlamaDevice, LlamaModel> {
               stopReason: 'abort',
               totalTime: clock() - totalTime,
             } as const;
-
-            if (!_grammar && !_selected_module && !_.isNil(module_records)) {
-              for (const module of _modules) {
-                const records = this.model.detokenize(_.map(module_records, ([x]) => x));
-                if (_.startsWith(records, module.beginTrigger)) {
-                  _selected_module = module;
-                  _grammar = this._grammarEvaluationState(_selected_module.grammar);
-                  for (const [token] of module_records) _grammar.acceptToken(token);
-                  break;
-                } else if (records.length >= module.beginTrigger.length) {
-                  _modules = _.filter(_modules, x => x !== module);
-                }
-              }
-              if (_.isEmpty(_modules)) {
-                for (const [sample, time] of module_records) onToken(sample, time);
-                module_records = undefined;
-              }
-            }
 
             const time = clock();
             let candidates = this._sampleCandidates(options);
@@ -393,9 +375,9 @@ export class LlamaContext extends LLMContext<LlamaDevice, LlamaModel> {
             }, v => !_.isNil(v)));
 
             if (this.model.isEogToken(sample)) {
-              if (_selected_module && !_.isNil(module_records)) {
-                inputs = await _selected_module.handle(_.map(module_records, ([x]) => x));
-                break loop;
+              if (_selected_module && !_.isNil(_module_records)) {
+                inputs = await _selected_module.handle(_.map(_module_records, ([x]) => x));
+                if (!_.isEmpty(inputs)) break loop;
               }
               return {
                 stopReason: 'eogToken',
@@ -406,9 +388,9 @@ export class LlamaContext extends LLMContext<LlamaDevice, LlamaModel> {
             for (const trigger of _selected_module?.stopGenerationTriggers ?? stopTriggers) {
               let offset = this._tokens.length - trigger.length;
               if (offset >= 0 && trigger.every((v, i) => v === this._tokens[i + offset])) {
-                if (_selected_module && !_.isNil(module_records)) {
-                  inputs = await _selected_module.handle(_.map(module_records, ([x]) => x));
-                  break loop;
+                if (_selected_module && !_.isNil(_module_records)) {
+                  inputs = await _selected_module.handle(_.map(_module_records, ([x]) => x));
+                  if (!_.isEmpty(inputs)) break loop;
                 }
                 return {
                   stopReason: 'stopTrigger',
@@ -417,11 +399,44 @@ export class LlamaContext extends LLMContext<LlamaDevice, LlamaModel> {
               }
             }
 
-            if (_grammar) _grammar.acceptToken(sample);
+            if (!_.isNil(_grammar)) _grammar.acceptToken(sample);
             await this._decodeTokens([sample]);
 
-            if (!_.isNil(module_records)) {
-              module_records.push([sample, clock() - time]);
+            if (_.isNil(_grammar) && _.isNil(_selected_module)) {
+
+              if (_.isEmpty(_modules)) {
+                const str = this.model.detokenize(sample);
+                for (const module of modules) {
+                  if (module.beginTrigger.length > str.length) {
+                    if (_.startsWith(module.beginTrigger, str)) _modules.push(module);
+                  } else {
+                    if (_.startsWith(str, module.beginTrigger)) _modules.push(module);
+                  }
+                }
+                if (!_.isEmpty(_modules)) _module_records = [];
+              }
+
+              if (!_.isEmpty(_modules) && !_.isNil(_module_records)) {
+                for (const module of _modules) {
+                  const records = this.model.detokenize(_.map(_module_records, ([x]) => x));
+                  if (_.startsWith(records, module.beginTrigger)) {
+                    _selected_module = module;
+                    _grammar = this._grammarEvaluationState(_selected_module.grammar);
+                    for (const [token] of _module_records) _grammar.acceptToken(token);
+                    break;
+                  } else if (records.length >= module.beginTrigger.length) {
+                    _modules = _.filter(_modules, x => x !== module);
+                  }
+                }
+                if (_.isEmpty(_modules)) {
+                  for (const [sample, time] of _module_records) onToken(sample, time);
+                  _module_records = undefined;
+                }
+              }
+            }
+
+            if (!_.isNil(_module_records)) {
+              _module_records.push([sample, clock() - time]);
             } else {
               onToken(sample, clock() - time);
             }

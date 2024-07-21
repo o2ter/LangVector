@@ -242,12 +242,18 @@ export class Llama3ChatWrapper implements ChatWrapper {
         case 'assistant':
           {
             const last = _.last(result);
+            const _content = ctx.model.detokenize(content);
+            const callIdx = _content.indexOf(functionCallPrefix);
             if (last?.type === 'model') {
-              last.response.push(ctx.model.detokenize(content));
+              last.response.push(callIdx === -1 ? _content : _content.slice(0, callIdx));
+              if (callIdx !== -1) last.response.push(_content.slice(callIdx));
             } else {
               result.push({
                 type: 'model',
-                response: [ctx.model.detokenize(content)],
+                response: _.compact([
+                  callIdx === -1 ? _content : _content.slice(0, callIdx),
+                  callIdx !== -1 && _content.slice(callIdx),
+                ]),
               });
             }
           }
