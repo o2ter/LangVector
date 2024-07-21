@@ -399,32 +399,48 @@ export class LlamaContext extends LLMContext<LlamaDevice, LlamaModel> {
               }
             }
 
-            if (!_.isNil(_grammar)) _grammar.acceptToken(sample);
             await this._decodeTokens([sample]);
+            const _time = clock() - time;
+
+            let _record_pushed = false;
 
             if (_.isNil(_grammar) && _.isNil(_selected_module)) {
 
               if (_.isEmpty(_modules)) {
-                const str = this.model.detokenize(sample);
-                for (const module of modules) {
-                  if (module.beginTrigger.length > str.length) {
-                    if (_.startsWith(module.beginTrigger, str)) _modules.push(module);
+                let str_0 = '';
+                let str_1 = '';
+                str_1 = this.model.detokenize(sample);
+                while (!_.isEmpty(str_1)) {
+                  for (const module of modules) {
+                    if (module.beginTrigger.length > str_1.length) {
+                      if (_.startsWith(module.beginTrigger, str_1)) _modules.push(module);
+                    } else {
+                      if (_.startsWith(str_1, module.beginTrigger)) _modules.push(module);
+                    }
+                  }
+                  if (_.isEmpty(_modules)) {
+                    str_0 += str_1[0];
+                    str_1 = str_1.slice(1);
                   } else {
-                    if (_.startsWith(str, module.beginTrigger)) _modules.push(module);
+                    if (!_.isEmpty(str_0)) {
+                      for (const token of this.model.tokenize(str_0)) onToken(token, _time);
+                    }
+                    _module_records = _.map(this.model.tokenize(str_1), x => [x, _time]);
+                    _record_pushed = true;
+                    break;
                   }
                 }
-                if (!_.isEmpty(_modules)) _module_records = [];
               }
 
               if (!_.isEmpty(_modules) && !_.isNil(_module_records)) {
+                const record = this.model.detokenize(_.map(_module_records, ([x]) => x));
                 for (const module of _modules) {
-                  const records = this.model.detokenize(_.map(_module_records, ([x]) => x));
-                  if (_.startsWith(records, module.beginTrigger)) {
+                  if (_.startsWith(record, module.beginTrigger)) {
                     _selected_module = module;
                     _grammar = this._grammarEvaluationState(_selected_module.grammar);
                     for (const [token] of _module_records) _grammar.acceptToken(token);
-                    break;
-                  } else if (records.length >= module.beginTrigger.length) {
+                    continue loop;
+                  } else if (record.length >= module.beginTrigger.length) {
                     _modules = _.filter(_modules, x => x !== module);
                   }
                 }
@@ -438,10 +454,12 @@ export class LlamaContext extends LLMContext<LlamaDevice, LlamaModel> {
             }
 
             if (!_.isNil(_module_records)) {
-              _module_records.push([sample, clock() - time]);
+              if (!_record_pushed) _module_records.push([sample, _time]);
             } else {
-              onToken(sample, clock() - time);
+              onToken(sample, _time);
             }
+
+            if (!_.isNil(_grammar)) _grammar.acceptToken(sample);
           }
         }
 
