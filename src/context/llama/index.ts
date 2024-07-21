@@ -416,7 +416,7 @@ export class LlamaContext extends LLMContext<LlamaDevice, LlamaModel> {
             }
           }
 
-          if (grammar) grammar.acceptToken(sample);
+          if (_grammar) _grammar.acceptToken(sample);
           await this._decodeTokens([sample]);
 
           if (!_.isNil(module_records)) {
