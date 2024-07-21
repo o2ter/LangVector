@@ -282,14 +282,11 @@ export class Llama3ChatWrapper implements ChatWrapper {
             if (calls.length <= results.length) continue;
             const current = calls[results.length];
 
-            result.push({
-              type: 'model',
-              response: [{
-                type: 'functionCall',
-                result: JSON.parse(ctx.model.detokenize(content)),
-                description: functions[current.name]?.description,
-                ...current,
-              }],
+            last.response.push({
+              type: 'functionCall',
+              result: JSON.parse(ctx.model.detokenize(content)),
+              description: functions[current.name]?.description,
+              ...current,
             });
           }
           break;
@@ -297,7 +294,13 @@ export class Llama3ChatWrapper implements ChatWrapper {
       }
     }
 
-    return result;
+    return _.map(result, item => { 
+      if (item.type !== 'model') return item;
+      return {
+        ...item, 
+        response: _.filter(item.response, x => !_.isString(x) || !_.startsWith(x, functionCallPrefix)),
+       };
+    });
   }
 
   decodeFunctionCalls(ctx: LlamaContext, tokens: string) {
