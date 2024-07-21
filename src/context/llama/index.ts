@@ -171,6 +171,8 @@ export class LlamaContext extends LLMContext<LlamaDevice, LlamaModel> {
         pos += diff.insert.length;
       }
     }
+
+    this._ctx_state = tokens;
   }
 
   /** @internal */
