@@ -269,7 +269,6 @@ export class LlamaContext extends LLMContext<LlamaDevice, LlamaModel> {
 
     const tokens = this.model.tokenize(value);
     this._tokens.push(...tokens);
-    this._chat_history = undefined;
 
     if (this._ctx_state.length + tokens.length > this.contextSize) {
       const _state = await this._contextShiftStrategy();
@@ -336,101 +335,107 @@ export class LlamaContext extends LLMContext<LlamaDevice, LlamaModel> {
 
       if (_.isNil(this._ctx)) throw new DisposedError();
 
-      while (inputs.length) {
+      try {
 
-        await this._decodeTokens(inputs);
-        inputs = [];
+        while (inputs.length) {
 
-        let maxTokens = options.maxTokens ?? -1;
-        let _modules = modules;
-        let _grammar = grammar;
-        let _selected_module: typeof modules[number] | undefined;
-        let module_records: [number, number][] | undefined = [];
+          await this._decodeTokens(inputs);
+          inputs = [];
 
-        loop: while (maxTokens--) {
+          let maxTokens = options.maxTokens ?? -1;
+          let _modules = modules;
+          let _grammar = grammar;
+          let _selected_module: typeof modules[number] | undefined;
+          let module_records: [number, number][] | undefined = [];
 
-          if (options.signal?.aborted) return {
-            stopReason: 'abort',
-            totalTime: clock() - totalTime,
-          } as const;
+          loop: while (maxTokens--) {
 
-          if (!_grammar && !_selected_module && !_.isNil(module_records)) {
-            for (const module of _modules) {
-              const records = this.model.detokenize(_.map(module_records, ([x]) => x));
-              if (_.startsWith(records, module.beginTrigger)) {
-                _selected_module = module;
-                _grammar = this._grammarEvaluationState(_selected_module.grammar);
-                for (const [token] of module_records) _grammar.acceptToken(token);
-                break;
-              } else if (records.length >= module.beginTrigger.length) {
-                _modules = _.filter(_modules, x => x !== module);
-              }
-            }
-            if (_.isEmpty(_modules)) {
-              for (const [sample, time] of module_records) onToken(sample, time);
-              module_records = undefined;
-            }
-          }
-
-          const time = clock();
-          let candidates = this._sampleCandidates(options);
-
-          if (_grammar) {
-            _grammar.sampleToken(candidates);
-            if (!candidates.isValid()) {
-              // logit biases caused grammar sampling to fail, so sampling again without logit biases
-              candidates = this._sampleCandidates(_.omit(options, 'tokenBias'));
-              _grammar.sampleToken(candidates);
-            }
-          }
-
-          const sample = await this._ctx.sampleToken(candidates, _.pickBy({
-            temperature: options.temperature,
-            minP: options.minP,
-            topK: options.topK,
-            topP: options.topP,
-          }, v => !_.isNil(v)));
-
-          if (this.model.isEogToken(sample)) {
-            if (_selected_module && !_.isNil(module_records)) {
-              inputs = await _selected_module.handle(_.map(module_records, ([x]) => x));
-              break loop;
-            }
-            return {
-              stopReason: 'eogToken',
+            if (options.signal?.aborted) return {
+              stopReason: 'abort',
               totalTime: clock() - totalTime,
             } as const;
-          }
 
-          for (const trigger of _selected_module?.stopGenerationTriggers ?? stopTriggers) {
-            let offset = this._tokens.length - trigger.length;
-            if (offset >= 0 && trigger.every((v, i) => v === this._tokens[i + offset])) {
+            if (!_grammar && !_selected_module && !_.isNil(module_records)) {
+              for (const module of _modules) {
+                const records = this.model.detokenize(_.map(module_records, ([x]) => x));
+                if (_.startsWith(records, module.beginTrigger)) {
+                  _selected_module = module;
+                  _grammar = this._grammarEvaluationState(_selected_module.grammar);
+                  for (const [token] of module_records) _grammar.acceptToken(token);
+                  break;
+                } else if (records.length >= module.beginTrigger.length) {
+                  _modules = _.filter(_modules, x => x !== module);
+                }
+              }
+              if (_.isEmpty(_modules)) {
+                for (const [sample, time] of module_records) onToken(sample, time);
+                module_records = undefined;
+              }
+            }
+
+            const time = clock();
+            let candidates = this._sampleCandidates(options);
+
+            if (_grammar) {
+              _grammar.sampleToken(candidates);
+              if (!candidates.isValid()) {
+                // logit biases caused grammar sampling to fail, so sampling again without logit biases
+                candidates = this._sampleCandidates(_.omit(options, 'tokenBias'));
+                _grammar.sampleToken(candidates);
+              }
+            }
+
+            const sample = await this._ctx.sampleToken(candidates, _.pickBy({
+              temperature: options.temperature,
+              minP: options.minP,
+              topK: options.topK,
+              topP: options.topP,
+            }, v => !_.isNil(v)));
+
+            if (this.model.isEogToken(sample)) {
               if (_selected_module && !_.isNil(module_records)) {
                 inputs = await _selected_module.handle(_.map(module_records, ([x]) => x));
                 break loop;
               }
               return {
-                stopReason: 'stopTrigger',
+                stopReason: 'eogToken',
                 totalTime: clock() - totalTime,
               } as const;
             }
-          }
 
-          if (_grammar) _grammar.acceptToken(sample);
-          await this._decodeTokens([sample]);
+            for (const trigger of _selected_module?.stopGenerationTriggers ?? stopTriggers) {
+              let offset = this._tokens.length - trigger.length;
+              if (offset >= 0 && trigger.every((v, i) => v === this._tokens[i + offset])) {
+                if (_selected_module && !_.isNil(module_records)) {
+                  inputs = await _selected_module.handle(_.map(module_records, ([x]) => x));
+                  break loop;
+                }
+                return {
+                  stopReason: 'stopTrigger',
+                  totalTime: clock() - totalTime,
+                } as const;
+              }
+            }
 
-          if (!_.isNil(module_records)) {
-            module_records.push([sample, clock() - time]);
-          } else {
-            onToken(sample, clock() - time);
+            if (_grammar) _grammar.acceptToken(sample);
+            await this._decodeTokens([sample]);
+
+            if (!_.isNil(module_records)) {
+              module_records.push([sample, clock() - time]);
+            } else {
+              onToken(sample, clock() - time);
+            }
           }
         }
-      }
 
-      return {
-        stopReason: 'maxTokens',
-        totalTime: clock() - totalTime,
-      } as const;
+        return {
+          stopReason: 'maxTokens',
+          totalTime: clock() - totalTime,
+        } as const;
+
+      } finally {
+        this._chat_history = undefined;
+      }
     });
   }
 
