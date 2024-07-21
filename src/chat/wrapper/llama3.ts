@@ -305,9 +305,10 @@ export class Llama3ChatWrapper implements ChatWrapper {
       for (const name of _.keys(functions)) {
         const prefix = `${functionCallPrefix}${name}(`;
         if (!_.startsWith(str, prefix)) continue;
+        const params = str.substring(prefix.length, str.length - 1).trim();
         result.push({
           name,
-          params: JSON.parse(str.substring(prefix.length, str.length - 1)),
+          params: params ? JSON.parse(params) : undefined,
         });
       }
     }
