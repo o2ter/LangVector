@@ -89,10 +89,6 @@ export const functions = {
 };
 
 const models: Record<string, LlamaModel> = {};
-const chatOptions = {
-  chatWrapper: new Llama3ChatWrapper,
-  functions,
-};
 
 export const createModel = async (name: string) => {
   if (models[name]) return models[name];
@@ -105,5 +101,11 @@ export const createModel = async (name: string) => {
 
 export const createContext = async (name: string) => {
   const model = await createModel(name);
-  return model.createContext({ chatOptions });
+  return model.createContext({
+    contextSize: 6752,
+    chatOptions: {
+      chatWrapper: new Llama3ChatWrapper,
+      functions,
+    },
+  });
 }
