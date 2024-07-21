@@ -202,18 +202,18 @@ export class Llama3ChatWrapper implements ChatWrapper {
     const endHeaderId = ctx.model.tokenize(endHeaderToken);
     const eotId = ctx.model.tokenize(eotToken);
 
-    if (!tokenStartsWith(tokens, beginOfText)) throw Error('Invalid chat history');
+    if (!tokenStartsWith(tokens, beginOfText)) return [];
     tokens = tokens.subarray(beginOfText.length);
 
     const result: ChatHistoryItem[] = [];
 
     while (tokens.length > 0) {
 
-      if (!tokenStartsWith(tokens, startHeaderId)) throw Error('Invalid chat history');
+      if (!tokenStartsWith(tokens, startHeaderId)) return result;
       tokens = tokens.subarray(startHeaderId.length);
 
       const endHeaderIdx = tokenFind(tokens, endHeaderId);
-      if (endHeaderIdx === -1) throw Error('Invalid chat history');
+      if (endHeaderIdx === -1) return result;
 
       const type = tokens.subarray(0, endHeaderIdx);
       tokens = tokens.subarray(endHeaderIdx + endHeaderId.length);
@@ -255,10 +255,10 @@ export class Llama3ChatWrapper implements ChatWrapper {
         case 'function_call_result':
           {
             const functions = ctx.chatOptions?.functions;
-            if (!functions) throw Error('Invalid chat history');
+            if (!functions) continue;
 
             const last = _.last(result);
-            if (last?.type !== 'model') throw Error('Invalid chat history');
+            if (last?.type !== 'model') continue;
 
             const calls = _.flatMap(
               _.filter(last.response, x => _.isString(x) && _.startsWith(x, functionCallPrefix)) as string[],
@@ -266,7 +266,7 @@ export class Llama3ChatWrapper implements ChatWrapper {
             );
             const results = _.filter(last.response, x => !_.isString(x) && x.type === 'functionCall') as ChatModelFunctionCall[];
 
-            if (calls.length <= results.length) throw Error('Invalid chat history');
+            if (calls.length <= results.length) continue;
             const current = calls[results.length];
 
             result.push({
@@ -280,7 +280,7 @@ export class Llama3ChatWrapper implements ChatWrapper {
             });
           }
           break;
-        default: throw Error('Invalid chat history');
+        default: break;
       }
     }
 
@@ -300,8 +300,8 @@ export class Llama3ChatWrapper implements ChatWrapper {
     for (const line of tokens.split(/\r\n|\r|\n/)) {
       const str = line.trim();
       if (_.isEmpty(str)) continue;
-      if (!_.startsWith(str, functionCallPrefix)) throw Error('Invalid function call format');
-      if (!_.endsWith(str, ')')) throw Error('Invalid function call format');
+      if (!_.startsWith(str, functionCallPrefix)) return result;
+      if (!_.endsWith(str, ')')) return result;
       for (const name of _.keys(functions)) {
         const prefix = `${functionCallPrefix}${name}(`;
         if (!_.startsWith(str, prefix)) continue;
