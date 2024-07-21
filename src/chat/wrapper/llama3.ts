@@ -62,7 +62,7 @@ export class Llama3ChatWrapper implements ChatWrapper {
       return params ? gbnf`${`${k}(`} ${schemaToJsonGrammarRules(params)} ")"` : gbnf`${`${k}()`}`;
     });
     const result = gbnf`"||call: " ${gbnf.join(calls, ' | ')}`;
-    return result.toString();
+    return gbnf`${result} ("\\n" ${result})*`.toString();
   }
 
   generateFunctionGrammar(ctx: LlamaContext) {
