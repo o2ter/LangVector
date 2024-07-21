@@ -24,14 +24,15 @@
 //
 
 import _ from 'lodash';
+import { myers } from 'myers.js';
+import { clock } from '../../utils';
+import { Worker } from './worker';
 import { Awaitable, EventIterator } from '@o2ter/utils-js';
 import { LLMContext } from '../base';
 import { LlamaModel } from '../../model/llama';
 import { LlamaDevice } from '../../device/llama';
 import { LLamaChatPromptOptions, LlamaContextOptions } from './types';
 import { DisposedError, LLMTextValue } from '../../types';
-import { Worker } from './worker';
-import { clock } from '../../utils';
 import { ChatHistoryItem } from '../../chat/wrapper/types';
 import { LlamaGrammar } from '../../device/llama/grammar';
 import * as llamaCpp from '../../plugins/llamaCpp';
@@ -158,21 +159,17 @@ export class LlamaContext extends LLMContext<LlamaDevice, LlamaModel> {
       throw Error('Invalid context shift operation');
     }
 
-    const diff = _.findIndex(this._ctx_state, (x, i) => x !== tokens[i]);
-
-    if (diff !== -1) {
-
-      this._removeTokens(diff, this._ctx_state.length);
-      this._ctx_state = this._ctx_state.slice(0, diff);
-
-      const _tokens = tokens.slice(diff);
-      await this._eval(new Uint32Array(_tokens), this._ctx_state.length);
-      this._ctx_state.push(..._tokens);
-
-    } else if (this._ctx_state.length < tokens.length) {
-
-      await this._eval(new Uint32Array(tokens), this._ctx_state.length);
-      this._ctx_state.push(...tokens);
+    let pos = 0;
+    for (const diff of await myers(this._ctx_state, tokens)) {
+      if (diff.equivalent) pos += diff.equivalent.length;
+      if (diff.remove) {
+        this._removeTokens(pos, pos + diff.remove.length);
+      }
+      if (diff.insert) {
+        this._shiftTokens(pos, -1, diff.insert.length);
+        await this._eval(new Uint32Array(diff.insert), pos);
+        pos += diff.insert.length;
+      }
     }
   }
 

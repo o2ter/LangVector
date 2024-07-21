@@ -24,6 +24,7 @@
     "@o2ter/utils-js": "^0.0.10",
     "llama-node": "./packages/llama-node",
     "lodash": "^4.17.21",
+    "myers.js": "^0.0.15",
     "stable-diffusion-node": "./packages/stable-diffusion-node"
   },
   "devDependencies": {
