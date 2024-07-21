@@ -44,6 +44,12 @@ const roleHeader = (role: string) => [startHeaderToken, role, endHeaderToken, '\
 
 export class Llama3ChatWrapper implements ChatWrapper {
 
+  parallel: boolean;
+
+  constructor({ parallel }: { parallel?: boolean; } = {}) {
+    this.parallel = parallel ?? true;
+  }
+
   stopGenerationTriggers(ctx: LlamaContext): LLMTextValue[] {
     const { eot, eos } = ctx.model.tokens;
     return _.filter([
@@ -61,8 +67,9 @@ export class Llama3ChatWrapper implements ChatWrapper {
     const calls = _.map(functions, ({ params }, k) => {
       return params ? gbnf`${`${k}(`} ${schemaToJsonGrammarRules(params)} ")"` : gbnf`${`${k}()`}`;
     });
-    const result = gbnf`"||call: " ${gbnf.join(calls, ' | ')}`;
-    return gbnf`${result} ("\\n" ${result})*`.toString();
+    const _calls = gbnf`"||call: " ${gbnf.join(calls, ' | ')}`;
+    const result = this.parallel ? gbnf`${_calls} ("\\n" ${_calls})*` : _calls;
+    return result.toString();
   }
 
   generateFunctionGrammar(ctx: LlamaContext) {
