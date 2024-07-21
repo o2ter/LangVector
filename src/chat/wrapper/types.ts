@@ -23,9 +23,9 @@
 //  THE SOFTWARE.
 //
 
-import { LLMTextValue } from '../types';
-import { LlamaGrammar } from '../device/llama/grammar';
-import type { LlamaContext } from '../context/llama';
+import { LLMTextValue } from '../../types';
+import { LlamaGrammar } from '../../device/llama/grammar';
+import type { LlamaContext } from '../../context/llama';
 
 export type ChatHistoryItem = ChatSystemMessage | ChatUserMessage | ChatModelResponse;
 export type ChatSystemMessage = {
@@ -55,7 +55,7 @@ export type ChatWrapper = {
   generateFunctionGrammar?: (
     ctx: LlamaContext,
   ) => {
-    beginTrigger: Uint32List;
+    beginTrigger: string;
     grammar: LlamaGrammar;
     stopGenerationTriggers: Uint32List[];
     responseRole: string;

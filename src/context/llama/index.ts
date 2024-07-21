@@ -32,7 +32,7 @@ import { LLamaChatPromptOptions, LlamaContextOptions } from './types';
 import { DisposedError, LLMTextValue } from '../../types';
 import { Worker } from './worker';
 import { clock, tokenStartsWith } from '../../utils';
-import { ChatHistoryItem } from '../../chat/types';
+import { ChatHistoryItem } from '../../chat/wrapper/types';
 import { LlamaGrammar } from '../../device/llama/grammar';
 import * as llamaCpp from '../../plugins/llamaCpp';
 
@@ -284,7 +284,7 @@ export class LlamaContext extends LLMContext<LlamaDevice, LlamaModel> {
   private _evaluate_modules() {
 
     const modules: {
-      beginTrigger: Uint32List;
+      beginTrigger: string;
       grammar: LlamaGrammar;
       stopGenerationTriggers: Uint32List[];
       handle: (tokens: number[]) => Awaitable<LLMTextValue[]>;
@@ -356,14 +356,13 @@ export class LlamaContext extends LLMContext<LlamaDevice, LlamaModel> {
 
           if (!_grammar && !_selected_module && !_.isNil(module_records)) {
             for (const module of _modules) {
-              const beginTrigger = this.model.detokenize(module.beginTrigger);
               const records = this.model.detokenize(_.map(module_records, ([x]) => x));
-              if (_.startsWith(records, beginTrigger)) {
+              if (_.startsWith(records, module.beginTrigger)) {
                 _selected_module = module;
                 _grammar = this._grammarEvaluationState(_selected_module.grammar);
                 for (const [token] of module_records) _grammar.acceptToken(token);
                 break;
-              } else if (records.length >= beginTrigger.length) {
+              } else if (records.length >= module.beginTrigger.length) {
                 _modules = _.filter(_modules, x => x !== module);
               }
             }

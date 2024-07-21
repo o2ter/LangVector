@@ -26,6 +26,7 @@
 export { gbnf } from './chat/grammar/gbnf';
 export { schemaToJsonGrammarRules } from './chat/grammar/json';
 export { defineChatSessionFunction } from './context/llama/types';
+export { ChatWrapper } from './chat/wrapper/types';
 
 export * from './types';
 

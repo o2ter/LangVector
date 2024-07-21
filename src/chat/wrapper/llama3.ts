@@ -24,7 +24,7 @@
 //
 
 import _ from 'lodash';
-import { ChatHistoryItem, ChatModelFunctionCall, ChatSystemMessage, ChatWrapper } from './../types';
+import { ChatHistoryItem, ChatModelFunctionCall, ChatSystemMessage, ChatWrapper } from './types';
 import { LlamaContext } from '../../context/llama';
 import { LLMTextValue, SpecialToken } from '../../types';
 import { tokenEndsWith, tokenFind, tokenStartsWith } from '../../utils';
@@ -69,7 +69,7 @@ export class Llama3ChatWrapper implements ChatWrapper {
     const functions = ctx.chatOptions?.functions;
     if (_.isEmpty(functions)) return undefined;
     return {
-      beginTrigger: ctx.model.tokenize(functionCallPrefix),
+      beginTrigger: functionCallPrefix,
       grammar: new LlamaDevice.Grammar(this._generateFunctionGrammar(ctx)),
       stopGenerationTriggers: _.map(
         this.stopGenerationTriggers(ctx),
