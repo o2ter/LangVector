@@ -408,8 +408,7 @@ export class LlamaContext extends LLMContext<LlamaDevice, LlamaModel> {
 
               if (_.isEmpty(_modules)) {
                 let str_0 = '';
-                let str_1 = '';
-                str_1 = this.model.detokenize(sample);
+                let str_1 = this.model.detokenize(sample);
                 while (!_.isEmpty(str_1)) {
                   for (const module of modules) {
                     if (module.beginTrigger.length > str_1.length) {
