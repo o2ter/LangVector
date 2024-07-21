@@ -141,31 +141,20 @@ export default async (app: Server, env: Record<string, any>) => {
         responseText: '',
       });
 
-      let partial: Token[] = [];
-
-      const { responseText } = await _session.prompt(msg, {
+      const generator = _session.prompt(msg, {
         ...options,
         signal: abort.signal,
-        stopOnAbortSignal: true,
-        onToken: (token) => {
-          partial.push(...token);
-          socket.emit('response', {
-            status: 'responding',
-            ...defaultResponse(_session),
-            partial: true,
-            message: msg,
-            responseText: _session.model.detokenize(partial, { decodeSpecial: true }),
-          });
-        }
       });
 
-      socket.emit('response', {
-        status: 'ready',
-        ...defaultResponse(_session),
-        partial: false,
-        message: msg,
-        responseText,
-      });
+      for await (const { response, done } of generator) {
+        socket.emit('response', {
+          status: done ? 'ready' : 'responding',
+          ...defaultResponse(_session),
+          partial: !done,
+          message: msg,
+          responseText: _session.model.detokenize(response, { decodeSpecial: true }),
+        });
+      }
     });
 
     socket.on('disconnect', () => {

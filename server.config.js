@@ -16,9 +16,7 @@ module.exports = (env, argv) => ({
       new webpack.IgnorePlugin({ resourceRegExp: /^pg-native$/ }),
     ],
     externals: {
-      '@reflink/reflink': 'commonjs2 @reflink/reflink',
-      '@node-llama-cpp/win-x64-cuda': 'commonjs2 @node-llama-cpp/win-x64-cuda',
-      '@node-llama-cpp/linux-x64-cuda': 'commonjs2 @node-llama-cpp/linux-x64-cuda',
+      'llama-node': 'commonjs2 llama-node',
     },
   },
 })
