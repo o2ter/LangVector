@@ -95,6 +95,9 @@ export default async (app: Server, env: Record<string, any>) => {
       currentModel,
       options,
       history: session.chatHistory,
+      tokens: session.tokens.length,
+      contextSize: session.contextSize,
+      maxContextSize: session.maxContextSize,
       raw: session.model.detokenize(session.tokens, { decodeSpecial: true }),
     });
 

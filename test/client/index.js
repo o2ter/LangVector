@@ -77,7 +77,11 @@ export default () => {
           </ScrollView>
         </div>
         <div className='d-flex flex-column border-top'>
-          <div className='mb-3 px-3'>status: {state.status}</div>
+          <div className='row mb-3 px-3'>
+            <div className='col'>status: {state.status}</div>
+            <div className='col'>tokens: {state.tokens}</div>
+            <div className='col'>context size: {state.contextSize}/{state.maxContextSize}</div>
+          </div>
           <div className='row mb-3 px-3 gap-3'>
             <div className='col input-group align-items-center gap-1'>
               <label>max tokens</label>
