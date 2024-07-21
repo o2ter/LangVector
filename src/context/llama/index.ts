@@ -80,11 +80,18 @@ export class LlamaContext extends LLMContext<LlamaDevice, LlamaModel> {
     return this._ctx.stateSize();
   }
   /**
+   * The max context size of context.
+   */
+  get maxContextSize(): number {
+    if (_.isNil(this._ctx)) throw new DisposedError();
+    return this._ctx.contextSize();
+  }
+  /**
    * The context size of context.
    */
   get contextSize(): number {
     if (_.isNil(this._ctx)) throw new DisposedError();
-    return this._ctx.contextSize();
+    return this._ctx_state.length;
   }
   /**
    * The batch size of context.
@@ -147,7 +154,7 @@ export class LlamaContext extends LLMContext<LlamaDevice, LlamaModel> {
 
     const tokens = _.isArray(value) ? value : [...value];
 
-    if (tokens.length > this.contextSize) {
+    if (tokens.length > this.maxContextSize) {
       throw Error('Invalid context shift operation');
     }
 
@@ -226,7 +233,7 @@ export class LlamaContext extends LLMContext<LlamaDevice, LlamaModel> {
     if (contextShiftStrategy) return contextShiftStrategy(this);
 
     const chatWrapper = this._options.chatOptions?.chatWrapper;
-    const maxTokens = Math.floor(this.contextSize * 0.9);
+    const maxTokens = Math.floor(this.maxContextSize * 0.9);
 
     if (!chatWrapper) {
       const bos = this.model.tokens.bos
@@ -270,7 +277,7 @@ export class LlamaContext extends LLMContext<LlamaDevice, LlamaModel> {
     const tokens = this.model.tokenize(value);
     this._tokens.push(...tokens);
 
-    if (this._ctx_state.length + tokens.length > this.contextSize) {
+    if (this._ctx_state.length + tokens.length > this.maxContextSize) {
       const _state = await this._contextShiftStrategy();
       await this._updateTokens(_state);
     }
