@@ -96,7 +96,7 @@ const model = await LlamaDevice.loadModel({
 });
 
 const context = await model.createContext({
-  contextSize: 4096,
+  contextSize: 6752,
   chatOptions: {
     chatWrapper: new Llama3ChatWrapper,
     functions,
