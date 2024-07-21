@@ -96,6 +96,7 @@ const model = await LlamaDevice.loadModel({
 });
 
 const context = await model.createContext({
+  seed: 0,
   contextSize: 4096,
   chatOptions: {
     chatWrapper: new Llama3ChatWrapper,
@@ -116,10 +117,10 @@ const options = {
 };
 
 const quests = [
-  'Hi',
-  'Can you pick one item from menu randomly?',
+  // 'Hi',
+  // 'Can you pick one item from menu randomly?',
   'What is the time of Hong Kong now?',
-  'What is time offset in Hong Kong?',
+  // 'What is time offset in Hong Kong?',
 ];
 
 for (const quest of quests) {

@@ -31,7 +31,7 @@ import { LlamaDevice } from '../../device/llama';
 import { LLamaChatPromptOptions, LlamaContextOptions } from './types';
 import { DisposedError, LLMTextValue } from '../../types';
 import { Worker } from './worker';
-import { clock, tokenStartsWith } from '../../utils';
+import { clock } from '../../utils';
 import { ChatHistoryItem } from '../../chat/wrapper/types';
 import { LlamaGrammar } from '../../device/llama/grammar';
 import * as llamaCpp from '../../plugins/llamaCpp';

@@ -40,21 +40,3 @@ export class LlamaGrammar {
     return this._grammar.description();
   }
 }
-
-export class LlamaGrammarEvaluationState {
-
-  /** @internal */
-  _state: typeof llamaCpp.LlamaGrammarEvaluationState;
-
-  constructor(context: LlamaContext, grammar: LlamaGrammar) {
-    this._state = new llamaCpp.LlamaGrammarEvaluationState(context, grammar);
-  }
-
-  acceptToken(token: number) {
-    this._state.acceptToken(token);
-  }
-
-  canBeNextToken(token: number): boolean {
-    return this._state.canBeNextToken(token);
-  }
-}
