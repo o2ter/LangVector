@@ -116,10 +116,10 @@ const options = {
 };
 
 const quests = [
-  'Hi',
+  //'Hi',
   'Can you pick one item from menu randomly?',
-  'What is the time of Hong Kong now?',
-  'What is time offset in Hong Kong?',
+  // 'What is the time of Hong Kong now?',
+  // 'What is time offset in Hong Kong?',
 ];
 
 for (const quest of quests) {
