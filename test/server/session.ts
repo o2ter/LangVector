@@ -102,7 +102,7 @@ export const createModel = async (name: string) => {
 export const createContext = async (name: string) => {
   const model = await createModel(name);
   return model.createContext({
-    contextSize: 6752,
+    contextSize: 4096,
     chatOptions: {
       chatWrapper: new Llama3ChatWrapper,
       functions,
