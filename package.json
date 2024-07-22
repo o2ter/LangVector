@@ -11,6 +11,7 @@
   "author": "Susan Cheng <susan.doggie@gmail.com>",
   "license": "MIT",
   "scripts": {
+    "checkout": "./scripts/checkout",
     "download": "./scripts/download",
     "convert": "./scripts/convert",
     "make_convertor": "./scripts/make_convertor",

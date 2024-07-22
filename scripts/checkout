@@ -1,0 +1,12 @@
+#!/bin/bash
+set -e
+
+SCRIPT_DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )"
+
+# =================    checkout    =================
+#
+#                 update git submodule
+#
+
+cd $SCRIPT_DIR
+git submodule foreach --recursive git pull origin master
