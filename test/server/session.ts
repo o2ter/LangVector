@@ -31,7 +31,8 @@ export const modelsDir = path.join(__dirname, '../../models');
 
 export const functions = {
   datetime: defineChatSessionFunction({
-    description: "Get current datetime",
+    description: "Get current ISO datetime in UTC",
+    resultType: { type: 'string' },
     handler() {
       return new Date();
     }
@@ -46,6 +47,7 @@ export const functions = {
       },
       required: ['maximum', 'minimum'],
     },
+    resultType: { type: 'integer' },
     handler({ maximum, minimum }) {
       return Math.floor(Math.random() * (maximum - minimum + 1)) + minimum;
     }
@@ -60,12 +62,31 @@ export const functions = {
       },
       required: ['maximum', 'minimum'],
     },
+    resultType: { type: 'number' },
     handler({ maximum, minimum }) {
       return Math.random() * (maximum - minimum) + minimum;
     }
   }),
   todayMenu: defineChatSessionFunction({
     description: "A list of today’s special menu",
+    resultType: {
+      type: 'object',
+      properties: {
+        totalCount: { type: 'integer' },
+        menus: {
+          type: 'array',
+          items: {
+            type: 'object',
+            properties: {
+              name: { type: 'string' },
+              price: { type: 'number' },
+            },
+            required: ['name', 'price'],
+          },
+        },
+      },
+      required: ['totalCount', 'menus'],
+    },
     handler() {
       return {
         totalCount: 3,
