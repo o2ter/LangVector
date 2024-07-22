@@ -62,7 +62,7 @@ export const _typeScriptFunctionSignatures = (functions: Record<string, ChatMode
   const result: string[] = [];
   for (const [name, options] of _.entries(functions)) {
     const desc = options.description?.split(/\r\n|\r|\n/).map(x => `// ${x.trim()}`) ?? [];
-    const func = options.params ? `${name}(params: ${_typeScriptSchemaString(options.params)})` : `${name}()`;
+    const func = options.params ? `function ${name}(params: ${_typeScriptSchemaString(options.params)})` : `function ${name}()`;
     const res = options.resultType ? `: ${_typeScriptSchemaString(options.resultType)}` : '';
     result.push([
       ...desc,
