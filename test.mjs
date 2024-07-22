@@ -86,6 +86,7 @@ const functions = {
             required: ['name', 'price'],
           },
         },
+        required: ['totalCount', 'menus'],
       },
       required: ['maximum', 'minimum'],
     },
