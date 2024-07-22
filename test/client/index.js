@@ -179,7 +179,7 @@ export default () => {
                     <ChatBox
                       key={i}
                       classes='bg-light mr-auto'
-                      text={_.map(_.filter(x.response, s => _.isString(s)), s => s.trim()).join('\n')}
+                      text={_.map(_.filter(x.response, s => _.isString(s)), s => s.trim()).join('')}
                     />
                   );
                 default: return null;
