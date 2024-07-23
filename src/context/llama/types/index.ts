@@ -145,11 +145,6 @@ export type LLamaChatPromptOptions = {
    * Only relevant when `temperature` is set to a value greater than `0`.
    */
   topP?: number;
-  /**
-   * Trim whitespace from the end of the generated text
-   * Disabled by default.
-   */
-  trimWhitespaceSuffix?: boolean;
 
   repeatPenalty?: false | LlamaSequenceRepeatPenalty;
   /**
