@@ -36,7 +36,7 @@ const model = await LlamaDevice.loadModel({
   useMmap: true,
 });
 
-const test = 'bye world!';
+const test = 'bonjour!';
 
 const list = [
   'hello',
