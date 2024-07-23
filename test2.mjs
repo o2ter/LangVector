@@ -32,7 +32,7 @@ const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
 
 const model = await LlamaDevice.loadModel({
-  modelPath: path.join(__dirname, 'models', 'sentence-transformers/all-MiniLM-L6-v2/ggml-model-q3_k_m.gguf'),
+  modelPath: path.join(__dirname, 'models', 'sentence-transformers/all-MiniLM-L6-v2/ggml-model-f16.gguf'),
   useMmap: true,
 });
 
