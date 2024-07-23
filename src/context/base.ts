@@ -24,10 +24,9 @@
 //
 
 import _ from 'lodash';
-import { LLMDevice } from '../device/base';
 import { LLMModel } from '../model/base';
 
-export abstract class LLMContext<D extends LLMDevice, M extends LLMModel<D>> {
+export abstract class LLMContext<M extends LLMModel<any>> {
 
   /** @internal */
   _model: M;
@@ -41,7 +40,7 @@ export abstract class LLMContext<D extends LLMDevice, M extends LLMModel<D>> {
     return this._model;
   }
 
-  get device() {
+  get device(): M['device'] {
     return this._model.device;
   }
 

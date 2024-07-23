@@ -37,7 +37,7 @@ import { ChatHistoryItem } from '../../chat/wrapper/types';
 import { LlamaGrammar } from '../../device/llama/grammar';
 import * as llamaCpp from '../../plugins/llamaCpp';
 
-export class LlamaContext extends LLMContext<LlamaDevice, LlamaModel> {
+export class LlamaContext extends LLMContext<LlamaModel> {
 
   /** @internal */
   _ctx: typeof llamaCpp.LlamaContext;
