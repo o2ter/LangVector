@@ -171,9 +171,11 @@ export class LlamaModel extends LLMModel<LlamaDevice> {
     if (_.isNil(this._model)) throw new DisposedError();
     const model = this._model;
     function* _tokenize(value: LLMTextValue): Generator<number, void, undefined> {
-      if (_.isNumber(value)) {
+      if(_.isNumber(value)) {
         yield value;
       } else if (_.isArrayBuffer(value)) {
+        yield* value;
+      } else if (_.isArray(value) && _.every(value, x => _.isNumber(x))) {
         yield* value;
       } else if (_.isString(value)) {
         yield* model.tokenize(value, encodeSpecial);
@@ -185,10 +187,25 @@ export class LlamaModel extends LLMModel<LlamaDevice> {
     }
     return new Uint32Array([..._tokenize(value)]);
   }
-  detokenize(tokens: Uint32List | number, { decodeSpecial = false } = {}): string {
+  detokenize(value: LLMTextValue, { decodeSpecial = false } = {}): string {
     if (_.isNil(this._model)) throw new DisposedError();
-    const _tokens = _.isArrayBuffer(tokens) ? tokens : new Uint32Array(_.isNumber(tokens) ? [tokens] : tokens);
-    return this._model.detokenize(_tokens, decodeSpecial);
+    const model = this._model;
+    function* _detokenize(value: LLMTextValue): Generator<string, void, undefined> {
+      if (_.isNumber(value)) {
+        yield model.detokenize(new Uint32Array([value]), decodeSpecial);
+      } else if (_.isArrayBuffer(value)) {
+        yield model.detokenize(value, decodeSpecial);
+      } else if (_.isArray(value) && _.every(value, x => _.isNumber(x))) {
+        yield model.detokenize(new Uint32Array(value), decodeSpecial);
+      } else if (_.isString(value)) {
+        yield value;
+      } else if (value instanceof SpecialTokenType) {
+        yield value._text;
+      } else {
+        for (const v of value) yield* _detokenize(v);
+      }
+    }
+    return [..._detokenize(value)].join('');
   }
 
   applyChatTemplate(msgs: { role: string; content: string; }[]): string | undefined {
