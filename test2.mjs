@@ -42,6 +42,8 @@ const list = [
   'hello',
   'hi',
   'bye',
+  'meta',
+  'hello, world',
 ];
 
 const { vector: v1 } = await model.embedding(test);
