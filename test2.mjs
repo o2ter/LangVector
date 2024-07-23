@@ -43,8 +43,10 @@ const list = [
   'hi',
   'bye',
   'meta',
+  '你好',
   'hello, world',
   'what is your name',
+  '你叫咩名',
 ];
 
 const { vector: v1 } = await model.embedding(test);
