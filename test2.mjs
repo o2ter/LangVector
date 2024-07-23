@@ -36,7 +36,7 @@ const model = await LlamaDevice.loadModel({
   useMmap: true,
 });
 
-const test = 'hello';
+const test = 'bye world!';
 
 const list = [
   'hello',
@@ -44,6 +44,7 @@ const list = [
   'bye',
   'meta',
   'hello, world',
+  'what is your name',
 ];
 
 const { vector: v1 } = await model.embedding(test);
