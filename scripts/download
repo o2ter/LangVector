@@ -10,6 +10,7 @@ LIST=(
   meta-llama/Meta-Llama-3-8B-Instruct
   # meta-llama/Meta-Llama-3-70B-Instruct
   # stabilityai/stable-diffusion-2-1
+  # sentence-transformers/all-MiniLM-L6-v2
 )
 
 for SOURCE in "${LIST[@]}"; do
