@@ -176,7 +176,7 @@ export class LlamaModel extends LLMModel<LlamaDevice> {
     if (_.isNil(this._model)) throw new DisposedError();
     const model = this._model;
     function* _tokenize(value: LLMTextValue): Generator<number, void, undefined> {
-      if(_.isNumber(value)) {
+      if (_.isNumber(value)) {
         yield value;
       } else if (_.isArrayBuffer(value)) {
         yield* value;
@@ -224,10 +224,11 @@ export class LlamaModel extends LLMModel<LlamaDevice> {
     return new LlamaContext(this, ctx, _options);
   }
 
-  async embedding(value: LLMTextValue, { batchSize, threads, poolingType }: {
+  async embedding(value: LLMTextValue, { batchSize, threads, poolingType, normalize }: {
     batchSize?: number;
     threads?: number;
     poolingType?: LlamaPoolingType;
+    normalize?: number;
   } = {}) {
     const time = clock();
     const tokens = this.tokenize(value);
@@ -241,7 +242,7 @@ export class LlamaModel extends LLMModel<LlamaDevice> {
     for (let i = 0; i < tokens.length; i += _batchSize) {
       await ctx.eval(tokens.subarray(i, i + _batchSize), i, i + _batchSize >= tokens.length);
     }
-    const vector = ctx.embedding() as Vector;
+    const vector = ctx.embedding({ normalize }) as Vector;
     ctx.dispose();
     return { type: 'embedding', vector, time: clock() - time } as const;
   }

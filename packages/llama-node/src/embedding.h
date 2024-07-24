@@ -120,7 +120,8 @@ public:
           auto token_length = tokens.ElementLength();
           size_t n_batch = llama_n_batch(ctx);
 
-          if (token_length > n_batch) {
+          if (token_length > n_batch)
+          {
             throw std::runtime_error("Number of tokens exceeds batch size");
           }
 
@@ -148,8 +149,16 @@ public:
   }
   Napi::Value GetEmbedding(const Napi::CallbackInfo &info)
   {
+    int embd_norm = 2;
+
+    Napi::Object options = info[0].As<Napi::Object>();
+    if (options.Has("normalize"))
+    {
+      embd_norm = options.Get("normalize").As<Napi::Number>().Int32Value();
+    }
+
     const int n_embd = llama_n_embd(model->model);
-    const auto *embeddings = llama_get_embeddings_seq(ctx, 0);
+    auto *embeddings = llama_get_embeddings_seq(ctx, 0);
     if (embeddings == NULL)
     {
       embeddings = llama_get_embeddings_ith(ctx, -1);
@@ -159,6 +168,11 @@ public:
         Napi::Error::New(Env(), "Failed to get embeddings").ThrowAsJavaScriptException();
         return Env().Undefined();
       }
+    }
+
+    if (embd_norm != -1)
+    {
+      llama_embd_normalize(embeddings, embeddings, n_embd, embd_norm);
     }
 
     Napi::Float64Array result = Napi::Float64Array::New(Env(), n_embd);
