@@ -242,7 +242,7 @@ export class LlamaModel extends LLMModel<LlamaDevice> {
     for (let i = 0; i < tokens.length; i += _batchSize) {
       await ctx.eval(tokens.subarray(i, i + _batchSize), i, i + _batchSize >= tokens.length);
     }
-    const vector = ctx.embedding({ normalize }) as Vector;
+    const vector = ctx.embedding(_.pickBy({ normalize }, v => !_.isNil(v))) as Vector;
     ctx.dispose();
     return { type: 'embedding', vector, time: clock() - time } as const;
   }
