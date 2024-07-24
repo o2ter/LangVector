@@ -220,9 +220,10 @@ public:
   Napi::Value Tokenize(const Napi::CallbackInfo &info)
   {
     std::string text = info[0].As<Napi::String>().Utf8Value();
-    bool encodeSpecial = info[1].As<Napi::Boolean>().Value();
+    bool addSpecial = info[1].As<Napi::Boolean>().Value();
+    bool encodeSpecial = info[2].As<Napi::Boolean>().Value();
 
-    std::vector<llama_token> tokens = llama_tokenize(model, text, false, encodeSpecial);
+    std::vector<llama_token> tokens = llama_tokenize(model, text, addSpecial, encodeSpecial);
 
     Napi::Uint32Array result = Napi::Uint32Array::New(Env(), tokens.size());
     for (size_t i = 0; i < tokens.size(); ++i)
@@ -235,12 +236,11 @@ public:
   Napi::Value Detokenize(const Napi::CallbackInfo &info)
   {
     Napi::Uint32Array tokens = info[0].As<Napi::Uint32Array>();
-    bool decodeSpecial = info.Length() > 0
-                             ? info[1].As<Napi::Boolean>().Value()
-                             : false;
+    bool removeSpecial = info[1].As<Napi::Boolean>().Value();
+    bool decodeSpecial = info[2].As<Napi::Boolean>().Value();
 
     std::vector<char> result(8, 0);
-    const int n_length = llama_detokenize(model, (llama_token *)tokens.Data(), tokens.ElementLength(), result.data(), result.size(), false, decodeSpecial);
+    const int n_length = llama_detokenize(model, (llama_token *)tokens.Data(), tokens.ElementLength(), result.data(), result.size(), removeSpecial, decodeSpecial);
 
     if (n_length < 0)
     {

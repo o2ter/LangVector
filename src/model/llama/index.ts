@@ -172,7 +172,7 @@ export class LlamaModel extends LLMModel<LlamaDevice> {
     return this._model.isEogToken(token);
   }
 
-  tokenize(value: LLMTextValue, { encodeSpecial = false } = {}): Uint32Array {
+  tokenize(value: LLMTextValue, { addSpecial = false, encodeSpecial = false } = {}): Uint32Array {
     if (_.isNil(this._model)) throw new DisposedError();
     const model = this._model;
     function* _tokenize(value: LLMTextValue): Generator<number, void, undefined> {
@@ -183,7 +183,7 @@ export class LlamaModel extends LLMModel<LlamaDevice> {
       } else if (_.isArray(value) && _.every(value, x => _.isNumber(x))) {
         yield* value;
       } else if (_.isString(value)) {
-        yield* model.tokenize(value, encodeSpecial);
+        yield* model.tokenize(value, addSpecial, encodeSpecial);
       } else if (value instanceof SpecialTokenType) {
         yield* model.tokenize(value._text, true);
       } else {
@@ -192,16 +192,16 @@ export class LlamaModel extends LLMModel<LlamaDevice> {
     }
     return new Uint32Array([..._tokenize(value)]);
   }
-  detokenize(value: LLMTextValue, { decodeSpecial = false } = {}): string {
+  detokenize(value: LLMTextValue, { removeSpecial = false, decodeSpecial = false } = {}): string {
     if (_.isNil(this._model)) throw new DisposedError();
     const model = this._model;
     function* _detokenize(value: LLMTextValue): Generator<string, void, undefined> {
       if (_.isNumber(value)) {
-        yield model.detokenize(new Uint32Array([value]), decodeSpecial);
+        yield model.detokenize(new Uint32Array([value]), removeSpecial, decodeSpecial);
       } else if (_.isArrayBuffer(value)) {
-        yield model.detokenize(value, decodeSpecial);
+        yield model.detokenize(value, removeSpecial, decodeSpecial);
       } else if (_.isArray(value) && _.every(value, x => _.isNumber(x))) {
-        yield model.detokenize(new Uint32Array(value), decodeSpecial);
+        yield model.detokenize(new Uint32Array(value), removeSpecial, decodeSpecial);
       } else if (_.isString(value)) {
         yield value;
       } else if (value instanceof SpecialTokenType) {
@@ -231,7 +231,7 @@ export class LlamaModel extends LLMModel<LlamaDevice> {
     normalize?: number;
   } = {}) {
     const time = clock();
-    const tokens = this.tokenize(value);
+    const tokens = this.tokenize(value, { addSpecial: true });
     const _batchSize = batchSize ?? tokens.length;
     const ctx = new llamaCpp.LlamaEmbeddingContext(this._model, _.pickBy({
       contextSize: tokens.length,
