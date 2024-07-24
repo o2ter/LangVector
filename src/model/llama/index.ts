@@ -53,6 +53,10 @@ export class LlamaModel extends LLMModel<LlamaDevice> {
     return _.isNil(this._model);
   }
 
+  get hasEncoder(): boolean {
+    return this._model.hasEncoder();
+  }
+
   get tokens() {
     if (_.isNil(this._model)) throw new DisposedError();
     const _model = this._model;

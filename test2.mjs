@@ -68,4 +68,7 @@ for (const str of list) {
   })
 }
 
-console.log({ ...model.meta })
+console.log({
+  hasEncoder: model.hasEncoder,
+  ...model.meta,
+ })

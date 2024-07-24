@@ -213,6 +213,10 @@ public:
     dispose();
   }
 
+  Napi::Value HasEncoder(const Napi::CallbackInfo &info)
+  {
+    return Napi::Boolean::From(Env(), llama_model_has_encoder(model));
+  }
   Napi::Value Tokenize(const Napi::CallbackInfo &info)
   {
     std::string text = info[0].As<Napi::String>().Utf8Value();
@@ -406,6 +410,7 @@ public:
         exports.Env(),
         "LlamaModel",
         {
+            InstanceMethod("hasEncoder", &LlamaModel::HasEncoder),
             InstanceMethod("tokenize", &LlamaModel::Tokenize),
             InstanceMethod("detokenize", &LlamaModel::Detokenize),
             InstanceMethod("contextSize", &LlamaModel::ContextSize),
