@@ -58,10 +58,10 @@ const list = [
 // what is your name: 0.2558874487876892
 // 你叫咩名: 0.2359335869550705
 
-const { vector: v1 } = await model.embedding(test, { poolingType: LlamaPoolingType.mean });
+const { vector: v1 } = await model.embedding(test);
 
 for (const str of list) {
-  const { vector: v2 } = await model.embedding(str, { poolingType: LlamaPoolingType.mean });
+  const { vector: v2 } = await model.embedding(str);
   console.log({
     distance: Similarity.distance(v1, v2),
     cosine: Similarity.cosine(v1, v2),
