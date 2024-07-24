@@ -71,4 +71,4 @@ for (const str of list) {
 console.log({
   hasEncoder: model.hasEncoder,
   ...model.meta,
- })
+})
