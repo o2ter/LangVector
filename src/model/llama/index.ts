@@ -185,7 +185,7 @@ export class LlamaModel extends LLMModel<LlamaDevice> {
       } else if (_.isString(value)) {
         yield* model.tokenize(value, addSpecial, encodeSpecial);
       } else if (value instanceof SpecialTokenType) {
-        yield* model.tokenize(value._text, true);
+        yield* model.tokenize(value._text, addSpecial, true);
       } else {
         for (const v of value) yield* _tokenize(v);
       }
