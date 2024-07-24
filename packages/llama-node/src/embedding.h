@@ -149,7 +149,7 @@ public:
   }
   Napi::Value GetEmbedding(const Napi::CallbackInfo &info)
   {
-    int embd_norm = 2;
+    int embd_norm = -1;
 
     Napi::Object options = info[0].As<Napi::Object>();
     if (options.Has("normalize"))
