@@ -67,3 +67,5 @@ for (const str of list) {
     cosine: Similarity.cosine(v1, v2),
   })
 }
+
+console.log({ ...model.meta })
