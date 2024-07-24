@@ -170,16 +170,8 @@ public:
       }
     }
 
-    if (embd_norm != -1)
-    {
-      llama_embd_normalize(embeddings, embeddings, n_embd, embd_norm);
-    }
-
-    Napi::Float64Array result = Napi::Float64Array::New(Env(), n_embd);
-    for (size_t i = 0; i < n_embd; ++i)
-    {
-      result[i] = embeddings[i];
-    }
+    Napi::Float32Array result = Napi::Float32Array::New(Env(), n_embd);
+    llama_embd_normalize(embeddings, result.Data(), n_embd, embd_norm);
 
     return result;
   }
