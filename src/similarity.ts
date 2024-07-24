@@ -33,6 +33,11 @@ export const Similarity = {
   },
   cosine: (v1: Vector, v2: Vector) => {
     if (v1.length !== v2.length) throw Error('Invalid comparison of two vectors of different lengths');
-    return _.sumBy(_.zip(v1, v2), ([a, b]) => a! * b!) / Math.sqrt(_.sumBy(v1, v => v ** 2) * _.sumBy(v2, v => v ** 2));
+    const s1 = _.sumBy(_.zip(v1, v2), ([a, b]) => a! * b!);
+    const s2 = _.sumBy(v1, v => v ** 2);
+    const s3 = _.sumBy(v2, v => v ** 2);
+    if (s2 === 0 && s3 === 0) return 1;
+    if (s2 === 0 || s3 === 0) return 0;
+    return s1 / Math.sqrt(s2 * s3);
   },
 };
