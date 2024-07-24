@@ -236,7 +236,7 @@ export class LlamaModel extends LLMModel<LlamaDevice> {
       contextSize: tokens.length,
       batchSize: _batchSize,
       threads,
-      poolingType: _.isString(poolingType) ? LlamaPoolingType[poolingType] : poolingType,
+      poolingType,
     }, v => !_.isNil(v)));
     for (let i = 0; i < tokens.length; i += _batchSize) {
       await ctx.eval(tokens.subarray(i, i + _batchSize), i, i + _batchSize >= tokens.length);
