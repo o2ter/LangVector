@@ -36,9 +36,8 @@ const model = await LlamaDevice.loadModel({
   useMmap: true,
 });
 
-const test = 'bonjour!';
-
 const list = [
+  'bonjour!',
   'hello',
   'hi',
   'bye',
@@ -49,17 +48,14 @@ const list = [
   '你叫咩名',
 ];
 
-const { vector: v1 } = await model.embedding(test);
+console.log(_.map(list, x => x.slice(0, 6)).join('\t'));
 
-for (const str of list) {
-  const { vector: v2 } = await model.embedding(str);
-  console.log({
-    distance: Similarity.distance(v1, v2),
-    cosine: Similarity.cosine(v1, v2),
-  })
+for (const s1 of list) {
+  const { vector: v1 } = await model.embedding(s1);
+  const result = [];
+  for (const s2 of list) {
+    const { vector: v2 } = await model.embedding(s2);
+    result.push(Similarity.cosine(v1, v2).toFixed(2));
+  }
+  console.log([...result, s1].join('\t'));
 }
-
-console.log({
-  hasEncoder: model.hasEncoder,
-  ...model.meta,
-})
