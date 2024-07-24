@@ -26,7 +26,7 @@
 import _ from 'lodash';
 import path from 'path';
 import { fileURLToPath } from 'url';
-import { LlamaDevice } from './dist/index.mjs';
+import { LlamaDevice, Similarity } from './dist/index.mjs';
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
@@ -53,7 +53,8 @@ const { vector: v1 } = await model.embedding(test);
 
 for (const str of list) {
   const { vector: v2 } = await model.embedding(str);
-  const distance = Math.sqrt(_.sumBy(_.zip(v1, v2), ([a, b]) => (a - b) ** 2));
-  const cosine = _.sumBy(_.zip(v1, v2), ([a, b]) => a * b) / Math.sqrt(_.sumBy(v1, v => v ** 2) * _.sumBy(v2, v => v ** 2));
-  console.log({ distance, cosine })
+  console.log({
+    distance: Similarity.distance(v1, v2),
+    cosine: Similarity.cosine(v1, v2),
+  })
 }

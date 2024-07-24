@@ -28,6 +28,8 @@ export { _typeScriptFunctionSignatures } from './chat/grammar/typescript';
 export { schemaToJsonGrammarRules } from './chat/grammar/json';
 export { defineChatSessionFunction } from './context/llama/types';
 
+export * from './similarity';
+
 export * from './types';
 export * from './chat/wrapper/types';
 

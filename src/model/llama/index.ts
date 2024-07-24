@@ -26,7 +26,7 @@
 import _ from 'lodash';
 import { LLMModel } from '../base';
 import { LlamaDevice } from '../../device/llama';
-import { SpecialTokenType, DisposedError, LLMTextValue } from '../../types';
+import { SpecialTokenType, DisposedError, LLMTextValue, Vector } from '../../types';
 import { LlamaContext } from '../../context/llama';
 import { LlamaContextOptions } from '../../context/llama/types';
 import { clock } from '../../utils';
@@ -234,7 +234,7 @@ export class LlamaModel extends LLMModel<LlamaDevice> {
     for (let i = 0; i < tokens.length; i += _batchSize) {
       await ctx.eval(tokens.subarray(i, i + _batchSize), i, i + _batchSize >= tokens.length);
     }
-    const vector = ctx.embedding() as Float64Array;
+    const vector = ctx.embedding() as Vector;
     ctx.dispose();
     return { type: 'embedding', vector, time: clock() - time } as const;
   }

@@ -1,5 +1,5 @@
 //
-//  types.ts
+//  similarity.ts
 //
 //  The MIT License
 //  Copyright (c) 2021 - 2024 O2ter Limited. All rights reserved.
@@ -23,25 +23,16 @@
 //  THE SOFTWARE.
 //
 
-export class DisposedError extends Error {
-  constructor() {
-    super("Object is disposed");
-  }
-}
+import _ from 'lodash';
+import { Vector } from './types';
 
-export class SpecialTokenType {
-
-  /** @internal */
-  _text: string;
-
-  constructor(text: string) {
-    this._text = text;
-  }
-}
-
-export const SpecialToken = (text: string) => new SpecialTokenType(text);
-
-type Many<T> = T | Iterable<Many<T>>;
-export type LLMTextValue = Many<string | number | SpecialTokenType | Uint32List>;
-
-export type Vector = Float32List | Float64Array;
+export const Similarity = {
+  distance: (v1: Vector, v2: Vector) => {
+    if (v1.length !== v2.length) throw Error('Invalid comparison of two vectors of different lengths');
+    return Math.sqrt(_.sumBy(_.zip(v1, v2), ([a, b]) => (a! - b!) ** 2));
+  },
+  cosine: (v1: Vector, v2: Vector) => {
+    if (v1.length !== v2.length) throw Error('Invalid comparison of two vectors of different lengths');
+    return _.sumBy(_.zip(v1, v2), ([a, b]) => a! * b!) / Math.sqrt(_.sumBy(v1, v => v ** 2) * _.sumBy(v2, v => v ** 2));
+  },
+};
