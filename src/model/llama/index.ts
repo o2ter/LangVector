@@ -31,6 +31,7 @@ import { LlamaContext } from '../../context/llama';
 import { LlamaContextOptions } from '../../context/llama/types';
 import { clock } from '../../utils';
 import * as llamaCpp from '../../plugins/llamaCpp';
+import { LlamaPoolingType } from './types';
 
 export class LlamaModel extends LLMModel<LlamaDevice> {
 
@@ -223,9 +224,10 @@ export class LlamaModel extends LLMModel<LlamaDevice> {
     return new LlamaContext(this, ctx, _options);
   }
 
-  async embedding(value: LLMTextValue, { batchSize, threads }: {
+  async embedding(value: LLMTextValue, { batchSize, threads, poolingType }: {
     batchSize?: number;
     threads?: number;
+    poolingType?: LlamaPoolingType;
   } = {}) {
     const time = clock();
     const tokens = this.tokenize(value);
@@ -234,6 +236,7 @@ export class LlamaModel extends LLMModel<LlamaDevice> {
       contextSize: tokens.length,
       batchSize: _batchSize,
       threads,
+      poolingType: _.isString(poolingType) ? LlamaPoolingType[poolingType] : poolingType,
     }, v => !_.isNil(v)));
     for (let i = 0; i < tokens.length; i += _batchSize) {
       await ctx.eval(tokens.subarray(i, i + _batchSize), i, i + _batchSize >= tokens.length);

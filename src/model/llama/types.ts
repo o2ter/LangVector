@@ -33,3 +33,11 @@ export type LlamaModelOptions = {
   signal?: AbortSignal;
   onLoadProgress?: (progress: number) => void;
 };
+
+export enum LlamaPoolingType {
+  unspecified = -1,
+  none = 0,
+  mean = 1,
+  cls = 2,
+  last = 3,
+};

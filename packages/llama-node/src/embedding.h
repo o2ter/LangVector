@@ -64,6 +64,12 @@ public:
       params.n_threads_batch = resolved_n_threads;
     }
 
+    if (options.Has("poolingType"))
+    {
+      const auto pooling_type = options.Get("poolingType").As<Napi::Number>().Uint32Value();
+      params.pooling_type = static_cast<enum llama_pooling_type>(pooling_type);
+    }
+
     ctx = llama_new_context_with_model(model->model, params);
     if (ctx == NULL)
     {

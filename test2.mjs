@@ -26,7 +26,7 @@
 import _ from 'lodash';
 import path from 'path';
 import { fileURLToPath } from 'url';
-import { LlamaDevice, Similarity } from './dist/index.mjs';
+import { LlamaDevice, Similarity, LlamaPoolingType } from './dist/index.mjs';
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
@@ -58,10 +58,10 @@ const list = [
 // what is your name: 0.2558874487876892
 // 你叫咩名: 0.2359335869550705
 
-const { vector: v1 } = await model.embedding(test);
+const { vector: v1 } = await model.embedding(test, { poolingType: LlamaPoolingType.mean });
 
 for (const str of list) {
-  const { vector: v2 } = await model.embedding(str);
+  const { vector: v2 } = await model.embedding(str, { poolingType: LlamaPoolingType.mean });
   console.log({
     distance: Similarity.distance(v1, v2),
     cosine: Similarity.cosine(v1, v2),
