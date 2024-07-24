@@ -36,17 +36,12 @@ const model = await LlamaDevice.loadModel({
   useMmap: true,
 });
 
-const test = 'bonjour!';
+const test = 'That is a happy person';
 
 const list = [
-  'hello',
-  'hi',
-  'bye',
-  'meta',
-  '你好',
-  'hello, world',
-  'what is your name',
-  '你叫咩名',
+  'That is a happy dog',
+  'That is a very happy person',
+  'Today is a sunny day',
 ];
 
 const { vector: v1 } = await model.embedding(test);
