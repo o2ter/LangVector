@@ -49,15 +49,6 @@ const list = [
   '你叫咩名',
 ];
 
-// hello: 0.315050333738327
-// hi: 0.2795584499835968
-// bye: 0.18997588753700256
-// meta: 0.1928933560848236
-// 你好: 0.2453768253326416
-// hello, world: 0.2886505722999573
-// what is your name: 0.2558874487876892
-// 你叫咩名: 0.2359335869550705
-
 const { vector: v1 } = await model.embedding(test);
 
 for (const str of list) {
