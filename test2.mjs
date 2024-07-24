@@ -31,11 +31,6 @@ import { LlamaDevice, Similarity, LlamaPoolingType } from './dist/index.mjs';
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
 
-const model = await LlamaDevice.loadModel({
-  modelPath: path.join(__dirname, 'models', 'sentence-transformers/all-MiniLM-L6-v2/ggml-model-f16.gguf'),
-  useMmap: true,
-});
-
 const list = [
   'bonjour!',
   'hello',
@@ -48,14 +43,30 @@ const list = [
   '你叫咩名',
 ];
 
-console.log(_.map(list, x => x.slice(0, 6)).join('\t'));
+const model_paths = [
+  'models/meta-llama/Meta-Llama-3-8B-Instruct/ggml-model-q3_k_m.gguf',
+  'sentence-transformers/all-MiniLM-L6-v2/ggml-model-f16.gguf',
+];
 
-for (const s1 of list) {
-  const { vector: v1 } = await model.embedding(s1);
-  const result = [];
-  for (const s2 of list) {
-    const { vector: v2 } = await model.embedding(s2);
-    result.push(Similarity.cosine(v1, v2).toFixed(2));
+for (const model_path of model_paths) {
+
+  console.log(model_path);
+
+  const model = await LlamaDevice.loadModel({
+    modelPath: path.join(__dirname, 'models', model_path),
+    useMmap: true,
+  });
+
+  console.log(_.map(list, x => x.slice(0, 6)).join('\t'));
+
+  for (const s1 of list) {
+    const { vector: v1 } = await model.embedding(s1);
+    const result = [];
+    for (const s2 of list) {
+      const { vector: v2 } = await model.embedding(s2);
+      result.push(Similarity.cosine(v1, v2).toFixed(2));
+    }
+    console.log([...result, s1].join('\t'));
   }
-  console.log([...result, s1].join('\t'));
+
 }
