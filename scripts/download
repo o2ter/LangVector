@@ -7,9 +7,13 @@ cd $SCRIPT_DIR
 cd ../
 
 LIST=(
-  meta-llama/Meta-Llama-3-8B-Instruct
+  # meta-llama/Meta-Llama-3-8B-Instruct
+  meta-llama/Meta-Llama-3.1-8B-Instruct
   # meta-llama/Meta-Llama-3-70B-Instruct
+  # meta-llama/Meta-Llama-3.1-70B-Instruct
+  # meta-llama/Meta-Llama-3.1-405B-Instruct
   # stabilityai/stable-diffusion-2-1
+  # stabilityai/stable-diffusion-3-medium
   # apple/DCLM-7B
   sentence-transformers/all-MiniLM-L6-v2
 )

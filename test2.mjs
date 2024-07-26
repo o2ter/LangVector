@@ -44,7 +44,7 @@ const list = [
 ];
 
 const model_paths = [
-  'meta-llama/Meta-Llama-3-8B-Instruct/ggml-model-q3_k_m.gguf',
+  'meta-llama/Meta-Llama-3.1-8B-Instruct/ggml-model-q3_k_m.gguf',
   'sentence-transformers/all-MiniLM-L6-v2/ggml-model-f16.gguf',
 ];
 

@@ -87,7 +87,7 @@ export default async (app: Server, env: Record<string, any>) => {
 
     const abort = new AbortController;
 
-    let currentModel = 'meta-llama/Meta-Llama-3-8B-Instruct/ggml-model-q3_k_m.gguf';
+    let currentModel = 'meta-llama/Meta-Llama-3.1-8B-Instruct/ggml-model-q3_k_m.gguf';
     let session = currentModel ? await createContext(currentModel) : null;
 
     const defaultResponse = (session: LlamaContext) => ({
