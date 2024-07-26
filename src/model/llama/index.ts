@@ -178,7 +178,7 @@ export class LlamaModel extends LLMModel<LlamaDevice> {
     function* _tokenize(value: LLMTextValue): Generator<number, void, undefined> {
       if (_.isNumber(value)) {
         yield value;
-      } else if (_.isArrayBuffer(value)) {
+      } else if (value instanceof Uint32Array) {
         yield* value;
       } else if (_.isArray(value) && _.every(value, x => _.isNumber(x))) {
         yield* value;
@@ -198,7 +198,7 @@ export class LlamaModel extends LLMModel<LlamaDevice> {
     function* _detokenize(value: LLMTextValue): Generator<string, void, undefined> {
       if (_.isNumber(value)) {
         yield model.detokenize(new Uint32Array([value]), removeSpecial, decodeSpecial);
-      } else if (_.isArrayBuffer(value)) {
+      } else if (value instanceof Uint32Array) {
         yield model.detokenize(value, removeSpecial, decodeSpecial);
       } else if (_.isArray(value) && _.every(value, x => _.isNumber(x))) {
         yield model.detokenize(new Uint32Array(value), removeSpecial, decodeSpecial);

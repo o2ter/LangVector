@@ -221,7 +221,7 @@ export class LlamaContext extends LLMContext<LlamaModel> {
       repeatPenalty: repeatPenalty.penalty,
       repeatPenaltyPresencePenalty: repeatPenalty.presencePenalty,
       repeatPenaltyFrequencyPenalty: repeatPenalty.frequencyPenalty,
-      repeatPenaltyTokens: _.isArrayBuffer(punishTokens) ? punishTokens : new Uint32Array(punishTokens),
+      repeatPenaltyTokens: punishTokens instanceof Uint32Array ? punishTokens : new Uint32Array(punishTokens),
     }, v => !_.isNil(v)));
   }
 
@@ -263,7 +263,7 @@ export class LlamaContext extends LLMContext<LlamaModel> {
 
   /** @internal */
   private async _eval(tokens: Uint32List, startPos: number) {
-    const _tokens = _.isArrayBuffer(tokens) ? tokens : new Uint32Array(tokens);
+    const _tokens = tokens instanceof Uint32Array ? tokens : new Uint32Array(tokens);
     const batchSize = this.batchSize;
     for (let i = 0; i < tokens.length; i += batchSize) {
       await this._ctx.eval(_tokens.subarray(i, i + batchSize), i + startPos, i + batchSize >= _tokens.length);
