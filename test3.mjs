@@ -51,7 +51,7 @@ class ChatWrapper extends Llama3ChatWrapper {
       'If none of the question matched, just say 0.',
       'Do not add any other unnecessary content in your response.',
       '',
-      'These is the questions:',
+      'These are the provided questions:',
       ..._.map(questions, (x, i) => `${i + 1}. ${x}`),
     ].join('\n');
   }
