@@ -1569,10 +1569,10 @@
     react-native-svg ">=15.3.0"
     react-native-vector-icons ">=10.1.0"
 
-"@o2ter/server-js@^0.0.15":
-  version "0.0.15"
-  resolved "https://registry.yarnpkg.com/@o2ter/server-js/-/server-js-0.0.15.tgz#c9564d3994cdfe150e3058c6d6a7e850ac22a003"
-  integrity sha512-SBZiG0Zl46X8+Ppz1lze4Ukg796w7CGoxCjO7oO89nxnsr93fshNpcS8c+uxPtak3fOxBfdQd+vScXHVZhZ0ig==
+"@o2ter/server-js@^0.0.16":
+  version "0.0.16"
+  resolved "https://registry.yarnpkg.com/@o2ter/server-js/-/server-js-0.0.16.tgz#6fc4fb0da26738274249fe067a05abf16509a0bd"
+  integrity sha512-o4EbZ7tbxvzxMxfIAs1rc4Gq16MMEw0XpFl9xihsOVW54bMsztJ08A4RIP8xymtV13xHa//7dWU0kgBttQEJdg==
   dependencies:
     "@o2ter/styler.js" "^0.0.1"
     "@o2ter/utils-js" "^0.0.10"
@@ -6783,10 +6783,10 @@ prop-types@^15.7.2:
     object-assign "^4.1.1"
     react-is "^16.13.1"
 
-proto.io@^0.0.129:
-  version "0.0.129"
-  resolved "https://registry.yarnpkg.com/proto.io/-/proto.io-0.0.129.tgz#f5c95769f8d33034f53ca29c9f33f906ea029276"
-  integrity sha512-Ykgc4EYAF3wywXUyPCv3+v5T9TYEEyyG5YlIrgBYJsu2yOLJqcnPCbjJy26yMqiNQp7OmoSxKT2oa3xx5lQw7A==
+proto.io@^0.0.130:
+  version "0.0.130"
+  resolved "https://registry.yarnpkg.com/proto.io/-/proto.io-0.0.130.tgz#34a82841eccedefbc94430ee877c5253557d7ddc"
+  integrity sha512-SefGDLtJXJgefqDX/ww0TEDN10/vkgN47So6JH+uuyIL1HhxH3H0WubgMu6YSShEgaZHy9Cvbg3JtSAz4T4k1g==
   dependencies:
     "@google-cloud/storage" "^7.11.0"
     "@o2ter/crypto-js" "^0.0.7"
