@@ -41,7 +41,7 @@ class ChatWrapper extends Llama3ChatWrapper {
   generateSystemMessage(ctx) {
     return [
       'You are a helpful, respectful and honest assistant.',
-      'You don\'t answer the question.',
+      'You don\'t answer the question. You should tell user which question they are most likely to ask.',
       'You only need to tell the index of the question provided as below.',
       'If none of the question matched, please answer 0.',
       '',
@@ -62,7 +62,7 @@ const options = {
   minP: 0,
   topK: 40,
   topP: 0.75,
-  temperature: 0.2,
+  temperature: 0.05,
   repeatPenalty: {
     frequencyPenalty: 0.2,
     presencePenalty: 0.2,
