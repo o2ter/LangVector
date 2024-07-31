@@ -43,7 +43,7 @@ class ChatWrapper extends Llama3ChatWrapper {
       'You are a helpful, respectful and honest assistant.',
       'You don\'t answer the question. You should tell user which question they are most likely to ask.',
       'You only need to tell the index of the question provided as below.',
-      'If none of the question matched, please answer 0.',
+      'If none of the question matched, just say 0. Don\'t make up an answer.',
       '',
       '1. What\'s your name?',
       '2. Where am I?',
