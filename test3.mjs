@@ -41,10 +41,12 @@ class ChatWrapper extends Llama3ChatWrapper {
   generateSystemMessage(ctx) {
     return [
       'You are a helpful, respectful and honest assistant.',
-      'You don\'t answer the question. You should tell user which question they are most likely to ask.',
-      'You only need to tell the index of the question provided as below.',
-      'If none of the question matched, just say 0. Don\'t make up an answer.',
+      'You will be provided list of questions. Pick the best match question from the choices.',
+      'You only need to tell the index of the question.',
+      'If none of the question matched, just say 0.',
+      'Do not add any other unnecessary content in your response.',
       '',
+      'These is the questions:',
       '1. What\'s your name?',
       '2. Where am I?',
     ].join('\n');
