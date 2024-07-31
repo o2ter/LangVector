@@ -439,6 +439,7 @@ export class LlamaContext extends LLMContext<LlamaModel> {
               if (!_record_pushed) _module_records.push([sample, _time]);
             } else {
               onToken(sample, _time);
+              if (_grammar) _grammar.acceptToken(sample);
             }
 
             if (!_.isEmpty(_modules) && !_.isNil(_module_records)) {
