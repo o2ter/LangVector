@@ -36,6 +36,11 @@ const model = await LlamaDevice.loadModel({
   useMmap: true,
 });
 
+const questions = [
+  'What\'s your name?',
+  'Where am I?',
+];
+
 class ChatWrapper extends Llama3ChatWrapper {
 
   generateSystemMessage(ctx) {
@@ -47,8 +52,7 @@ class ChatWrapper extends Llama3ChatWrapper {
       'Do not add any other unnecessary content in your response.',
       '',
       'These is the questions:',
-      '1. What\'s your name?',
-      '2. Where am I?',
+      ..._.map(questions, (x, i) => `${i + 1}. ${x}`),
     ].join('\n');
   }
 }
