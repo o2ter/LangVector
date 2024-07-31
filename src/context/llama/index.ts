@@ -439,10 +439,10 @@ export class LlamaContext extends LLMContext<LlamaModel> {
               if (!_record_pushed) _module_records.push([sample, _time]);
             } else {
               onToken(sample, _time);
-              if (_grammar) _grammar.acceptToken(sample);
             }
+            if (_grammar) _grammar.acceptToken(sample);
 
-            if (!_.isEmpty(_modules) && !_.isNil(_module_records)) {
+            if (_.isNil(_selected_module) && !_.isEmpty(_modules) && !_.isNil(_module_records)) {
               const record = this.model.detokenize(_.map(_module_records, ([x]) => x));
               for (const module of _modules) {
                 if (_.startsWith(record, module.beginTrigger)) {
