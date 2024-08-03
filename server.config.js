@@ -15,8 +15,5 @@ module.exports = (env, argv) => ({
     plugins: [
       new webpack.IgnorePlugin({ resourceRegExp: /^pg-native$/ }),
     ],
-    externals: {
-      'llama-node': 'commonjs2 llama-node',
-    },
   },
 })
