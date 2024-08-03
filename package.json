@@ -24,10 +24,10 @@
   },
   "dependencies": {
     "@o2ter/utils-js": "^0.0.10",
-    "llama-node": "file:packages/llama-node",
+    "llama-node": "@o2ter/lang-vector/packages/llama-node",
     "lodash": "^4.17.21",
     "myers.js": "^0.0.15",
-    "stable-diffusion-node": "file:packages/stable-diffusion-node"
+    "stable-diffusion-node": "@o2ter/lang-vector/packages/stable-diffusion-node"
   },
   "devDependencies": {
     "@babel/core": "^7.24.5",
