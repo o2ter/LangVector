@@ -5,6 +5,17 @@ SCRIPT_DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )"
 
 cd $SCRIPT_DIR
 
-for SCRIPT in ../packages/*/scripts/install; do 
+LIST=(
+  https://github.com/ggerganov/llama.cpp
+  https://github.com/leejet/stable-diffusion.cpp
+)
+
+for SOURCE in "${LIST[@]}"; do
+  if [ ! -d "../packages/$(basename "${SOURCE}")" ]; then
+    git clone --recurse-submodules --depth 1 ${SOURCE} "../packages/$(basename "${SOURCE}")"
+  fi
+done
+
+for SCRIPT in "../packages/*/scripts/install"; do 
   ${SCRIPT}
 done

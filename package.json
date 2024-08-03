@@ -6,8 +6,9 @@
   "types": "dist/index",
   "files": [
     "dist/*",
-    "packages/*",
-    "scripts/install"
+    "scripts/install",
+    "packages/llama-node",
+    "packages/stable-diffusion-node"
   ],
   "repository": "https://github.com/o2ter/LangVector.git",
   "author": "Susan Cheng <susan.doggie@gmail.com>",
