@@ -12,7 +12,7 @@
   "author": "Susan Cheng <susan.doggie@gmail.com>",
   "license": "MIT",
   "scripts": {
-    "install": "for SCRIPT in ./packages/*/scripts/install; do ${SCRIPT}; done",
+    "install": "for SCRIPT in \"${INIT_CWD}/packages/*/scripts/install\"; do ${SCRIPT}; done",
     "checkout": "./scripts/checkout",
     "download": "./scripts/download",
     "convert": "./scripts/convert",
