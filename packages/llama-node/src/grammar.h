@@ -98,13 +98,13 @@ public:
   {
     auto candidates = Napi::ObjectWrap<LlamaContextSampleCandidates>::Unwrap(info[0].As<Napi::Object>());
     llama_token_data_array candidates_p = {candidates->candidates.data(), candidates->candidates.size(), false};
-    llama_sample_grammar(ctx->ctx, &candidates_p, state);
+    llama_grammar_sample(state, ctx->ctx, &candidates_p);
   }
 
   Napi::Value AcceptToken(const Napi::CallbackInfo &info)
   {
     llama_token tokenId = info[0].As<Napi::Number>().Int32Value();
-    llama_grammar_accept_token(ctx->ctx, state, tokenId);
+    llama_grammar_accept_token(state, ctx->ctx, tokenId);
     return info.Env().Undefined();
   }
 
@@ -118,7 +118,7 @@ public:
 
     llama_token_data_array candidates_p = {candidates.data(), candidates.size(), false};
 
-    llama_sample_grammar(ctx->ctx, &candidates_p, state);
+    llama_grammar_sample(state, ctx->ctx, &candidates_p);
 
     if (candidates_p.data[0].logit == -INFINITY)
     {
