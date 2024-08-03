@@ -12,7 +12,7 @@
   "author": "Susan Cheng <susan.doggie@gmail.com>",
   "license": "MIT",
   "scripts": {
-    "install": "echo ${PWD}; echo ${INIT_CWD}; ${INIT_CWD}/scripts/install",
+    "install": "${PWD}/scripts/install",
     "checkout": "./scripts/checkout",
     "download": "./scripts/download",
     "convert": "./scripts/convert",
