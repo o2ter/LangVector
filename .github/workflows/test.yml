@@ -10,6 +10,8 @@ jobs:
         node_version: ['18.x', '20.x']
     steps:
       - uses: actions/checkout@v3
+        with:
+          submodules: recursive
       - uses: actions/setup-node@v3
         with:
           node-version: ${{ matrix.node_version }}
