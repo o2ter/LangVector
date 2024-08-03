@@ -1,0 +1,19 @@
+name: Test
+on: [push, pull_request]
+jobs:
+  test:
+    name: node ${{ matrix.node_version }}
+    runs-on: ubuntu-latest
+    strategy:
+      fail-fast: false
+      matrix:
+        node_version: ['18.x', '20.x']
+    steps:
+      - uses: actions/checkout@v3
+      - uses: actions/setup-node@v3
+        with:
+          node-version: ${{ matrix.node_version }}
+          registry-url: 'https://registry.npmjs.org'
+      - run: yarn install
+      - name: Test rollup
+        run: yarn rollup
