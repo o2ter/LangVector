@@ -12,6 +12,7 @@
   "author": "Susan Cheng <susan.doggie@gmail.com>",
   "license": "MIT",
   "scripts": {
+    "install": "for SCRIPT in ./packages/*/scripts/install; do ${SCRIPT}; done",
     "checkout": "./scripts/checkout",
     "download": "./scripts/download",
     "convert": "./scripts/convert",
@@ -24,10 +25,10 @@
   },
   "dependencies": {
     "@o2ter/utils-js": "^0.0.10",
-    "llama-node": "file:./packages/llama-node",
+    "cmake-js": "^7.3.0",
     "lodash": "^4.17.21",
     "myers.js": "^0.0.15",
-    "stable-diffusion-node": "file:./packages/stable-diffusion-node"
+    "node-addon-api": "^8.1.0"
   },
   "devDependencies": {
     "@babel/core": "^7.24.5",

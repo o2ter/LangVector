@@ -23,7 +23,10 @@
 //  THE SOFTWARE.
 //
 
-import pkg from 'llama-node';
+import { createRequire } from 'module';
+const require = createRequire(import.meta.url);
+
+const pkg = require('../packages/llama-node/build/Release/llama-node');
 
 export const LlamaModel = pkg.LlamaModel;
 export const LlamaContext = pkg.LlamaContext;
