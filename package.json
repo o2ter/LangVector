@@ -5,7 +5,8 @@
   "module": "dist/index",
   "types": "dist/index",
   "files": [
-    "dist/*"
+    "dist/*",
+    "packages/*"
   ],
   "repository": "https://github.com/o2ter/LangVector.git",
   "author": "Susan Cheng <susan.doggie@gmail.com>",
