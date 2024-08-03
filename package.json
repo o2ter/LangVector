@@ -6,7 +6,8 @@
   "types": "dist/index",
   "files": [
     "dist/*",
-    "packages/*"
+    "packages/*",
+    "scripts/install"
   ],
   "repository": "https://github.com/o2ter/LangVector.git",
   "author": "Susan Cheng <susan.doggie@gmail.com>",
