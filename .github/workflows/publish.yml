@@ -14,6 +14,8 @@ jobs:
           node-version: '18.x'
           registry-url: 'https://registry.npmjs.org'
       - run: yarn install && yarn rollup
+        env:
+          SKIP_BUILD_BIN: 1
       - run: git config --global user.name "${{ github.actor }}"
       - run: git config --global user.email "github-action-${{ github.actor }}@users.noreply.github.com"
       - run: npm version ${{ github.event.release.tag_name }}

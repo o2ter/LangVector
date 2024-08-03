@@ -13,7 +13,7 @@
   "author": "Susan Cheng <susan.doggie@gmail.com>",
   "license": "MIT",
   "scripts": {
-    "install": "${PWD}/scripts/install",
+    "install": "if [ -z ${SKIP_BUILD_BIN} ]; then ${PWD}/scripts/install; fi",
     "checkout": "./scripts/checkout",
     "download": "./scripts/download",
     "convert": "./scripts/convert",
