@@ -29,12 +29,13 @@ import { Select, TextInput } from '@o2ter/react-ui';
 import { Container } from '@o2ter/wireframe';
 import { useAsyncResource } from 'sugax';
 import { Proto } from '../proto';
+import { Similarity as _Similarity } from '../../../src/similarity';
 
 const embedding = (model, value) => Proto.run('llm_embedding', { model_name: model, value })
 
 export const Similarity = () => {
 
-  const [model, setModel] = React.useState();
+  const [model, setModel] = React.useState('sentence-transformers/all-MiniLM-L6-v2/ggml-model-f16.gguf');
 
   const [source, setSource] = React.useState('That is a happy person');
   const [compare, setCompare] = React.useState([
@@ -48,11 +49,12 @@ export const Similarity = () => {
   const { resource: result } = useAsyncResource({
     fetch: async () => {
       if (!model) return;
-      const s = await embedding(model, source);
+      const { vector: s } = await embedding(model, source);
       const c = await Promise.all(_.map(compare, x => embedding(model, x)));
-
-      console.log({ s, c })
-
+      return _.map(c, ({ vector: v }) => ({
+        distance: _Similarity.distance(s, v),
+        cosine: _Similarity.cosine(s, v),
+      }));
     },
     debounce: { wait: 1000 },
   }, [model, source, compare]);
@@ -71,11 +73,21 @@ export const Similarity = () => {
         <span className='mt-2'>Sentences to compare to</span>
         {_.map([...compare, ''], (x, i) => (
           <div key={i} className='d-flex flex-row flex-fill mt-1'>
-            <TextInput value={x} onChangeText={s => setCompare(v => {
-              const a = [...v];
-              a[i] = s;
-              return a;
-            })} />
+            <TextInput
+              classes='flex-fill'
+              value={x}
+              onChangeText={s => setCompare(v => {
+                const a = [...v];
+                a[i] = s;
+                return a;
+              })}
+            />
+            {result?.[i] && (
+              <>
+                <span className='ml-2'>distance: {result[i].distance}</span>
+                <span className='ml-2'>cosine: {result[i].cosine}</span>
+              </>
+            )}
           </div>
         ))}
       </Container>
