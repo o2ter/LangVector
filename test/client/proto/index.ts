@@ -1,5 +1,5 @@
 //
-//  main.ts
+//  index.ts
 //
 //  The MIT License
 //  Copyright (c) 2021 - 2024 O2ter Limited. All rights reserved.
@@ -23,18 +23,26 @@
 //  THE SOFTWARE.
 //
 
-import _ from 'lodash';
-import { Proto } from '../proto';
-import { createModel, models } from '../llm';
+import ProtoClient from 'proto.io/dist/client';
+import { env } from '@o2ter/react-booster/src/route/client';
+import classExtends from './extends';
 
-Proto.define('llm_models', () => models);
+let endpoint = env.PROTO_ENDPOINT;
 
-Proto.define('llm_embedding', async ({ params }) => {
-  const { model_name, value } = params as any;
-  const model = await createModel(model_name);
-  const { vector, ...res } = await model.embedding(value);
-  return {
-    vector: [...vector],
-    ...res,
-  };
+if (typeof window !== 'undefined') {
+  const url = new URL(env.PROTO_ENDPOINT);
+  if (
+    url.hostname === 'localhost' &&
+    window.location.hostname !== 'localhost'
+  ) {
+    url.hostname = window.location.hostname;
+    endpoint = url.href;
+  }
+}
+
+export const Proto = new ProtoClient({
+  endpoint: endpoint,
+  classExtends: classExtends,
 });
+
+export default Proto;

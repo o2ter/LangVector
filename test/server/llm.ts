@@ -25,9 +25,31 @@
 
 import _ from 'lodash';
 import path from 'path';
+import fs from 'fs/promises';
 import { defineChatSessionFunction, Llama3ChatWrapper, LlamaDevice, LlamaModel } from '../../src';
 
+const walkDirAsync = async function* (dir: string): AsyncGenerator<string, void> {
+  const files = await fs.readdir(dir, { withFileTypes: true });
+  for (const file of files) {
+    if (file.isDirectory()) {
+      yield* walkDirAsync(path.join(dir, file.name));
+    } else {
+      yield path.join(dir, file.name);
+    }
+  }
+}
+
 export const modelsDir = path.join(__dirname, '../../models');
+
+export const models: string[] = [];
+
+try {
+  for await (const file of walkDirAsync(modelsDir)) {
+    if (file.endsWith('.gguf')) {
+      models.push(file.slice(modelsDir.length + 1));
+    }
+  }
+} catch { }
 
 export const functions = {
   datetime: defineChatSessionFunction({
@@ -109,14 +131,14 @@ export const functions = {
   }),
 };
 
-const models: Record<string, LlamaModel> = {};
+const modelCaches: Record<string, LlamaModel> = {};
 
 export const createModel = async (name: string) => {
-  if (models[name]) return models[name];
+  if (modelCaches[name]) return modelCaches[name];
   const model = await LlamaDevice.loadModel({
     modelPath: path.join(modelsDir, name),
   });
-  models[name] = model;
+  modelCaches[name] = model;
   return model;
 }
 

@@ -1,0 +1,84 @@
+//
+//  index.js
+//
+//  The MIT License
+//  Copyright (c) 2021 - 2024 O2ter Limited. All rights reserved.
+//
+//  Permission is hereby granted, free of charge, to any person obtaining a copy
+//  of this software and associated documentation files (the "Software"), to deal
+//  in the Software without restriction, including without limitation the rights
+//  to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+//  copies of the Software, and to permit persons to whom the Software is
+//  furnished to do so, subject to the following conditions:
+//
+//  The above copyright notice and this permission notice shall be included in
+//  all copies or substantial portions of the Software.
+//
+//  THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+//  IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+//  FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+//  AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+//  LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+//  OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
+//  THE SOFTWARE.
+//
+
+import _ from 'lodash';
+import React from 'react';
+import { Select, TextInput } from '@o2ter/react-ui';
+import { Container } from '@o2ter/wireframe';
+import { useAsyncResource } from 'sugax';
+import { Proto } from '../proto';
+
+const embedding = (model, value) => Proto.run('llm_embedding', { model_name: model, value })
+
+export const Similarity = () => {
+
+  const [model, setModel] = React.useState();
+
+  const [source, setSource] = React.useState('That is a happy person');
+  const [compare, setCompare] = React.useState([
+    'That is a happy dog',
+    'That is a very happy person',
+    'Today is a sunny day',
+  ]);
+
+  const { resource: models } = useAsyncResource(() => Proto.run('llm_models'), []);
+
+  const { resource: result } = useAsyncResource({
+    fetch: async () => {
+      if (!model) return;
+      const s = await embedding(model, source);
+      const c = await Promise.all(_.map(compare, x => embedding(model, x)));
+
+      console.log({ s, c })
+
+    },
+    debounce: { wait: 1000 },
+  }, [model, source, compare]);
+
+  return (
+    <div className='d-flex flex-column flex-fill'>
+      <Container>
+        <span className='mt-2'>Model</span>
+        <Select
+          value={model}
+          options={_.map(models, x => ({ value: x, label: x }))}
+          onValueChange={v => setModel(v)}
+        />
+        <span className='mt-2'>Source Sentence</span>
+        <TextInput value={source} onChangeText={setSource} />
+        <span className='mt-2'>Sentences to compare to</span>
+        {_.map([...compare, ''], (x, i) => (
+          <div key={i} className='d-flex flex-row flex-fill mt-1'>
+            <TextInput value={x} onChangeText={s => setCompare(v => {
+              const a = [...v];
+              a[i] = s;
+              return a;
+            })} />
+          </div>
+        ))}
+      </Container>
+    </div>
+  );
+};

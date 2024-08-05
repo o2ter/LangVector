@@ -24,26 +24,13 @@
 //
 
 import _ from 'lodash';
-import path from 'path';
-import fs from 'fs/promises';
 import { Server } from '@o2ter/server-js';
 import ProtoRoute from 'proto.io';
 import { Proto } from './proto';
 import './cloud/main';
 
-import { createContext, modelsDir } from './session';
+import { createContext, models } from './llm';
 import { LlamaContext } from '../../src';
-
-const walkDirAsync = async function* (dir: string): AsyncGenerator<string, void> {
-  const files = await fs.readdir(dir, { withFileTypes: true });
-  for (const file of files) {
-    if (file.isDirectory()) {
-      yield* walkDirAsync(path.join(dir, file.name));
-    } else {
-      yield path.join(dir, file.name);
-    }
-  }
-}
 
 export const serverOptions: Server.Options = {
   http: 'v1',
@@ -67,15 +54,6 @@ export default async (app: Server, env: Record<string, any>) => {
   app.express().use('/proto', await ProtoRoute({
     proto: Proto,
   }));
-
-  let models = [];
-  try {
-    for await (const file of walkDirAsync(modelsDir)) {
-      if (file.endsWith('.gguf')) {
-        models.push(file.slice(modelsDir.length + 1));
-      }
-    }
-  } catch { }
 
   app.socket().on('connection', async (socket) => {
 

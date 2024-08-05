@@ -1,5 +1,5 @@
 //
-//  main.ts
+//  extends.ts
 //
 //  The MIT License
 //  Copyright (c) 2021 - 2024 O2ter Limited. All rights reserved.
@@ -23,18 +23,7 @@
 //  THE SOFTWARE.
 //
 
-import _ from 'lodash';
-import { Proto } from '../proto';
-import { createModel, models } from '../llm';
+import { classExtends } from 'proto.io/dist/client';
 
-Proto.define('llm_models', () => models);
-
-Proto.define('llm_embedding', async ({ params }) => {
-  const { model_name, value } = params as any;
-  const model = await createModel(model_name);
-  const { vector, ...res } = await model.embedding(value);
-  return {
-    vector: [...vector],
-    ...res,
-  };
+export default classExtends({
 });
