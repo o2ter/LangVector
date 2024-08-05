@@ -1498,10 +1498,10 @@
     events ">=3.3.0"
     lodash ">=4.17.21"
 
-"@o2ter/react-booster@^0.0.85":
-  version "0.0.85"
-  resolved "https://registry.yarnpkg.com/@o2ter/react-booster/-/react-booster-0.0.85.tgz#ff8c3c651cec373141fbbcff05ae64708b2d2928"
-  integrity sha512-PxBNJ92g4yCtIMrB1jedJ0dMH425pf34OfwQrXHoPZA7FGMZQik4gT1HEf4wxSRFlWOJvmp4PMI7jcbaW1L3fg==
+"@o2ter/react-booster@^0.0.86":
+  version "0.0.86"
+  resolved "https://registry.yarnpkg.com/@o2ter/react-booster/-/react-booster-0.0.86.tgz#d742133abcd7b1869fd277ddaaa6ec08acf7c18d"
+  integrity sha512-Hs/OQbYF669y/F3sfvHhJdPEWGSkW88PGgO0iZ3gG2DZLIqKt9IOB4+LrqstCW7da7OLPqyASvbt9BOkdzphnQ==
   dependencies:
     "@babel/core" "^7.24.4"
     "@babel/preset-env" "^7.24.4"
@@ -1510,7 +1510,7 @@
     "@loadable/babel-plugin" "^5.16.1"
     "@loadable/component" "^5.16.4"
     "@loadable/webpack-plugin" "^5.15.2"
-    "@o2ter/utils-js" "^0.0.9"
+    "@o2ter/utils-js" "^0.0.10"
     autoprefixer "^10.4.19"
     babel-loader "^9.1.3"
     core-js "^3.37.0"
@@ -1520,6 +1520,7 @@
     es6-promise "^4.2.8"
     file-loader "^6.2.0"
     mini-css-extract-plugin "^2.9.0"
+    node-loader "^2.0.0"
     nodemon "^3.1.0"
     npm-run-all "^4.1.5"
     postcss-js "^4.0.1"
@@ -6150,6 +6151,13 @@ node-int64@^0.4.0:
   version "0.4.0"
   resolved "https://registry.yarnpkg.com/node-int64/-/node-int64-0.4.0.tgz#87a9065cdb355d3182d8f94ce11188b825c68a3b"
   integrity sha512-O5lz91xSOeoXP6DulyHfllpq+Eg00MWitZIbtPfoSEvqIHdl5gfcY6hYzDWnj0qD5tz52PI08u9qUvSVeUBeHw==
+
+node-loader@^2.0.0:
+  version "2.0.0"
+  resolved "https://registry.yarnpkg.com/node-loader/-/node-loader-2.0.0.tgz#9109a6d828703fd3e0aa03c1baec12a798071562"
+  integrity sha512-I5VN34NO4/5UYJaUBtkrODPWxbobrE4hgDqPrjB25yPkonFhCmZ146vTH+Zg417E9Iwoh1l/MbRs1apc5J295Q==
+  dependencies:
+    loader-utils "^2.0.0"
 
 node-releases@^2.0.18:
   version "2.0.18"
