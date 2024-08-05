@@ -31,7 +31,7 @@ export let pkg;
 
 if (typeof __webpack_require__ === 'function') {
   try {
-    pkg = await import('../packages/llama-node/build/Release/llama-node.node');
+    pkg = await import('../../../packages/llama-node/build/Release/llama-node.node');
   } catch { }
 }
 
