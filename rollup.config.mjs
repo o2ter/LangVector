@@ -29,6 +29,7 @@ const rollupConfig = {
     /node_modules/,
     /^react$/,
     /^react-native$/,
+    /\.node$/,
   ],
 };
 
@@ -36,11 +37,6 @@ export default [
   {
     ...rollupConfig,
     output: [
-      {
-        file: 'dist/index.js',
-        format: 'cjs',
-        sourcemap: true,
-      },
       {
         file: 'dist/index.mjs',
         format: 'esm',

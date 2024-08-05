@@ -1,7 +1,6 @@
 {
   "name": "@o2ter/lang-vector",
   "version": "1.0.0",
-  "main": "dist/index",
   "module": "dist/index",
   "types": "dist/index",
   "files": [
