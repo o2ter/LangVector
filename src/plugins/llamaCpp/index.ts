@@ -28,21 +28,30 @@ import path from 'path';
 import { createRequire } from 'module';
 
 let pkg: any;
-const modulePath = (() => {
-  const dir = import.meta.url.replace('file://', '').split('/');
-  while (dir.length) {
-    const node_path = path.resolve('/', ...dir, 'packages/llama-node/build/Release/llama-node.node');
-    if (fs.existsSync(node_path)) return node_path;
-    dir.pop();
-  }
-  throw Error('llama-node not found.');
-})();
 
-if (typeof require === 'undefined') {
+try {
   const require = createRequire(import.meta.url);
-  pkg = require(modulePath);
-} else {
-  pkg = eval(`require('${modulePath}')`);
+  pkg = require('../../packages/llama-node/build/Release/llama-node.node');
+} catch {}
+
+if (!pkg) {
+
+  const modulePath = (() => {
+    const dir = import.meta.url.replace('file://', '').split('/');
+    while (dir.length) {
+      const node_path = path.resolve('/', ...dir, 'packages/llama-node/build/Release/llama-node.node');
+      if (fs.existsSync(node_path)) return node_path;
+      dir.pop();
+    }
+    throw Error('llama-node not found.');
+  })();
+
+  if (typeof require === 'undefined') {
+    const require = createRequire(import.meta.url);
+    pkg = require(modulePath);
+  } else {
+    pkg = eval(`require('${modulePath}')`);
+  }
 }
 
 export const LlamaModel = pkg.LlamaModel;
