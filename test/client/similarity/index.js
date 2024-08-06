@@ -51,7 +51,8 @@ export const Similarity = () => {
       if (!model) return;
       const { vector: s } = await embedding(model, source);
       const c = await Promise.all(_.map(compare, x => embedding(model, x)));
-      return _.map(c, ({ vector: v }) => ({
+      return _.map(c, ({ vector: v, time }) => ({
+        time,
         distance: _Similarity.distance(s, v),
         cosine: _Similarity.cosine(s, v),
       }));
@@ -84,6 +85,7 @@ export const Similarity = () => {
             />
             {result?.[i] && (
               <>
+                <span className='ml-2'>time: {result[i].time}</span>
                 <span className='ml-2'>distance: {result[i].distance}</span>
                 <span className='ml-2'>cosine: {result[i].cosine}</span>
               </>
