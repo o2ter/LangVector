@@ -31,12 +31,18 @@ const rollupConfig = {
     /^react-native$/,
     /\.node$/,
   ],
+  makeAbsoluteExternalsRelative: true,
 };
 
 export default [
   {
     ...rollupConfig,
     output: [
+      {
+        file: `dist/index.js`,
+        format: 'cjs',
+        sourcemap: true,
+      },
       {
         file: 'dist/index.mjs',
         format: 'esm',

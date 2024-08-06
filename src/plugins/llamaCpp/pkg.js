@@ -23,4 +23,4 @@
 //  THE SOFTWARE.
 //
 
-export const pkg = await import('../../../packages/llama-node/build/Release/llama-node.node');
+export const pkg = require('../../../packages/llama-node/build/Release/llama-node.node');
