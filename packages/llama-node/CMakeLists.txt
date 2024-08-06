@@ -109,7 +109,7 @@ if (GGML_METAL)
     find_library(METALKIT_FRAMEWORK MetalKit   REQUIRED)
 
     message(STATUS "Using Metal for GPU info")
-    set(GPU_INFO_HEADERS ${GPU_INFO_HEADERS}  gpuInfo/metal-gpu-info.h)
+    set(GPU_INFO_HEADERS ${GPU_INFO_HEADERS} gpuInfo/metal-gpu-info.h)
     set(GPU_INFO_SOURCES ${GPU_INFO_SOURCES} gpuInfo/metal-gpu-info.mm)
 
     add_compile_definitions(GPU_INFO_USE_METAL)
