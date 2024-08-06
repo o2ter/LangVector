@@ -25,7 +25,7 @@
 
 import _ from 'lodash';
 import React from 'react';
-import { Select, TextInput } from '@o2ter/react-ui';
+import { Select, TextInput, SegmentedControl } from '@o2ter/react-ui';
 import { Container } from '@o2ter/wireframe';
 import { useAsyncResource } from 'sugax';
 import { Proto } from '../proto';
@@ -36,6 +36,7 @@ const embedding = (model, value) => Proto.run('llm_embedding', { model_name: mod
 export const Similarity = () => {
 
   const [model, setModel] = React.useState('sentence-transformers/all-MiniLM-L6-v2/ggml-model-f16.gguf');
+  const [method, setMethod] = React.useState('cosine');
 
   const [source, setSource] = React.useState('That is a happy person');
   const [compare, setCompare] = React.useState([
@@ -64,11 +65,21 @@ export const Similarity = () => {
     <div className='d-flex flex-column flex-fill'>
       <Container>
         <span className='mt-2'>Model</span>
-        <Select
-          value={model}
-          options={_.map(models, x => ({ value: x, label: x }))}
-          onValueChange={v => setModel(v)}
-        />
+        <div className='d-flex flex-row flex-fill'>
+          <Select
+            value={model}
+            options={_.map(models, x => ({ value: x, label: x }))}
+            onValueChange={v => setModel(v)}
+          />
+          <SegmentedControl
+            value={method}
+            segments={[
+              { label: 'cosine', value: 'cosine' },
+              { label: 'distance', value: 'distance' },
+            ]}
+            onChange={v => setMethod(v)}
+          />
+        </div>
         <span className='mt-2'>Source Sentence</span>
         <TextInput value={source} onChangeText={setSource} />
         <span className='mt-2'>Sentences to compare to</span>
@@ -86,8 +97,7 @@ export const Similarity = () => {
             {result?.[i] && (
               <>
                 <span className='ml-2'>time: {result[i].time}</span>
-                <span className='ml-2'>distance: {result[i].distance}</span>
-                <span className='ml-2'>cosine: {result[i].cosine}</span>
+                <span className='ml-2'>{method}: {result[i][method]}</span>
               </>
             )}
           </div>
