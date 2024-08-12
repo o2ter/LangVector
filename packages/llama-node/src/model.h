@@ -206,11 +206,11 @@ public:
 
   Napi::Value Dispose(const Napi::CallbackInfo &info)
   {
-    if (model == NULL)
+    if (model != NULL)
     {
-      return Env().Undefined();
+      dispose();
     }
-    dispose();
+    return Env().Undefined();
   }
 
   Napi::Value HasEncoder(const Napi::CallbackInfo &info)

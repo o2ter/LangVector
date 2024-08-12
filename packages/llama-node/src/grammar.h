@@ -99,6 +99,7 @@ public:
     auto candidates = Napi::ObjectWrap<LlamaContextSampleCandidates>::Unwrap(info[0].As<Napi::Object>());
     llama_token_data_array candidates_p = {candidates->candidates.data(), candidates->candidates.size(), false};
     llama_grammar_sample(state, ctx->ctx, &candidates_p);
+    return info.Env().Undefined();
   }
 
   Napi::Value AcceptToken(const Napi::CallbackInfo &info)

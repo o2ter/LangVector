@@ -140,11 +140,11 @@ public:
 
   Napi::Value Dispose(const Napi::CallbackInfo &info)
   {
-    if (ctx == NULL)
+    if (ctx != NULL)
     {
-      return Env().Undefined();
+      dispose();
     }
-    dispose();
+    return Env().Undefined();
   }
 
   Napi::Value GetContextSize(const Napi::CallbackInfo &info)
