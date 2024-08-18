@@ -2782,7 +2782,7 @@ available-typed-arrays@^1.0.7:
   dependencies:
     possible-typed-array-names "^1.0.0"
 
-axios@^1.6.5, axios@^1.6.8:
+axios@^1.6.5, axios@^1.7.4:
   version "1.7.4"
   resolved "https://registry.yarnpkg.com/axios/-/axios-1.7.4.tgz#4c8ded1b43683c8dd362973c393f3ede24052aa2"
   integrity sha512-DukmaFRnY6AzAALSH4J2M3k6PkaC+MfaAGdEERRWcC9q3/TWQwLpHR8ZRLKTdQ3aBDL64EdluRDjJqKw+BPZEw==
@@ -6783,15 +6783,15 @@ prop-types@^15.7.2:
     object-assign "^4.1.1"
     react-is "^16.13.1"
 
-proto.io@^0.0.130:
-  version "0.0.130"
-  resolved "https://registry.yarnpkg.com/proto.io/-/proto.io-0.0.130.tgz#34a82841eccedefbc94430ee877c5253557d7ddc"
-  integrity sha512-SefGDLtJXJgefqDX/ww0TEDN10/vkgN47So6JH+uuyIL1HhxH3H0WubgMu6YSShEgaZHy9Cvbg3JtSAz4T4k1g==
+proto.io@^0.0.131:
+  version "0.0.131"
+  resolved "https://registry.yarnpkg.com/proto.io/-/proto.io-0.0.131.tgz#330e31bc223017b5000e9e9f927e531c39c0dc18"
+  integrity sha512-Q2DAtCPXK76umJ2yTHwvPLj/dN8bFPNM/g17KFkWF2dAPCV/iFpe0AwW9MoqNX6xfH3935/Q+mFRgjEY08TDcA==
   dependencies:
     "@google-cloud/storage" "^7.11.0"
     "@o2ter/crypto-js" "^0.0.7"
     "@o2ter/utils-js" "^0.0.10"
-    axios "^1.6.8"
+    axios "^1.7.4"
     busboy "^1.6.0"
     decimal.js "^10.4.3"
     jsonwebtoken "^9.0.2"
