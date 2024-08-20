@@ -1532,13 +1532,13 @@
     webpack "^5.91.0"
     webpack-cli "^5.1.4"
 
-"@o2ter/react-ui@^0.0.370":
-  version "0.0.370"
-  resolved "https://registry.yarnpkg.com/@o2ter/react-ui/-/react-ui-0.0.370.tgz#975a60e34bb5e53bd8b2c62f67ba1329b61f6ebf"
-  integrity sha512-f4cOxOFjdBIUhXIruZIiXH+qtbWjFcvGf1FyaqnqOJvtoJwrfOwC4cLz//IrBuKkWj6ejCYAnKsSYENsP3D18A==
+"@o2ter/react-ui@^0.0.371":
+  version "0.0.371"
+  resolved "https://registry.yarnpkg.com/@o2ter/react-ui/-/react-ui-0.0.371.tgz#0824e9e6548c69182a5a3dea44f308f8c3f08873"
+  integrity sha512-cB40bJP+JeedNjUJ5kBJqL4SyvMRxnVLFRw5j4Ohnphz1Jg4MffXpoBf2tqN3knglLM583Hg1mwu0e29ynqzdA==
   dependencies:
     "@codemirror/lang-javascript" "^6.2.2"
-    "@o2ter/utils-js" "^0.0.9"
+    "@o2ter/utils-js" "^0.0.10"
     "@react-native-picker/picker" ">=2.7.6"
     "@react-native/normalize-colors" "^0.74.83"
     "@types/d3-dsv" "^3.0.7"
