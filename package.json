@@ -39,7 +39,7 @@
     "@babel/preset-typescript": "^7.24.1",
     "@loadable/babel-plugin": "^5.16.1",
     "@o2ter/i18n": "^0.0.10",
-    "@o2ter/react-booster": "^0.0.88",
+    "@o2ter/react-booster": "^0.0.89",
     "@o2ter/react-ui": "^0.0.371",
     "@o2ter/server-js": "^0.0.16",
     "@o2ter/valid.js": "^1.0.8",
