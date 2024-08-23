@@ -26,6 +26,20 @@
 #pragma once
 
 #include "common.h"
+#include "log.h"
+
+#ifdef GPU_INFO_USE_CUDA
+void logCudaError(const char *message)
+{
+  llama_log_callback(GGML_LOG_LEVEL_ERROR, (std::string("CUDA error: ") + std::string(message)).c_str(), nullptr);
+}
+#endif
+#ifdef GPU_INFO_USE_VULKAN
+void logVulkanWarning(const char *message)
+{
+  llama_log_callback(GGML_LOG_LEVEL_WARN, (std::string("Vulkan warning: ") + std::string(message)).c_str(), nullptr);
+}
+#endif
 
 Napi::Value getGpuVramInfo(const Napi::CallbackInfo &info)
 {
