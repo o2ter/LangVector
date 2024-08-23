@@ -47,7 +47,7 @@ public:
     rewind(file);
     std::string desc;
     desc.resize(size);
-    (void) fread((char *)desc.c_str(), 1, size, file);
+    fread((char *)desc.c_str(), 1, size, file);
     fclose(file);
     return Napi::String::From(Env(), desc);
   }
