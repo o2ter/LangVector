@@ -23,11 +23,11 @@ fi
 EXTRA_OPTIONS=""
 
 if [ -x "$(command -v nvcc)" ]; then
-  EXTRA_OPTIONS="${EXTRA_OPTIONS} -DGGML_CUDA=ON"
+  EXTRA_OPTIONS="${EXTRA_OPTIONS} --CDGGML_CUDA=ON"
 fi
 
 if [ -x "$(command -v vulkaninfo)" ]; then
-  EXTRA_OPTIONS="${EXTRA_OPTIONS} -DGGML_VULKAN=ON"
+  EXTRA_OPTIONS="${EXTRA_OPTIONS} --CDGGML_VULKAN=ON"
 fi
 
 cmake-js compile --CDLLAMA_CPP_SOURCE=${LLAMA_CPP_SOURCE} ${EXTRA_OPTIONS}
