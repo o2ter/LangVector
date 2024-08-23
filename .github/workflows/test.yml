@@ -19,6 +19,10 @@ jobs:
       - run: yarn install
       - name: Test rollup
         run: yarn rollup
+      - uses: actions/upload-artifact@v4
+        with:
+          name: macos-node-${{ matrix.node_version }}-release
+          path: packages/llama-node/build/Release
   ubuntu:
     name: ubuntu node ${{ matrix.node_version }}
     runs-on: ubuntu-latest
@@ -37,6 +41,10 @@ jobs:
       - run: yarn install
       - name: Test rollup
         run: yarn rollup
+      - uses: actions/upload-artifact@v4
+        with:
+          name: ubuntu-node-${{ matrix.node_version }}-release
+          path: packages/llama-node/build/Release
   ubuntu-cuda:
     name: ubuntu-cuda node ${{ matrix.node_version }}
     runs-on: ubuntu-latest
@@ -60,6 +68,10 @@ jobs:
       - run: yarn install
       - name: Test rollup
         run: yarn rollup
+      - uses: actions/upload-artifact@v4
+        with:
+          name: ubuntu-cuda-node-${{ matrix.node_version }}-release
+          path: packages/llama-node/build/Release
   ubuntu-vulkan:
     name: ubuntu-vulkan node ${{ matrix.node_version }}
     runs-on: ubuntu-latest
@@ -84,3 +96,7 @@ jobs:
       - run: yarn install
       - name: Test rollup
         run: yarn rollup
+      - uses: actions/upload-artifact@v4
+        with:
+          name: ubuntu-vulkan-node-${{ matrix.node_version }}-release
+          path: packages/llama-node/build/Release
