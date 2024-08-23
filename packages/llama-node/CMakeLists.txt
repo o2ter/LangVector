@@ -8,6 +8,16 @@ add_definitions(-DNAPI_VERSION=7)
 set(CMAKE_POSITION_INDEPENDENT_CODE ON)
 set(CMAKE_CXX_STANDARD 11)
 
+if(APPLE)
+    set(CMAKE_SKIP_BUILD_RPATH  FALSE)
+    set(CMAKE_INSTALL_RPATH_USE_LINK_PATH FALSE)
+    set(CMAKE_BUILD_RPATH "@loader_path")
+    set(CMAKE_INSTALL_RPATH "@loader_path")
+    set(CMAKE_BUILD_WITH_INSTALL_RPATH TRUE)
+else()
+    set(CMAKE_BUILD_RPATH_USE_ORIGIN ON)
+endif()
+
 execute_process(COMMAND node -p "require('node-addon-api').include.slice(1,-1)"
                 WORKING_DIRECTORY ${CMAKE_SOURCE_DIR}
                 OUTPUT_VARIABLE NODE_ADDON_API_DIR

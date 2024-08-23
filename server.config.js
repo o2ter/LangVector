@@ -11,6 +11,9 @@ module.exports = (env, argv) => ({
     },
   },
   serverEntry: './test/server/index.ts',
+  serverAssets: [
+    { from: 'packages/llama-node/build/Release/!(*.node)', to: '[name][ext]' },
+  ],
   options: {
     plugins: [
       new webpack.IgnorePlugin({ resourceRegExp: /^pg-native$/ }),
