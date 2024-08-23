@@ -22,10 +22,6 @@ fi
 
 EXTRA_OPTIONS=""
 
-if [ -x "$(command -v ninja)" ]; then
-  EXTRA_OPTIONS="${EXTRA_OPTIONS} -G Ninja"
-fi
-
 if [ -x "$(command -v nvcc)" ]; then
   EXTRA_OPTIONS="${EXTRA_OPTIONS} -DGGML_CUDA=ON"
 fi

@@ -45,10 +45,6 @@ jobs:
       matrix:
         node_version: ['18.x', '20.x']
     steps:
-      - name: Install dependencies on Ubuntu
-        run: |
-          sudo apt-get update
-          sudo apt-get install ninja-build cmake
       - uses: Jimver/cuda-toolkit@v0.2.16
         id: cuda-toolkit
         with:
@@ -71,10 +67,6 @@ jobs:
       matrix:
         node_version: ['18.x', '20.x']
     steps:
-      - name: Install dependencies on Ubuntu
-        run: |
-          sudo apt-get update
-          sudo apt-get install ninja-build cmake
       - name: Install Vulkan SDK on Ubuntu
         run: |
           wget -qO- https://packages.lunarg.com/lunarg-signing-key-pub.asc | sudo tee /etc/apt/trusted.gpg.d/lunarg.asc
