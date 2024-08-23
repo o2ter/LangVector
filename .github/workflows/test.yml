@@ -59,3 +59,27 @@ jobs:
       - run: yarn install
       - name: Test rollup
         run: yarn rollup
+  ubuntu-vulkan:
+    name: ubuntu-vulkan node ${{ matrix.node_version }}
+    runs-on: ubuntu-latest
+    strategy:
+      fail-fast: false
+      matrix:
+        node_version: ['18.x', '20.x']
+    steps:
+      - name: Install Vulkan SDK on Ubuntu
+        run: |
+          wget -qO- https://packages.lunarg.com/lunarg-signing-key-pub.asc | sudo tee /etc/apt/trusted.gpg.d/lunarg.asc
+          sudo wget -qO /etc/apt/sources.list.d/lunarg-vulkan-jammy.list https://packages.lunarg.com/vulkan/lunarg-vulkan-jammy.list
+          sudo apt update
+          sudo apt install vulkan-sdk
+      - uses: actions/checkout@v3
+        with:
+          submodules: recursive
+      - uses: actions/setup-node@v3
+        with:
+          node-version: ${{ matrix.node_version }}
+          registry-url: 'https://registry.npmjs.org'
+      - run: yarn install
+      - name: Test rollup
+        run: yarn rollup
