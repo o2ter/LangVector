@@ -30,4 +30,4 @@ if [ -x "$(command -v vulkaninfo)" ]; then
   EXTRA_OPTIONS="${EXTRA_OPTIONS} -DGGML_VULKAN=ON"
 fi
 
-cmake-js compile --CDLLAMA_CPP_SOURCE=${LLAMA_CPP_SOURCE} ${EXTRA_OPTIONS}
+cmake-js compile -G Ninja --CDLLAMA_CPP_SOURCE=${LLAMA_CPP_SOURCE} ${EXTRA_OPTIONS}
