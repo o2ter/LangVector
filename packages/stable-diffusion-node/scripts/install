@@ -20,4 +20,14 @@ if [[ -z "${STABLE_DIFFUSION_CPP_SOURCE}" ]]; then
   exit 1
 fi
 
-cmake-js compile --CDSTABLE_DIFFUSION_CPP_SOURCE=${STABLE_DIFFUSION_CPP_SOURCE}
+EXTRA_OPTIONS=""
+
+if [ -x "$(command -v nvcc)" ]; then
+  EXTRA_OPTIONS="${EXTRA_OPTIONS} -DGGML_CUDA=ON"
+fi
+
+if [ -x "$(command -v vulkaninfo)" ]; then
+  EXTRA_OPTIONS="${EXTRA_OPTIONS} -DGGML_VULKAN=ON"
+fi
+
+cmake-js compile -G Ninja --CDSTABLE_DIFFUSION_CPP_SOURCE=${STABLE_DIFFUSION_CPP_SOURCE} ${EXTRA_OPTIONS}
