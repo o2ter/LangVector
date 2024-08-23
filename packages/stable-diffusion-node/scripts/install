@@ -22,6 +22,10 @@ fi
 
 EXTRA_OPTIONS=""
 
+if [ -x "$(command -v ninja)" ]; then
+  EXTRA_OPTIONS="${EXTRA_OPTIONS}  -G Ninja"
+fi
+
 if [ -x "$(command -v nvcc)" ]; then
   EXTRA_OPTIONS="${EXTRA_OPTIONS} -DGGML_CUDA=ON"
 fi
@@ -30,4 +34,4 @@ if [ -x "$(command -v vulkaninfo)" ]; then
   EXTRA_OPTIONS="${EXTRA_OPTIONS} -DGGML_VULKAN=ON"
 fi
 
-cmake-js compile -G Ninja --CDSTABLE_DIFFUSION_CPP_SOURCE=${STABLE_DIFFUSION_CPP_SOURCE} ${EXTRA_OPTIONS}
+cmake-js compile --CDSTABLE_DIFFUSION_CPP_SOURCE=${STABLE_DIFFUSION_CPP_SOURCE} ${EXTRA_OPTIONS}
