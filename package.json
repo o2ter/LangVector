@@ -56,7 +56,7 @@
     "babel-loader": "^9.1.2",
     "express": "^4.19.2",
     "lodash": "^4.17.21",
-    "proto.io": "^0.0.136",
+    "proto.io": "^0.0.137",
     "react": "^18.3.1",
     "react-dom": "^18.3.1",
     "react-native-reanimated": "^3.11.0",
