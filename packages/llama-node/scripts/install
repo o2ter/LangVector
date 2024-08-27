@@ -7,11 +7,11 @@ cd $SCRIPT_DIR
 cd ../
 
 if [[ -f "../../packages/llama.cpp/CMakeLists.txt" ]]; then
-  export LLAMA_CPP_SOURCE="$( cd "$( dirname ../../packages/llama.cpp/CMakeLists.txt )" && pwd )"
+  export LLAMA_CPP_SOURCE="$( cd ../../packages/llama.cpp && pwd )"
 else
   LANG_VECTOR_PATH="$( node -p "require('@o2ter/lang-vector').include.slice(1,-1)" )"
   if [[ -f "${LANG_VECTOR_PATH}/packages/llama.cpp/CMakeLists.txt" ]]; then
-    export LLAMA_CPP_SOURCE="$( cd "$( dirname ${LANG_VECTOR_PATH}/packages/llama.cpp/CMakeLists.txt )" && pwd )"
+    export LLAMA_CPP_SOURCE="$( cd ${LANG_VECTOR_PATH}/packages/llama.cpp && pwd )"
   fi
 fi
 
@@ -29,7 +29,7 @@ elif [[ -x "$(command -v vulkaninfo)" ]]; then
 fi
 
 if [[ -n "${TARGET_ARCH}" && "${TARGET_ARCH}" != "$(uname -m)" ]]; then
-  TOOLCHAIN_DIR="$( cd "$( dirname ../../toolchains )" && pwd )/toolchains"
+  TOOLCHAIN_DIR="$( cd ../../toolchains && pwd )"
   EXTRA_OPTIONS="${EXTRA_OPTIONS} --CDCMAKE_TOOLCHAIN_FILE=${TOOLCHAIN_DIR}/$(uname -s | tr '[:upper:]' '[:lower:]').target-$(uname -m).cmake"
 fi
 
