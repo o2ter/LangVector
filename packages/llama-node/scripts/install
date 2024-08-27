@@ -6,17 +6,20 @@ SCRIPT_DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )"
 cd $SCRIPT_DIR
 cd ../
 
-if [[ -f "../../packages/llama.cpp/CMakeLists.txt" ]]; then
-  export LLAMA_CPP_SOURCE="$( cd ../../packages/llama.cpp && pwd )"
+TARGET_NAME=llama-node
+SOURCE_NAME=llama.cpp
+
+if [[ -f "../../packages/${SOURCE_NAME}/CMakeLists.txt" ]]; then
+  export LLAMA_CPP_SOURCE="$( cd ../../packages/${SOURCE_NAME} && pwd )"
 else
   LANG_VECTOR_PATH="$( node -p "require('@o2ter/lang-vector').include.slice(1,-1)" )"
-  if [[ -f "${LANG_VECTOR_PATH}/packages/llama.cpp/CMakeLists.txt" ]]; then
-    export LLAMA_CPP_SOURCE="$( cd ${LANG_VECTOR_PATH}/packages/llama.cpp && pwd )"
+  if [[ -f "${LANG_VECTOR_PATH}/packages/${SOURCE_NAME}/CMakeLists.txt" ]]; then
+    export LLAMA_CPP_SOURCE="$( cd ${LANG_VECTOR_PATH}/packages/${SOURCE_NAME} && pwd )"
   fi
 fi
 
 if [[ -z "${LLAMA_CPP_SOURCE}" ]]; then
-  echo "Package llama.cpp not found" 1>&2
+  echo "Package ${SOURCE_NAME} not found" 1>&2
   exit 1
 fi
 
@@ -34,3 +37,8 @@ if [[ -n "${TARGET_ARCH}" && "${TARGET_ARCH}" != "$(uname -m)" ]]; then
 fi
 
 cmake-js compile --CDLLAMA_CPP_SOURCE=${LLAMA_CPP_SOURCE} ${EXTRA_OPTIONS}
+
+if [[ -f "./build/${TARGET_NAME}.node" ]]; then
+  mkdir -p ./build/Release/
+  mv ./build/${TARGET_NAME}.node ./build/Release/
+fi

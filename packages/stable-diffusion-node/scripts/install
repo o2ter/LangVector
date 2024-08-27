@@ -6,17 +6,20 @@ SCRIPT_DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )"
 cd $SCRIPT_DIR
 cd ../
 
-if [[ -f "../../packages/stable-diffusion.cpp/CMakeLists.txt" ]]; then
-  export STABLE_DIFFUSION_CPP_SOURCE="$( cd ../../packages/stable-diffusion.cpp && pwd )"
+TARGET_NAME=stable-diffusion-node
+SOURCE_NAME=stable-diffusion.cpp
+
+if [[ -f "../../packages/${SOURCE_NAME}/CMakeLists.txt" ]]; then
+  export STABLE_DIFFUSION_CPP_SOURCE="$( cd ../../packages/${SOURCE_NAME} && pwd )"
 else
   LANG_VECTOR_PATH="$( node -p "require('@o2ter/lang-vector').include.slice(1,-1)" )"
-  if [[ -f "${LANG_VECTOR_PATH}/packages/stable-diffusion.cpp/CMakeLists.txt" ]]; then
-    export STABLE_DIFFUSION_CPP_SOURCE="$( cd ${LANG_VECTOR_PATH}/packages/stable-diffusion.cpp && pwd )"
+  if [[ -f "${LANG_VECTOR_PATH}/packages/${SOURCE_NAME}/CMakeLists.txt" ]]; then
+    export STABLE_DIFFUSION_CPP_SOURCE="$( cd ${LANG_VECTOR_PATH}/packages/${SOURCE_NAME} && pwd )"
   fi
 fi
 
 if [[ -z "${STABLE_DIFFUSION_CPP_SOURCE}" ]]; then
-  echo "Package stable-diffusion.cpp not found" 1>&2
+  echo "Package ${SOURCE_NAME} not found" 1>&2
   exit 1
 fi
 
@@ -34,3 +37,8 @@ if [[ -n "${TARGET_ARCH}" && "${TARGET_ARCH}" != "$(uname -m)" ]]; then
 fi
 
 cmake-js compile --CDSTABLE_DIFFUSION_CPP_SOURCE=${STABLE_DIFFUSION_CPP_SOURCE} ${EXTRA_OPTIONS}
+
+if [[ -f "./build/${TARGET_NAME}.node" ]]; then
+  mkdir -p ./build/Release/
+  mv ./build/${TARGET_NAME}.node ./build/Release/
+fi
