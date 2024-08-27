@@ -6,39 +6,7 @@ SCRIPT_DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )"
 cd $SCRIPT_DIR
 cd ../
 
-SOURCE_NAME=llama.cpp
-BINARY_NAME="$( basename "$( pwd )" )"
+export PACKAGE_SOURCE_NAME="llama.cpp"
+export PACKAGE_NAME="$( basename "$( pwd )" )"
 
-if [[ -f "../../packages/${SOURCE_NAME}/CMakeLists.txt" ]]; then
-  export LLAMA_CPP_SOURCE="$( cd ../../packages/${SOURCE_NAME} && pwd )"
-else
-  LANG_VECTOR_PATH="$( node -p "require('@o2ter/lang-vector').include.slice(1,-1)" )"
-  if [[ -f "${LANG_VECTOR_PATH}/packages/${SOURCE_NAME}/CMakeLists.txt" ]]; then
-    export LLAMA_CPP_SOURCE="$( cd ${LANG_VECTOR_PATH}/packages/${SOURCE_NAME} && pwd )"
-  fi
-fi
-
-if [[ -z "${LLAMA_CPP_SOURCE}" ]]; then
-  echo "Package ${SOURCE_NAME} not found" 1>&2
-  exit 1
-fi
-
-EXTRA_OPTIONS=""
-
-if [[ -x "$(command -v nvcc)" ]]; then
-  EXTRA_OPTIONS="${EXTRA_OPTIONS} --CDGGML_CUDA=ON"
-elif [[ -x "$(command -v vulkaninfo)" ]]; then
-  EXTRA_OPTIONS="${EXTRA_OPTIONS} --CDGGML_VULKAN=ON"
-fi
-
-if [[ -n "${TARGET_ARCH}" && "${TARGET_ARCH}" != "$(uname -m)" ]]; then
-  TOOLCHAIN_DIR="$( cd ../../toolchains && pwd )"
-  EXTRA_OPTIONS="${EXTRA_OPTIONS} --CDCMAKE_TOOLCHAIN_FILE=${TOOLCHAIN_DIR}/$(uname -s | tr '[:upper:]' '[:lower:]').target-${TARGET_ARCH}.cmake"
-fi
-
-cmake-js compile --CDLLAMA_CPP_SOURCE=${LLAMA_CPP_SOURCE} ${EXTRA_OPTIONS}
-
-if [[ -f "./build/${BINARY_NAME}.node" ]]; then
-  mkdir -p ./build/Release/
-  mv ./build/${BINARY_NAME}.node ./build/Release/
-fi
+bash ../../scripts/package-install

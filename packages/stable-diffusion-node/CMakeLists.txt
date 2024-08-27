@@ -27,8 +27,8 @@ execute_process(COMMAND node -p "require('node-addon-api').include.slice(1,-1)"
 
 include_directories(${NODE_ADDON_API_DIR} ${CMAKE_JS_INC})
 
-add_subdirectory(${STABLE_DIFFUSION_CPP_SOURCE} "stable-diffusion.cpp")
-include_directories(${STABLE_DIFFUSION_CPP_SOURCE})
+add_subdirectory(${PACKAGE_CPP_SOURCE} "stable-diffusion.cpp")
+include_directories(${PACKAGE_CPP_SOURCE})
 
 file(GLOB SOURCE_FILES "addon.cpp" ${GPU_INFO_SOURCES})
 
