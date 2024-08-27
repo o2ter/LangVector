@@ -6,6 +6,7 @@
   "types": "dist/index",
   "files": [
     "dist/*",
+    "toolchains/*",
     "scripts/install",
     "packages/llama-node",
     "packages/stable-diffusion-node"
