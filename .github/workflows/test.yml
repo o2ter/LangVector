@@ -37,6 +37,16 @@ jobs:
     env:
       TARGET_ARCH: ${{ matrix.target_arch }}
     steps:
+      - name: Install dependencies on Ubuntu
+        run: |
+          sudo apt-get update
+          sudo apt-get install ninja-build cmake libtbb-dev g++-aarch64-linux-gnu gcc-aarch64-linux-gnu g++-arm-linux-gnueabihf gcc-arm-linux-gnueabihf
+          
+          which aarch64-linux-gnu-gcc
+          which aarch64-linux-gnu-g++
+          
+          which arm-linux-gnueabihf-gcc
+          which arm-linux-gnueabihf-g++
       - uses: actions/checkout@v3
         with:
           submodules: recursive
@@ -62,6 +72,16 @@ jobs:
     env:
       TARGET_ARCH: ${{ matrix.target_arch }}
     steps:
+      - name: Install dependencies on Ubuntu
+        run: |
+          sudo apt-get update
+          sudo apt-get install ninja-build cmake libtbb-dev g++-aarch64-linux-gnu gcc-aarch64-linux-gnu g++-arm-linux-gnueabihf gcc-arm-linux-gnueabihf
+          
+          which aarch64-linux-gnu-gcc
+          which aarch64-linux-gnu-g++
+          
+          which arm-linux-gnueabihf-gcc
+          which arm-linux-gnueabihf-g++
       - uses: Jimver/cuda-toolkit@v0.2.16
         id: cuda-toolkit
         with:
@@ -92,6 +112,16 @@ jobs:
     env:
       TARGET_ARCH: ${{ matrix.target_arch }}
     steps:
+      - name: Install dependencies on Ubuntu
+        run: |
+          sudo apt-get update
+          sudo apt-get install ninja-build cmake libtbb-dev g++-aarch64-linux-gnu gcc-aarch64-linux-gnu g++-arm-linux-gnueabihf gcc-arm-linux-gnueabihf
+          
+          which aarch64-linux-gnu-gcc
+          which aarch64-linux-gnu-g++
+          
+          which arm-linux-gnueabihf-gcc
+          which arm-linux-gnueabihf-g++
       - name: Install Vulkan SDK on Ubuntu
         run: |
           wget -qO- https://packages.lunarg.com/lunarg-signing-key-pub.asc | sudo tee /etc/apt/trusted.gpg.d/lunarg.asc
