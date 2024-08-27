@@ -68,7 +68,7 @@ jobs:
       fail-fast: false
       matrix:
         node_version: ['18.x', '20.x', '22.x']
-        target_arch: ['aarch64', 'armv7l', 'x86_64']
+        target_arch: ['aarch64', 'x86_64']
     env:
       TARGET_ARCH: ${{ matrix.target_arch }}
     steps:
@@ -108,7 +108,7 @@ jobs:
       fail-fast: false
       matrix:
         node_version: ['18.x', '20.x', '22.x']
-        target_arch: ['aarch64', 'armv7l', 'x86_64']
+        target_arch: ['aarch64', 'x86_64']
     env:
       TARGET_ARCH: ${{ matrix.target_arch }}
     steps:
