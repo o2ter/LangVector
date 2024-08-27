@@ -6,8 +6,8 @@ SCRIPT_DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )"
 cd $SCRIPT_DIR
 cd ../
 
-TARGET_NAME=stable-diffusion-node
 SOURCE_NAME=stable-diffusion.cpp
+BINARY_NAME="$( basename "$( pwd )" )"
 
 if [[ -f "../../packages/${SOURCE_NAME}/CMakeLists.txt" ]]; then
   export STABLE_DIFFUSION_CPP_SOURCE="$( cd ../../packages/${SOURCE_NAME} && pwd )"
@@ -38,7 +38,7 @@ fi
 
 cmake-js compile --CDSTABLE_DIFFUSION_CPP_SOURCE=${STABLE_DIFFUSION_CPP_SOURCE} ${EXTRA_OPTIONS}
 
-if [[ -f "./build/${TARGET_NAME}.node" ]]; then
+if [[ -f "./build/${BINARY_NAME}.node" ]]; then
   mkdir -p ./build/Release/
-  mv ./build/${TARGET_NAME}.node ./build/Release/
+  mv ./build/${BINARY_NAME}.node ./build/Release/
 fi
