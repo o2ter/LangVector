@@ -30,7 +30,7 @@ fi
 
 if [[ -n "${TARGET_ARCH}" && "${TARGET_ARCH}" != "$(uname -m)" ]]; then
   TOOLCHAIN_DIR="$( cd ../../toolchains && pwd )"
-  EXTRA_OPTIONS="${EXTRA_OPTIONS} --CDCMAKE_TOOLCHAIN_FILE=${TOOLCHAIN_DIR}/$(uname -s | tr '[:upper:]' '[:lower:]').target-$(uname -m).cmake"
+  EXTRA_OPTIONS="${EXTRA_OPTIONS} --CDCMAKE_TOOLCHAIN_FILE=${TOOLCHAIN_DIR}/$(uname -s | tr '[:upper:]' '[:lower:]').target-${TARGET_ARCH}.cmake"
 fi
 
 cmake-js compile --CDSTABLE_DIFFUSION_CPP_SOURCE=${STABLE_DIFFUSION_CPP_SOURCE} ${EXTRA_OPTIONS}
