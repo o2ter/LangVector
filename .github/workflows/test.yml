@@ -38,12 +38,18 @@ jobs:
       TARGET_ARCH: ${{ matrix.target_arch }}
     steps:
       - name: Install dependencies on Ubuntu
+        if: matrix.target_arch == 'aarch64'
         run: |
           sudo apt-get update
-          sudo apt-get install ninja-build cmake libtbb-dev g++-aarch64-linux-gnu gcc-aarch64-linux-gnu g++-arm-linux-gnueabihf gcc-arm-linux-gnueabihf
+          sudo apt-get install ninja-build cmake libtbb-dev g++-aarch64-linux-gnu gcc-aarch64-linux-gnu
           
           which aarch64-linux-gnu-gcc
           which aarch64-linux-gnu-g++
+      - name: Install dependencies on Ubuntu
+        if: matrix.target_arch == 'armv7l'
+        run: |
+          sudo apt-get update
+          sudo apt-get install ninja-build cmake libtbb-dev g++-arm-linux-gnueabihf gcc-arm-linux-gnueabihf
           
           which arm-linux-gnueabihf-gcc
           which arm-linux-gnueabihf-g++
@@ -73,6 +79,7 @@ jobs:
       TARGET_ARCH: ${{ matrix.target_arch }}
     steps:
       - name: Install dependencies on Ubuntu
+        if: matrix.target_arch == 'aarch64'
         run: |
           sudo apt-get update
           sudo apt-get install ninja-build cmake libtbb-dev g++-aarch64-linux-gnu gcc-aarch64-linux-gnu
