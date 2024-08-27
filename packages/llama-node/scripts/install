@@ -29,7 +29,7 @@ elif [[ -x "$(command -v vulkaninfo)" ]]; then
 fi
 
 if [[ -n "${TARGET_ARCH}" && "${TARGET_ARCH}" != "$(uname -m)" ]]; then
-  EXTRA_OPTIONS="${EXTRA_OPTIONS} --CDCMAKE_TOOLCHAIN_FILE=ON $(uname -s | tr '[:upper:]' '[:lower:]').target-$(uname -m).cmake"
+  EXTRA_OPTIONS="${EXTRA_OPTIONS} --CDCMAKE_TOOLCHAIN_FILE=$(uname -s | tr '[:upper:]' '[:lower:]').target-$(uname -m).cmake"
 fi
 
 cmake-js compile --CDLLAMA_CPP_SOURCE=${LLAMA_CPP_SOURCE} ${EXTRA_OPTIONS}
