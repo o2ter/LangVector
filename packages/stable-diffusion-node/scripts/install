@@ -22,10 +22,14 @@ fi
 
 EXTRA_OPTIONS=""
 
-if [ -x "$(command -v nvcc)" ]; then
+if [[ -x "$(command -v nvcc)" ]]; then
   EXTRA_OPTIONS="${EXTRA_OPTIONS} --CDGGML_CUDA=ON"
-elif [ -x "$(command -v vulkaninfo)" ]; then
+elif [[ -x "$(command -v vulkaninfo)" ]]; then
   EXTRA_OPTIONS="${EXTRA_OPTIONS} --CDGGML_VULKAN=ON"
+fi
+
+if [[ -n "${TARGET_ARCH}" && "${TARGET_ARCH}" != "$(uname -m)" ]]; then
+  EXTRA_OPTIONS="${EXTRA_OPTIONS} --CDCMAKE_TOOLCHAIN_FILE=ON $(uname -s | tr '[:upper:]' '[:lower:]').target-$(uname -m).cmake"
 fi
 
 cmake-js compile --CDSTABLE_DIFFUSION_CPP_SOURCE=${STABLE_DIFFUSION_CPP_SOURCE} ${EXTRA_OPTIONS}

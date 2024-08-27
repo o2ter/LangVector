@@ -2,12 +2,15 @@ name: Test
 on: [push, pull_request]
 jobs:
   macos:
-    name: macos node ${{ matrix.node_version }}
+    name: macos node_${{ matrix.node_version }} arch_${{ matrix.target_arch }}
     runs-on: macOS-latest
     strategy:
       fail-fast: false
       matrix:
         node_version: ['18.x', '20.x', '22.x']
+        target_arch: ['arm46']
+    env:
+      TARGET_ARCH: ${{ matrix.target_arch }}
     steps:
       - uses: actions/checkout@v3
         with:
@@ -24,12 +27,15 @@ jobs:
           name: macos-node-${{ matrix.node_version }}-release
           path: packages/llama-node/build/Release/**/*
   ubuntu:
-    name: ubuntu node ${{ matrix.node_version }}
+    name: ubuntu node_${{ matrix.node_version }} arch_${{ matrix.target_arch }}
     runs-on: ubuntu-latest
     strategy:
       fail-fast: false
       matrix:
         node_version: ['18.x', '20.x', '22.x']
+        target_arch: ['aarch64', 'armv7l', 'x86_64']
+    env:
+      TARGET_ARCH: ${{ matrix.target_arch }}
     steps:
       - uses: actions/checkout@v3
         with:
@@ -46,12 +52,15 @@ jobs:
           name: ubuntu-node-${{ matrix.node_version }}-release
           path: packages/llama-node/build/Release/**/*
   ubuntu-cuda:
-    name: ubuntu-cuda node ${{ matrix.node_version }}
+    name: ubuntu-cuda node_${{ matrix.node_version }} arch_${{ matrix.target_arch }}
     runs-on: ubuntu-latest
     strategy:
       fail-fast: false
       matrix:
         node_version: ['18.x', '20.x', '22.x']
+        target_arch: ['aarch64', 'armv7l', 'x86_64']
+    env:
+      TARGET_ARCH: ${{ matrix.target_arch }}
     steps:
       - uses: Jimver/cuda-toolkit@v0.2.16
         id: cuda-toolkit
@@ -73,12 +82,15 @@ jobs:
           name: ubuntu-cuda-node-${{ matrix.node_version }}-release
           path: packages/llama-node/build/Release/**/*
   ubuntu-vulkan:
-    name: ubuntu-vulkan node ${{ matrix.node_version }}
+    name: ubuntu-vulkan node_${{ matrix.node_version }} arch_${{ matrix.target_arch }}
     runs-on: ubuntu-latest
     strategy:
       fail-fast: false
       matrix:
         node_version: ['18.x', '20.x', '22.x']
+        target_arch: ['aarch64', 'armv7l', 'x86_64']
+    env:
+      TARGET_ARCH: ${{ matrix.target_arch }}
     steps:
       - name: Install Vulkan SDK on Ubuntu
         run: |
