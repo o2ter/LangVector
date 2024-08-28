@@ -31,13 +31,13 @@
 #ifdef GPU_INFO_USE_CUDA
 void logCudaError(const char *message)
 {
-  llama_log_callback(GGML_LOG_LEVEL_ERROR, (std::string("CUDA error: ") + std::string(message)).c_str(), nullptr);
+  LLAMA_LOG_ERROR("CUDA error: %s\n", message);
 }
 #endif
 #ifdef GPU_INFO_USE_VULKAN
 void logVulkanWarning(const char *message)
 {
-  llama_log_callback(GGML_LOG_LEVEL_WARN, (std::string("Vulkan warning: ") + std::string(message)).c_str(), nullptr);
+  LLAMA_LOG_WARN("Vulkan warning: %s\n", message);
 }
 #endif
 
