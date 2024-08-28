@@ -34,6 +34,7 @@
 Napi::Object registerCallback(Napi::Env env, Napi::Object exports)
 {
   llama_backend_init();
+  llama_log_set(llama_log_callback, nullptr);
   exports.DefineProperties({
       Napi::PropertyDescriptor::Function("systemInfo", systemInfo),
       Napi::PropertyDescriptor::Function("getSupportsGpuOffloading", getSupportsGpuOffloading),
@@ -52,7 +53,6 @@ Napi::Object registerCallback(Napi::Env env, Napi::Object exports)
   LlamaEmbeddingContext::init(exports);
   LlamaGrammar::init(exports);
   LlamaGrammarEvaluationState::init(exports);
-  llama_log_set(llama_log_callback, nullptr);
   return exports;
 }
 
