@@ -1498,10 +1498,10 @@
     events ">=3.3.0"
     lodash ">=4.17.21"
 
-"@o2ter/react-booster@^0.0.90":
-  version "0.0.90"
-  resolved "https://registry.yarnpkg.com/@o2ter/react-booster/-/react-booster-0.0.90.tgz#536d86f5dc49e86f4f5255142b85bbdb443eb2db"
-  integrity sha512-uO2UTl1dgzfAwXga7BbjKLTwwvc3L7H9GkBBBDlqUCYGgOBvzyL/cf+gn65kzuIE+C67f8udc14eXdo6tRPGbQ==
+"@o2ter/react-booster@^0.0.91":
+  version "0.0.91"
+  resolved "https://registry.yarnpkg.com/@o2ter/react-booster/-/react-booster-0.0.91.tgz#c12eb35c8f1d0c0fabf0cc251e3c83f8e2c2c387"
+  integrity sha512-zDuG9kx1l44bdItqKcg7J9ICjXcPGgPlVponSxdbgIrmbeq3K9lfMKiXTFgcu6fTN8sx80ovVibJYX+gbZFMBQ==
   dependencies:
     "@babel/core" "^7.24.4"
     "@babel/preset-env" "^7.24.4"
@@ -1530,7 +1530,7 @@
     sass-loader "^14.2.1"
     stream-browserify "^3.0.0"
     tslib "^2.6.2"
-    webpack "^5.91.0"
+    webpack "^5.94.0"
     webpack-cli "^5.1.4"
 
 "@o2ter/react-ui@^0.0.374":
@@ -8389,7 +8389,7 @@ webpack-sources@^3.2.3:
   resolved "https://registry.yarnpkg.com/webpack-sources/-/webpack-sources-3.2.3.tgz#2d4daab8451fd4b240cc27055ff6a0c2ccea0cde"
   integrity sha512-/DyMEOrDgLKKIG0fmvtz+4dUX/3Ghozwgm6iPp8KRhvn+eQf9+Q7GWxVNMk3+uCPWfdXYC4ExGBckIXdFEfH1w==
 
-webpack@^5.91.0:
+webpack@^5.94.0:
   version "5.94.0"
   resolved "https://registry.yarnpkg.com/webpack/-/webpack-5.94.0.tgz#77a6089c716e7ab90c1c67574a28da518a20970f"
   integrity sha512-KcsGn50VT+06JH/iunZJedYGUJS5FGjow8wb9c0v5n1Om8O1g4L6LjtfxwlXIATopoQu+vOXXa7gYisWxCoPyg==
