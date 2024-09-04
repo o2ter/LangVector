@@ -67,7 +67,7 @@
     "rollup": "^4.17.2",
     "rollup-plugin-dts": "^6.1.1",
     "rollup-plugin-sass": "^1.12.22",
-    "sugax": "^1.0.102",
+    "sugax": "^1.0.103",
     "tslib": "^2.4.0",
     "typescript": "^5.4.5"
   }
