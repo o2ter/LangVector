@@ -122,8 +122,7 @@ public:
     auto def = DefineClass(
         exports.Env(),
         "LlamaContextSampler",
-        {
-        });
+        {});
     exports.Set("LlamaContextSampler", def);
   }
 };
@@ -368,97 +367,3 @@ public:
     exports.Set("LlamaContext", def);
   }
 };
-
-LlamaContextSampleCandidates::LlamaContextSampleCandidates(const Napi::CallbackInfo &info) : Napi::ObjectWrap<LlamaContextSampleCandidates>(info)
-{
-  float repeat_penalty = 1.10f;                   // 1.0 = disabled
-  float repeat_penalty_presence_penalty = 0.00f;  // 0.0 = disabled
-  float repeat_penalty_frequency_penalty = 0.00f; // 0.0 = disabled
-  std::unordered_map<llama_token, float> tokenBias;
-  std::vector<llama_token> repeat_penalty_tokens;
-
-  auto ctx = Napi::ObjectWrap<LlamaContext>::Unwrap(info[0].As<Napi::Object>());
-  Napi::Object options = info[1].As<Napi::Object>();
-
-  if (options.Has("tokenBias"))
-  {
-    auto _tokenBias = options.Get("tokenBias").As<Napi::Array>();
-    for (size_t i = 0; i < _tokenBias.Length(); ++i)
-    {
-      auto key = _tokenBias.Get(i).As<Napi::Object>().Get("key").As<Napi::Number>().Uint32Value();
-      auto value = _tokenBias.Get(i).As<Napi::Object>().Get("value").As<Napi::Number>().FloatValue();
-      tokenBias[static_cast<llama_token>(key)] = value;
-    }
-  }
-
-  if (options.Has("repeatPenalty"))
-  {
-    repeat_penalty = options.Get("repeatPenalty").As<Napi::Number>().FloatValue();
-  }
-
-  if (options.Has("repeatPenaltyTokens"))
-  {
-    Napi::Uint32Array array = options.Get("repeatPenaltyTokens").As<Napi::Uint32Array>();
-    repeat_penalty_tokens.reserve(array.ElementLength());
-    for (size_t i = 0; i < array.ElementLength(); ++i)
-    {
-      repeat_penalty_tokens.push_back(static_cast<llama_token>(array[i]));
-    }
-  }
-
-  if (options.Has("repeatPenaltyPresencePenalty"))
-  {
-    repeat_penalty_presence_penalty = options.Get("repeatPenaltyPresencePenalty").As<Napi::Number>().FloatValue();
-  }
-
-  if (options.Has("repeatPenaltyFrequencyPenalty"))
-  {
-    repeat_penalty_frequency_penalty = options.Get("repeatPenaltyFrequencyPenalty").As<Napi::Number>().FloatValue();
-  }
-
-  // Select the best prediction.
-  if (llama_get_logits(ctx->ctx) == nullptr)
-  {
-    throw std::runtime_error("This model does not support token generation");
-  }
-
-  auto logits = llama_get_logits_ith(ctx->ctx, -1);
-  auto n_vocab = llama_n_vocab(ctx->model->model);
-
-  candidates.reserve(n_vocab);
-
-  for (llama_token token_id = 0; token_id < n_vocab; ++token_id)
-  {
-    auto logit = logits[token_id];
-    if (!tokenBias.empty() && tokenBias.find(token_id) != tokenBias.end())
-    {
-      auto logitBias = tokenBias.at(token_id);
-      if (logitBias == -INFINITY || logitBias < -INFINITY)
-      {
-        if (!llama_token_is_eog(ctx->model->model, token_id))
-        {
-          logit = -INFINITY;
-        }
-      }
-      else
-      {
-        logit += logitBias;
-      }
-    }
-    candidates.emplace_back(llama_token_data{token_id, logit, 0.0f});
-  }
-
-  llama_token_data_array candidates_p = {candidates.data(), candidates.size(), false};
-
-  if (!repeat_penalty_tokens.empty())
-  {
-    llama_sample_repetition_penalties(
-        ctx->ctx,
-        &candidates_p,
-        repeat_penalty_tokens.data(),
-        repeat_penalty_tokens.size(),
-        repeat_penalty,
-        repeat_penalty_frequency_penalty,
-        repeat_penalty_presence_penalty);
-  }
-}
