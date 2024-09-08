@@ -26,7 +26,6 @@
 import { Awaitable } from '@o2ter/utils-js';
 import { ChatWrapper } from '../../../chat/wrapper/types';
 import { LLMTextValue } from '../../../types';
-import { LlamaGrammar } from '../../../device/llama/grammar';
 import { Schema } from './schema';
 import type { LlamaContext } from '../index';
 
@@ -158,5 +157,5 @@ export type LLamaChatPromptOptions = {
    */
   stopTriggers?: LLMTextValue[];
 
-  grammar?: LlamaGrammar;
+  grammar?: string;
 };

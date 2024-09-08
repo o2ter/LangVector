@@ -77,7 +77,7 @@ export class Llama3ChatWrapper implements ChatWrapper {
     if (_.isEmpty(functions)) return undefined;
     return {
       beginTrigger: functionCallPrefix,
-      grammar: new LlamaDevice.Grammar(this._generateFunctionGrammar(ctx)),
+      grammar: this._generateFunctionGrammar(ctx),
       stopGenerationTriggers: _.map(
         this.stopGenerationTriggers(ctx),
         x => ctx.model.tokenize(x),

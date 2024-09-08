@@ -34,7 +34,6 @@ import { LlamaDevice } from '../../device/llama';
 import { LLamaChatPromptOptions, LlamaContextOptions } from './types';
 import { DisposedError, LLMTextValue } from '../../types';
 import { ChatHistoryItem } from '../../chat/wrapper/types';
-import { LlamaGrammar } from '../../device/llama/grammar';
 import * as llamaCpp from '../../plugins/llamaCpp';
 
 export class LlamaContext extends LLMContext<LlamaModel> {
@@ -176,13 +175,6 @@ export class LlamaContext extends LLMContext<LlamaModel> {
   }
 
   /** @internal */
-  private _grammarEvaluationState(
-    grammar: LlamaGrammar,
-  ) {
-    return new llamaCpp.LlamaGrammarEvaluationState(this._ctx, grammar._grammar);
-  }
-
-  /** @internal */
   private _sampleCandidates(
     options: LLamaChatPromptOptions,
   ) {
@@ -290,7 +282,7 @@ export class LlamaContext extends LLMContext<LlamaModel> {
 
     const modules: {
       beginTrigger: string;
-      grammar: LlamaGrammar;
+      grammar: string;
       stopGenerationTriggers: Uint32List[];
       handle: (tokens: number[]) => Awaitable<LLMTextValue[]>;
     }[] = [];
@@ -327,7 +319,7 @@ export class LlamaContext extends LLMContext<LlamaModel> {
 
     const modules = this._evaluate_modules();
     const chatWrapper = this._options.chatOptions?.chatWrapper;
-    const grammar = options.grammar ? this._grammarEvaluationState(options.grammar) : null;
+    const grammar = options.grammar;
     const stopTriggers = _.map(
       options.stopTriggers ?? chatWrapper?.stopGenerationTriggers(this),
       x => this.model.tokenize(x)

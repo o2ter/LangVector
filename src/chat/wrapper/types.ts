@@ -24,7 +24,6 @@
 //
 
 import { LLMTextValue } from '../../types';
-import { LlamaGrammar } from '../../device/llama/grammar';
 import type { LlamaContext } from '../../context/llama';
 
 export type ChatHistoryItem = ChatSystemMessage | ChatUserMessage | ChatModelResponse;
@@ -56,7 +55,7 @@ export type ChatWrapper = {
     ctx: LlamaContext,
   ) => {
     beginTrigger: string;
-    grammar: LlamaGrammar;
+    grammar: string;
     stopGenerationTriggers: Uint32List[];
     responseRole: string;
     responseEncoder: (result: any) => string;
