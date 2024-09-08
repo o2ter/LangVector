@@ -246,9 +246,12 @@ public:
           llama_token result;
           llama_token_data_array candidates_p = {candidates->candidates.data(), candidates->candidates.size(), false};
 
+          auto sparams = llama_sampler_chain_default_params();
+          llama_sampler *smpl = llama_sampler_chain_init(sparams);
+
           if (temperature <= 0)
           {
-            result = llama_sample_token_greedy(ctx, &candidates_p);
+            result = llama_sampler_sample(smpl, ctx, -1);
           }
           else
           {
@@ -261,14 +264,18 @@ public:
 
             // Temperature sampling
             size_t min_keep = std::max(1, n_probs);
-            llama_sample_top_k(ctx, &candidates_p, resolved_top_k, min_keep);
-            llama_sample_tail_free(ctx, &candidates_p, tfs_z, min_keep);
-            llama_sample_typical(ctx, &candidates_p, typical_p, min_keep);
-            llama_sample_top_p(ctx, &candidates_p, resolved_top_p, min_keep);
-            llama_sample_min_p(ctx, &candidates_p, min_p, min_keep);
-            llama_sample_temp(ctx, &candidates_p, temperature);
-            result = llama_sample_token(ctx, &candidates_p);
+
+            llama_sampler_chain_add(smpl, llama_sampler_init_top_k(resolved_top_k));
+            llama_sampler_chain_add(smpl, llama_sampler_init_tail_free(tfs_z, min_keep));
+            llama_sampler_chain_add(smpl, llama_sampler_init_typical(typical_p, min_keep));
+            llama_sampler_chain_add(smpl, llama_sampler_init_top_p(resolved_top_p, min_keep));
+            llama_sampler_chain_add(smpl, llama_sampler_init_min_p(min_p, min_keep));
+            llama_sampler_chain_add(smpl, llama_sampler_init_temp(temperature));
+
+            result = llama_sampler_sample(smpl, ctx, -1);
           }
+
+          llama_sampler_free(smpl);
 
           return result;
         },
