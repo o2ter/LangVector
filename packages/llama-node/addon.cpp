@@ -29,7 +29,6 @@
 #include "src/model.h"
 #include "src/context.h"
 #include "src/embedding.h"
-#include "src/grammar.h"
 
 Napi::Object registerCallback(Napi::Env env, Napi::Object exports)
 {
@@ -51,8 +50,6 @@ Napi::Object registerCallback(Napi::Env env, Napi::Object exports)
   LlamaContext::init(exports);
   LlamaContextSampleCandidates::init(exports);
   LlamaEmbeddingContext::init(exports);
-  LlamaGrammar::init(exports);
-  LlamaGrammarEvaluationState::init(exports);
   return exports;
 }
 

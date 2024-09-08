@@ -29,6 +29,96 @@
 #include "model.h"
 #include "worker.h"
 
+class LlamaContextSampler : public Napi::ObjectWrap<LlamaContextSampler>
+{
+public:
+  LlamaModel *model;
+  llama_sampler *sampler;
+
+  LlamaContextSampler(const Napi::CallbackInfo &info) : Napi::ObjectWrap<LlamaContextSampler>(info)
+  {
+    auto sparams = llama_sampler_chain_default_params();
+    sampler = llama_sampler_chain_init(sparams);
+
+    model = Napi::ObjectWrap<LlamaModel>::Unwrap(info[0].As<Napi::Object>());
+    model->Ref();
+
+    uint32_t seed = -1;
+    float temperature = 0.0f;
+    float min_p = 0;
+    int32_t top_k = 40;
+    float top_p = 0.95f;
+
+    Napi::Object options = info[1].As<Napi::Object>();
+
+    if (options.Has("seed"))
+    {
+      seed = options.Get("seed").As<Napi::Number>().Uint32Value();
+    }
+    if (options.Has("temperature"))
+    {
+      temperature = options.Get("temperature").As<Napi::Number>().FloatValue();
+    }
+
+    if (options.Has("minP"))
+    {
+      min_p = options.Get("minP").As<Napi::Number>().FloatValue();
+    }
+
+    if (options.Has("topK"))
+    {
+      top_k = options.Get("topK").As<Napi::Number>().Int32Value();
+    }
+
+    if (options.Has("topP"))
+    {
+      top_p = options.Get("topP").As<Napi::Number>().FloatValue();
+    }
+
+    if (options.Has("grammar"))
+    {
+      std::string grammar = options.Get("grammar").As<Napi::String>().Utf8Value();
+      llama_sampler_chain_add(sampler, llama_sampler_init_grammar(model->model, grammar.c_str(), "root"));
+    }
+
+    if (temperature <= 0)
+    {
+      llama_sampler_chain_add(sampler, llama_sampler_init_greedy());
+    }
+    else
+    {
+      const int32_t resolved_top_k =
+          top_k <= 0 ? llama_n_vocab(model->model) : std::min(top_k, llama_n_vocab(model->model));
+      const int32_t n_probs = 0;          // Number of probabilities to keep - 0 = disabled
+      const float tfs_z = 1.00f;          // Tail free sampling - 1.0 = disabled
+      const float typical_p = 1.00f;      // Typical probability - 1.0 = disabled
+      const float resolved_top_p = top_p; // Top p sampling - 1.0 = disabled
+
+      // Temperature sampling
+      size_t min_keep = std::max(1, n_probs);
+
+      llama_sampler_chain_add(sampler, llama_sampler_init_top_k(resolved_top_k));
+      llama_sampler_chain_add(sampler, llama_sampler_init_tail_free(tfs_z, min_keep));
+      llama_sampler_chain_add(sampler, llama_sampler_init_typical(typical_p, min_keep));
+      llama_sampler_chain_add(sampler, llama_sampler_init_top_p(resolved_top_p, min_keep));
+      llama_sampler_chain_add(sampler, llama_sampler_init_min_p(min_p, min_keep));
+      llama_sampler_chain_add(sampler, llama_sampler_init_temp(temperature));
+      llama_sampler_chain_add(sampler, llama_sampler_init_dist(seed));
+    }
+  }
+
+  ~LlamaContextSampler()
+  {
+    if (sampler == NULL)
+    {
+      return;
+    }
+    llama_sampler_free(sampler);
+    sampler = NULL;
+    model->Unref();
+  }
+};
+
 class LlamaContextSampleCandidates : public Napi::ObjectWrap<LlamaContextSampleCandidates>
 {
 public:
