@@ -116,6 +116,16 @@ public:
     sampler = NULL;
     model->Unref();
   }
+
+  static void init(Napi::Object exports)
+  {
+    auto def = DefineClass(
+        exports.Env(),
+        "LlamaContextSampler",
+        {
+        });
+    exports.Set("LlamaContextSampler", def);
+  }
 };
 
 class LlamaContextSampleCandidates : public Napi::ObjectWrap<LlamaContextSampleCandidates>
