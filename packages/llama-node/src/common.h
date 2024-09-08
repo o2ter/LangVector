@@ -28,8 +28,8 @@
 #include <stddef.h>
 
 #include "llama.h"
+#include "llama-grammar.h"
 #include "common/common.h"
-#include "common/grammar-parser.h"
 #include "napi.h"
 
 #ifdef GPU_INFO_USE_CUDA
