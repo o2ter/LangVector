@@ -87,8 +87,7 @@ public:
     }
     else
     {
-      const int32_t resolved_top_k =
-          top_k <= 0 ? llama_n_vocab(model->model) : std::min(top_k, llama_n_vocab(model->model));
+      const int32_t resolved_top_k = top_k <= 0 ? llama_n_vocab(model->model) : std::min(top_k, llama_n_vocab(model->model));
       const int32_t n_probs = 0;          // Number of probabilities to keep - 0 = disabled
       const float tfs_z = 1.00f;          // Tail free sampling - 1.0 = disabled
       const float typical_p = 1.00f;      // Typical probability - 1.0 = disabled
