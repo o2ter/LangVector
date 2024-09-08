@@ -164,18 +164,12 @@ public:
     auto hardware_concurrency = std::thread::hardware_concurrency();
 
     params = llama_context_default_params();
-    params.seed = -1;
     params.n_ctx = 0;
     params.n_seq_max = 1;
     params.n_threads = hardware_concurrency;
     params.n_threads_batch = hardware_concurrency;
 
     Napi::Object options = info[1].As<Napi::Object>();
-
-    if (options.Has("seed"))
-    {
-      params.seed = options.Get("seed").As<Napi::Number>().Uint32Value();
-    }
 
     if (options.Has("contextSize"))
     {
@@ -296,35 +290,10 @@ public:
 
   Napi::Value SampleToken(const Napi::CallbackInfo &info)
   {
-    float temperature = 0.0f;
-    float min_p = 0;
-    int32_t top_k = 40;
-    float top_p = 0.95f;
-
     auto candidates = Napi::ObjectWrap<LlamaContextSampleCandidates>::Unwrap(info[0].As<Napi::Object>());
     candidates->Ref();
 
-    Napi::Object options = info[1].As<Napi::Object>();
-
-    if (options.Has("temperature"))
-    {
-      temperature = options.Get("temperature").As<Napi::Number>().FloatValue();
-    }
-
-    if (options.Has("minP"))
-    {
-      min_p = options.Get("minP").As<Napi::Number>().FloatValue();
-    }
-
-    if (options.Has("topK"))
-    {
-      top_k = options.Get("topK").As<Napi::Number>().Int32Value();
-    }
-
-    if (options.Has("topP"))
-    {
-      top_p = options.Get("topP").As<Napi::Number>().FloatValue();
-    }
+    auto sampler = Napi::ObjectWrap<LlamaContextSampler>::Unwrap(info[1].As<Napi::Object>());
 
     this->Ref();
 
@@ -332,39 +301,9 @@ public:
         Env(),
         [=]()
         {
-          llama_token result;
           llama_token_data_array candidates_p = {candidates->candidates.data(), candidates->candidates.size(), false};
 
-          auto sparams = llama_sampler_chain_default_params();
-          llama_sampler *smpl = llama_sampler_chain_init(sparams);
-
-          if (temperature <= 0)
-          {
-            result = llama_sampler_sample(smpl, ctx, -1);
-          }
-          else
-          {
-            const int32_t resolved_top_k =
-                top_k <= 0 ? llama_n_vocab(model->model) : std::min(top_k, llama_n_vocab(model->model));
-            const int32_t n_probs = 0;          // Number of probabilities to keep - 0 = disabled
-            const float tfs_z = 1.00f;          // Tail free sampling - 1.0 = disabled
-            const float typical_p = 1.00f;      // Typical probability - 1.0 = disabled
-            const float resolved_top_p = top_p; // Top p sampling - 1.0 = disabled
-
-            // Temperature sampling
-            size_t min_keep = std::max(1, n_probs);
-
-            llama_sampler_chain_add(smpl, llama_sampler_init_top_k(resolved_top_k));
-            llama_sampler_chain_add(smpl, llama_sampler_init_tail_free(tfs_z, min_keep));
-            llama_sampler_chain_add(smpl, llama_sampler_init_typical(typical_p, min_keep));
-            llama_sampler_chain_add(smpl, llama_sampler_init_top_p(resolved_top_p, min_keep));
-            llama_sampler_chain_add(smpl, llama_sampler_init_min_p(min_p, min_keep));
-            llama_sampler_chain_add(smpl, llama_sampler_init_temp(temperature));
-
-            result = llama_sampler_sample(smpl, ctx, -1);
-          }
-
-          llama_sampler_free(smpl);
+          llama_token result = llama_sampler_sample(sampler->sampler, ctx, -1);
 
           return result;
         },
