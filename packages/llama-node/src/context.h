@@ -170,37 +170,6 @@ public:
   }
 };
 
-class LlamaContextSampleCandidates : public Napi::ObjectWrap<LlamaContextSampleCandidates>
-{
-public:
-  std::vector<llama_token_data> candidates;
-
-  LlamaContextSampleCandidates(const Napi::CallbackInfo &info);
-
-  Napi::Value IsValid(const Napi::CallbackInfo &info)
-  {
-    for (auto candidate : candidates)
-    {
-      if (candidate.logit != -INFINITY)
-      {
-        return Napi::Boolean::New(info.Env(), true);
-      }
-    }
-    return Napi::Boolean::New(info.Env(), false);
-  }
-
-  static void init(Napi::Object exports)
-  {
-    auto def = DefineClass(
-        exports.Env(),
-        "LlamaContextSampleCandidates",
-        {
-            InstanceMethod("isValid", &LlamaContextSampleCandidates::IsValid),
-        });
-    exports.Set("LlamaContextSampleCandidates", def);
-  }
-};
-
 class LlamaContext : public Napi::ObjectWrap<LlamaContext>
 {
 public:
@@ -342,22 +311,14 @@ public:
 
   Napi::Value SampleToken(const Napi::CallbackInfo &info)
   {
-    auto candidates = Napi::ObjectWrap<LlamaContextSampleCandidates>::Unwrap(info[0].As<Napi::Object>());
-    candidates->Ref();
-
-    auto sampler = Napi::ObjectWrap<LlamaContextSampler>::Unwrap(info[1].As<Napi::Object>());
-
+    auto sampler = Napi::ObjectWrap<LlamaContextSampler>::Unwrap(info[0].As<Napi::Object>());
     this->Ref();
 
     auto worker = new _AsyncWorkerWithResult<llama_token>(
         Env(),
         [=]()
         {
-          llama_token_data_array candidates_p = {candidates->candidates.data(), candidates->candidates.size(), false};
-
-          llama_token result = llama_sampler_sample(sampler->sampler, ctx, -1);
-
-          return result;
+          return llama_sampler_sample(sampler->sampler, ctx, -1);
         },
         [=](Napi::Env env, llama_token result)
         {
@@ -366,7 +327,6 @@ public:
         [=]()
         {
           this->Unref();
-          candidates->Unref();
         });
 
     worker->Queue();

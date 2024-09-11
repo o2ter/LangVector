@@ -49,7 +49,6 @@ Napi::Object registerCallback(Napi::Env env, Napi::Object exports)
   LlamaModel::init(exports);
   LlamaContext::init(exports);
   LlamaContextSampler::init(exports);
-  LlamaContextSampleCandidates::init(exports);
   LlamaEmbeddingContext::init(exports);
   return exports;
 }

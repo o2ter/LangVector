@@ -30,7 +30,6 @@ import { Worker } from './worker';
 import { Awaitable, EventIterator } from '@o2ter/utils-js';
 import { LLMContext } from '../base';
 import { LlamaModel } from '../../model/llama';
-import { LlamaDevice } from '../../device/llama';
 import { LLamaChatPromptOptions, LlamaContextOptions } from './types';
 import { DisposedError, LLMTextValue } from '../../types';
 import { ChatHistoryItem } from '../../chat/wrapper/types';
