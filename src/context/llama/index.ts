@@ -309,7 +309,7 @@ export class LlamaContext extends LLMContext<LlamaModel> {
           inputs = [];
 
           let maxTokens = options.maxTokens ?? -1;
-          let _grammar = grammar;
+          let _sampler = null;
           let _modules: typeof modules = [];
           let _selected_module: typeof modules[number] | undefined;
           let _module_records: [number, number][] | undefined;
@@ -322,23 +322,8 @@ export class LlamaContext extends LLMContext<LlamaModel> {
             } as const;
 
             const time = clock();
-            let candidates = this._sampleCandidates(options);
-
-            if (_grammar) {
-              _grammar.sampleToken(candidates);
-              if (!candidates.isValid()) {
-                // logit biases caused grammar sampling to fail, so sampling again without logit biases
-                candidates = this._sampleCandidates(_.omit(options, 'tokenBias'));
-                _grammar.sampleToken(candidates);
-              }
-            }
-
-            const sample = await this._ctx.sampleToken(candidates, _.pickBy({
-              temperature: options.temperature,
-              minP: options.minP,
-              topK: options.topK,
-              topP: options.topP,
-            }, v => !_.isNil(v)));
+            
+            const sample = await this._ctx.sampleToken(_sampler ?? sampler);
 
             if (this.model.isEogToken(sample)) {
               if (_selected_module && !_.isNil(_module_records)) {
@@ -370,7 +355,7 @@ export class LlamaContext extends LLMContext<LlamaModel> {
 
             let _record_pushed = false;
 
-            if (_.isNil(_grammar) && _.isNil(_selected_module) && _.isEmpty(_modules)) {
+            if (_.isNil(_sampler) && _.isNil(_selected_module) && _.isEmpty(_modules)) {
               let str_0 = '';
               let str_1 = this.model.detokenize(sample);
               while (!_.isEmpty(str_1)) {
@@ -400,15 +385,15 @@ export class LlamaContext extends LLMContext<LlamaModel> {
             } else {
               onToken(sample, _time);
             }
-            if (_grammar) _grammar.acceptToken(sample);
+            if (_sampler) _sampler.acceptToken(sample);
 
             if (_.isNil(_selected_module) && !_.isEmpty(_modules) && !_.isNil(_module_records)) {
               const record = this.model.detokenize(_.map(_module_records, ([x]) => x));
               for (const module of _modules) {
                 if (_.startsWith(record, module.beginTrigger)) {
                   _selected_module = module;
-                  _grammar = this._grammarEvaluationState(_selected_module.grammar);
-                  for (const [token] of _module_records) _grammar.acceptToken(token);
+                  _sampler = this._sampler({ ...options, grammar: _selected_module.grammar });
+                  for (const [token] of _module_records) _sampler.acceptToken(token);
                   continue loop;
                 } else if (record.length >= module.beginTrigger.length) {
                   _modules = _.filter(_modules, x => x !== module);

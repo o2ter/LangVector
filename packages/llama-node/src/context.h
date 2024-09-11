@@ -172,7 +172,9 @@ public:
     auto def = DefineClass(
         exports.Env(),
         "LlamaContextSampler",
-        {});
+        {
+            InstanceMethod("acceptToken", &LlamaContextSampler::AcceptToken),
+        });
     exports.Set("LlamaContextSampler", def);
   }
 };
