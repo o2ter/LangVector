@@ -175,49 +175,6 @@ export class LlamaContext extends LLMContext<LlamaModel> {
   }
 
   /** @internal */
-  private _sampleCandidates(
-    options: LLamaChatPromptOptions,
-  ) {
-
-    const lastTokens = options.repeatPenalty ? options.repeatPenalty.lastTokens ?? 64 : 0;
-    const penalizeNewLine = options.repeatPenalty ? options.repeatPenalty.penalizeNewLine : null;
-    const punishTokensFilter = options.repeatPenalty ? options.repeatPenalty.punishTokensFilter : null;
-
-    const repeatPenalty = {
-      punishTokens: () => {
-        let tokens: Uint32List = this._tokens.slice(-lastTokens);
-        tokens = punishTokensFilter ? punishTokensFilter(this, tokens) : tokens;
-        if (penalizeNewLine !== false) {
-          const nlToken = this.model.tokens.nl;
-          if (nlToken != null) tokens = tokens.filter(token => token !== nlToken);
-        }
-        return tokens;
-      },
-      ...options.repeatPenalty ? options.repeatPenalty : {},
-    };
-    const punishTokens = options.repeatPenalty === false ?
-      [] : _.isFunction(repeatPenalty.punishTokens) ?
-        repeatPenalty.punishTokens(this) :
-        repeatPenalty.punishTokens;
-    const tokenBias = [
-      ..._.isFunction(options.tokenBias) ?
-        options.tokenBias(this) :
-        options.tokenBias ?? []
-    ];
-
-    return new llamaCpp.LlamaContextSampleCandidates(this._ctx, _.pickBy({
-      tokenBias: _.map(tokenBias, ([key, value]) => ({
-        key: key,
-        value: value === 'never' ? Number.NEGATIVE_INFINITY : value,
-      })),
-      repeatPenalty: repeatPenalty.penalty,
-      repeatPenaltyPresencePenalty: repeatPenalty.presencePenalty,
-      repeatPenaltyFrequencyPenalty: repeatPenalty.frequencyPenalty,
-      repeatPenaltyTokens: punishTokens instanceof Uint32Array ? punishTokens : new Uint32Array(punishTokens),
-    }, v => !_.isNil(v)));
-  }
-
-  /** @internal */
   private async _contextShiftStrategy() {
 
     const contextShiftStrategy = this._options.chatOptions?.contextShiftStrategy;
