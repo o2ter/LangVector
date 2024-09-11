@@ -287,7 +287,7 @@ export class LlamaContext extends LLMContext<LlamaModel> {
 
     const modules = this._evaluate_modules();
     const chatWrapper = this._options.chatOptions?.chatWrapper;
-    const grammar = options.grammar;
+    const sampler = this._sampler(options);
     const stopTriggers = _.map(
       options.stopTriggers ?? chatWrapper?.stopGenerationTriggers(this),
       x => this.model.tokenize(x)
