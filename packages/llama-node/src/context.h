@@ -75,6 +75,49 @@ public:
       top_p = options.Get("topP").As<Napi::Number>().FloatValue();
     }
 
+    if (options.Has("repeatPenalty"))
+    {
+      auto repeatPenalty = options.Get("repeatPenalty").As<Napi::Object>();
+      int32_t last_n = 64;
+      float repeat = 1.10f;    // 1.0 = disabled
+      float presence = 0.00f;  // 0.0 = disabled
+      float frequency = 0.00f; // 0.0 = disabled
+      bool penalize_nl = true;
+      bool ignore_eos = false;
+      if (repeatPenalty.Has("lastTokens"))
+      {
+        last_n = options.Get("lastTokens").As<Napi::Number>().Int32Value();
+      }
+      if (repeatPenalty.Has("penalizeNewLine"))
+      {
+        penalize_nl = options.Get("penalizeNewLine").As<Napi::Boolean>().Value();
+      }
+      if (repeatPenalty.Has("penalty"))
+      {
+        repeat = options.Get("penalty").As<Napi::Number>().FloatValue();
+      }
+      if (repeatPenalty.Has("frequencyPenalty"))
+      {
+        frequency = options.Get("frequencyPenalty").As<Napi::Number>().FloatValue();
+      }
+      if (repeatPenalty.Has("presencePenalty"))
+      {
+        presence = options.Get("presencePenalty").As<Napi::Number>().FloatValue();
+      }
+      llama_sampler_chain_add(
+          sampler,
+          llama_sampler_init_penalties(
+              llama_n_vocab(model->model),
+              llama_token_eos(model->model),
+              llama_token_nl(model->model),
+              last_n,
+              repeat,
+              frequency,
+              presence,
+              penalize_nl,
+              ignore_eos));
+    }
+
     if (options.Has("grammar"))
     {
       std::string grammar = options.Get("grammar").As<Napi::String>().Utf8Value();

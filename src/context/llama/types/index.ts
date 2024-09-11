@@ -77,9 +77,6 @@ export type LlamaSequenceRepeatPenalty = {
    * Enabled by default.
    */
   penalizeNewLine?: boolean;
-  /** Tokens to lower the predication probability of to be the next predicted token */
-  punishTokens?: Uint32List | ((ctx: LlamaContext) => Uint32List);
-  punishTokensFilter?: (ctx: LlamaContext, tokens: Uint32List) => Uint32List;
   /**
    * The relative amount to lower the probability of the tokens in `punishTokens` by
    * Defaults to `1.1`.
