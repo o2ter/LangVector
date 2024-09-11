@@ -265,6 +265,18 @@ export class LlamaContext extends LLMContext<LlamaModel> {
   }
 
   /** @internal */
+  private _sampler(options: LLamaChatPromptOptions) {
+    return new llamaCpp.LlamaContextSampler({
+      temperature: options.temperature,
+      minP: options.minP,
+      topK: options.topK,
+      topP: options.topP,
+      repeatPenalty: options.repeatPenalty,
+      grammar: options.grammar,
+    });
+  }
+
+  /** @internal */
   private async _evaluate(
     value: LLMTextValue,
     options: LLamaChatPromptOptions,

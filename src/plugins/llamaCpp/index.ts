@@ -27,6 +27,7 @@ import { pkg } from './pkg';
 
 export const LlamaModel = pkg.LlamaModel;
 export const LlamaContext = pkg.LlamaContext;
+export const LlamaContextSampler = pkg.LlamaContextSampler;
 export const LlamaEmbeddingContext = pkg.LlamaEmbeddingContext;
 
 export const systemInfo = (): string => {
