@@ -160,6 +160,13 @@ public:
     model->Unref();
   }
 
+  Napi::Value AcceptToken(const Napi::CallbackInfo &info)
+  {
+    llama_token tokenId = info[0].As<Napi::Number>().Int32Value();
+    llama_sampler_accept(sampler, tokenId);
+    return info.Env().Undefined();
+  }
+
   static void init(Napi::Object exports)
   {
     auto def = DefineClass(
