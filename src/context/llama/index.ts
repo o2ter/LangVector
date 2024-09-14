@@ -315,7 +315,7 @@ export class LlamaContext extends LLMContext<LlamaModel> {
           inputs = [];
 
           let maxTokens = options.maxTokens ?? -1;
-          let _sampler = options.grammar ? sampler : null;
+          let _sampler = null;
           let _modules: typeof modules = [];
           let _selected_module: typeof modules[number] | undefined;
           let _module_records: [number, number][] | undefined;
@@ -328,7 +328,6 @@ export class LlamaContext extends LLMContext<LlamaModel> {
             } as const;
 
             const time = clock();
-            
             const sample = await this._ctx.sampleToken(_sampler ?? sampler);
 
             if (this.model.isEogToken(sample)) {
@@ -340,6 +339,12 @@ export class LlamaContext extends LLMContext<LlamaModel> {
                 stopReason: 'eogToken',
                 totalTime: clock() - totalTime,
               } as const;
+            }
+
+            if (!_.isNil(options.grammar)) {
+              await this._decodeTokens(sample);
+              onToken(sample, clock() - time);
+              continue;
             }
 
             for (const trigger of _selected_module?.stopGenerationTriggers ?? stopTriggers) {
