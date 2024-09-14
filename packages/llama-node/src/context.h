@@ -86,23 +86,23 @@ public:
       bool ignore_eos = false;
       if (repeatPenalty.Has("lastTokens"))
       {
-        last_n = options.Get("lastTokens").As<Napi::Number>().Int32Value();
+        last_n = repeatPenalty.Get("lastTokens").As<Napi::Number>().Int32Value();
       }
       if (repeatPenalty.Has("penalizeNewLine"))
       {
-        penalize_nl = options.Get("penalizeNewLine").As<Napi::Boolean>().Value();
+        penalize_nl = repeatPenalty.Get("penalizeNewLine").As<Napi::Boolean>().Value();
       }
       if (repeatPenalty.Has("penalty"))
       {
-        repeat = options.Get("penalty").As<Napi::Number>().FloatValue();
+        repeat = repeatPenalty.Get("penalty").As<Napi::Number>().FloatValue();
       }
       if (repeatPenalty.Has("frequencyPenalty"))
       {
-        frequency = options.Get("frequencyPenalty").As<Napi::Number>().FloatValue();
+        frequency = repeatPenalty.Get("frequencyPenalty").As<Napi::Number>().FloatValue();
       }
       if (repeatPenalty.Has("presencePenalty"))
       {
-        presence = options.Get("presencePenalty").As<Napi::Number>().FloatValue();
+        presence = repeatPenalty.Get("presencePenalty").As<Napi::Number>().FloatValue();
       }
       llama_sampler_chain_add(
           sampler,
