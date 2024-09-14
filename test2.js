@@ -1,5 +1,5 @@
 const path = require('path');
-const { LlamaDevice } = require('./dist/index.js');
+const { LlamaDevice, Llama3ChatWrapper } = require('./dist/index.js');
 
 const modelsDir = path.join(__dirname, './models');
 
@@ -9,7 +9,12 @@ const modelsDir = path.join(__dirname, './models');
     modelPath: path.join(modelsDir, 'meta-llama/Meta-Llama-3-8B-Instruct/ggml-model-q3_k_m.gguf'),
   });
 
-  const context = model.createContext();
+  const context = model.createContext({
+    contextSize: 4096,
+    chatOptions: {
+      chatWrapper: new Llama3ChatWrapper,
+    },
+  });
 
   const messages = [
     'hi',
