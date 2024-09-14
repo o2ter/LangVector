@@ -29,34 +29,153 @@
 #include "model.h"
 #include "worker.h"
 
-class LlamaContextSampleCandidates : public Napi::ObjectWrap<LlamaContextSampleCandidates>
+class LlamaContextSampler : public Napi::ObjectWrap<LlamaContextSampler>
 {
 public:
-  std::vector<llama_token_data> candidates;
+  LlamaModel *model;
+  llama_sampler *sampler;
 
-  LlamaContextSampleCandidates(const Napi::CallbackInfo &info);
-
-  Napi::Value IsValid(const Napi::CallbackInfo &info)
+  LlamaContextSampler(const Napi::CallbackInfo &info) : Napi::ObjectWrap<LlamaContextSampler>(info)
   {
-    for (auto candidate : candidates)
+    auto sparams = llama_sampler_chain_default_params();
+    sampler = llama_sampler_chain_init(sparams);
+
+    model = Napi::ObjectWrap<LlamaModel>::Unwrap(info[0].As<Napi::Object>());
+    model->Ref();
+
+    uint32_t seed = -1;
+    float temperature = 0.0f;
+    float min_p = 0;
+    int32_t top_k = 40;
+    float top_p = 0.95f;
+
+    Napi::Object options = info[1].As<Napi::Object>();
+
+    if (options.Has("seed"))
     {
-      if (candidate.logit != -INFINITY)
-      {
-        return Napi::Boolean::New(info.Env(), true);
-      }
+      seed = options.Get("seed").As<Napi::Number>().Uint32Value();
     }
-    return Napi::Boolean::New(info.Env(), false);
+    if (options.Has("temperature"))
+    {
+      temperature = options.Get("temperature").As<Napi::Number>().FloatValue();
+    }
+
+    if (options.Has("minP"))
+    {
+      min_p = options.Get("minP").As<Napi::Number>().FloatValue();
+    }
+
+    if (options.Has("topK"))
+    {
+      top_k = options.Get("topK").As<Napi::Number>().Int32Value();
+    }
+
+    if (options.Has("topP"))
+    {
+      top_p = options.Get("topP").As<Napi::Number>().FloatValue();
+    }
+
+    if (options.Has("repeatPenalty"))
+    {
+      auto repeatPenalty = options.Get("repeatPenalty").As<Napi::Object>();
+      int32_t last_n = 64;
+      float repeat = 1.10f;    // 1.0 = disabled
+      float presence = 0.00f;  // 0.0 = disabled
+      float frequency = 0.00f; // 0.0 = disabled
+      bool penalize_nl = true;
+      bool ignore_eos = false;
+      if (repeatPenalty.Has("lastTokens"))
+      {
+        last_n = repeatPenalty.Get("lastTokens").As<Napi::Number>().Int32Value();
+      }
+      if (repeatPenalty.Has("penalizeNewLine"))
+      {
+        penalize_nl = repeatPenalty.Get("penalizeNewLine").As<Napi::Boolean>().Value();
+      }
+      if (repeatPenalty.Has("penalty"))
+      {
+        repeat = repeatPenalty.Get("penalty").As<Napi::Number>().FloatValue();
+      }
+      if (repeatPenalty.Has("frequencyPenalty"))
+      {
+        frequency = repeatPenalty.Get("frequencyPenalty").As<Napi::Number>().FloatValue();
+      }
+      if (repeatPenalty.Has("presencePenalty"))
+      {
+        presence = repeatPenalty.Get("presencePenalty").As<Napi::Number>().FloatValue();
+      }
+      llama_sampler_chain_add(
+          sampler,
+          llama_sampler_init_penalties(
+              llama_n_vocab(model->model),
+              llama_token_eos(model->model),
+              llama_token_nl(model->model),
+              last_n,
+              repeat,
+              frequency,
+              presence,
+              penalize_nl,
+              ignore_eos));
+    }
+
+    if (options.Has("grammar"))
+    {
+      std::string grammar = options.Get("grammar").As<Napi::String>().Utf8Value();
+      llama_sampler_chain_add(sampler, llama_sampler_init_grammar(model->model, grammar.c_str(), "root"));
+    }
+
+    if (temperature <= 0)
+    {
+      llama_sampler_chain_add(sampler, llama_sampler_init_greedy());
+    }
+    else
+    {
+      const int32_t resolved_top_k = top_k <= 0 ? llama_n_vocab(model->model) : std::min(top_k, llama_n_vocab(model->model));
+      const int32_t n_probs = 0;          // Number of probabilities to keep - 0 = disabled
+      const float tfs_z = 1.00f;          // Tail free sampling - 1.0 = disabled
+      const float typical_p = 1.00f;      // Typical probability - 1.0 = disabled
+      const float resolved_top_p = top_p; // Top p sampling - 1.0 = disabled
+
+      // Temperature sampling
+      size_t min_keep = std::max(1, n_probs);
+
+      llama_sampler_chain_add(sampler, llama_sampler_init_top_k(resolved_top_k));
+      llama_sampler_chain_add(sampler, llama_sampler_init_tail_free(tfs_z, min_keep));
+      llama_sampler_chain_add(sampler, llama_sampler_init_typical(typical_p, min_keep));
+      llama_sampler_chain_add(sampler, llama_sampler_init_top_p(resolved_top_p, min_keep));
+      llama_sampler_chain_add(sampler, llama_sampler_init_min_p(min_p, min_keep));
+      llama_sampler_chain_add(sampler, llama_sampler_init_temp(temperature));
+      llama_sampler_chain_add(sampler, llama_sampler_init_dist(seed));
+    }
+  }
+
+  ~LlamaContextSampler()
+  {
+    if (sampler == NULL)
+    {
+      return;
+    }
+    llama_sampler_free(sampler);
+    sampler = NULL;
+    model->Unref();
+  }
+
+  Napi::Value AcceptToken(const Napi::CallbackInfo &info)
+  {
+    llama_token tokenId = info[0].As<Napi::Number>().Int32Value();
+    llama_sampler_accept(sampler, tokenId);
+    return info.Env().Undefined();
   }
 
   static void init(Napi::Object exports)
   {
     auto def = DefineClass(
         exports.Env(),
-        "LlamaContextSampleCandidates",
+        "LlamaContextSampler",
         {
-            InstanceMethod("isValid", &LlamaContextSampleCandidates::IsValid),
+            InstanceMethod("acceptToken", &LlamaContextSampler::AcceptToken),
         });
-    exports.Set("LlamaContextSampleCandidates", def);
+    exports.Set("LlamaContextSampler", def);
   }
 };
 
@@ -75,18 +194,12 @@ public:
     auto hardware_concurrency = std::thread::hardware_concurrency();
 
     params = llama_context_default_params();
-    params.seed = -1;
     params.n_ctx = 0;
     params.n_seq_max = 1;
     params.n_threads = hardware_concurrency;
     params.n_threads_batch = hardware_concurrency;
 
     Napi::Object options = info[1].As<Napi::Object>();
-
-    if (options.Has("seed"))
-    {
-      params.seed = options.Get("seed").As<Napi::Number>().Uint32Value();
-    }
 
     if (options.Has("contextSize"))
     {
@@ -207,70 +320,14 @@ public:
 
   Napi::Value SampleToken(const Napi::CallbackInfo &info)
   {
-    float temperature = 0.0f;
-    float min_p = 0;
-    int32_t top_k = 40;
-    float top_p = 0.95f;
-
-    auto candidates = Napi::ObjectWrap<LlamaContextSampleCandidates>::Unwrap(info[0].As<Napi::Object>());
-    candidates->Ref();
-
-    Napi::Object options = info[1].As<Napi::Object>();
-
-    if (options.Has("temperature"))
-    {
-      temperature = options.Get("temperature").As<Napi::Number>().FloatValue();
-    }
-
-    if (options.Has("minP"))
-    {
-      min_p = options.Get("minP").As<Napi::Number>().FloatValue();
-    }
-
-    if (options.Has("topK"))
-    {
-      top_k = options.Get("topK").As<Napi::Number>().Int32Value();
-    }
-
-    if (options.Has("topP"))
-    {
-      top_p = options.Get("topP").As<Napi::Number>().FloatValue();
-    }
-
+    auto sampler = Napi::ObjectWrap<LlamaContextSampler>::Unwrap(info[0].As<Napi::Object>());
     this->Ref();
 
     auto worker = new _AsyncWorkerWithResult<llama_token>(
         Env(),
         [=]()
         {
-          llama_token result;
-          llama_token_data_array candidates_p = {candidates->candidates.data(), candidates->candidates.size(), false};
-
-          if (temperature <= 0)
-          {
-            result = llama_sample_token_greedy(ctx, &candidates_p);
-          }
-          else
-          {
-            const int32_t resolved_top_k =
-                top_k <= 0 ? llama_n_vocab(model->model) : std::min(top_k, llama_n_vocab(model->model));
-            const int32_t n_probs = 0;          // Number of probabilities to keep - 0 = disabled
-            const float tfs_z = 1.00f;          // Tail free sampling - 1.0 = disabled
-            const float typical_p = 1.00f;      // Typical probability - 1.0 = disabled
-            const float resolved_top_p = top_p; // Top p sampling - 1.0 = disabled
-
-            // Temperature sampling
-            size_t min_keep = std::max(1, n_probs);
-            llama_sample_top_k(ctx, &candidates_p, resolved_top_k, min_keep);
-            llama_sample_tail_free(ctx, &candidates_p, tfs_z, min_keep);
-            llama_sample_typical(ctx, &candidates_p, typical_p, min_keep);
-            llama_sample_top_p(ctx, &candidates_p, resolved_top_p, min_keep);
-            llama_sample_min_p(ctx, &candidates_p, min_p, min_keep);
-            llama_sample_temp(ctx, &candidates_p, temperature);
-            result = llama_sample_token(ctx, &candidates_p);
-          }
-
-          return result;
+          return llama_sampler_sample(sampler->sampler, ctx, -1);
         },
         [=](Napi::Env env, llama_token result)
         {
@@ -279,7 +336,6 @@ public:
         [=]()
         {
           this->Unref();
-          candidates->Unref();
         });
 
     worker->Queue();
@@ -323,97 +379,3 @@ public:
     exports.Set("LlamaContext", def);
   }
 };
-
-LlamaContextSampleCandidates::LlamaContextSampleCandidates(const Napi::CallbackInfo &info) : Napi::ObjectWrap<LlamaContextSampleCandidates>(info)
-{
-  float repeat_penalty = 1.10f;                   // 1.0 = disabled
-  float repeat_penalty_presence_penalty = 0.00f;  // 0.0 = disabled
-  float repeat_penalty_frequency_penalty = 0.00f; // 0.0 = disabled
-  std::unordered_map<llama_token, float> tokenBias;
-  std::vector<llama_token> repeat_penalty_tokens;
-
-  auto ctx = Napi::ObjectWrap<LlamaContext>::Unwrap(info[0].As<Napi::Object>());
-  Napi::Object options = info[1].As<Napi::Object>();
-
-  if (options.Has("tokenBias"))
-  {
-    auto _tokenBias = options.Get("tokenBias").As<Napi::Array>();
-    for (size_t i = 0; i < _tokenBias.Length(); ++i)
-    {
-      auto key = _tokenBias.Get(i).As<Napi::Object>().Get("key").As<Napi::Number>().Uint32Value();
-      auto value = _tokenBias.Get(i).As<Napi::Object>().Get("value").As<Napi::Number>().FloatValue();
-      tokenBias[static_cast<llama_token>(key)] = value;
-    }
-  }
-
-  if (options.Has("repeatPenalty"))
-  {
-    repeat_penalty = options.Get("repeatPenalty").As<Napi::Number>().FloatValue();
-  }
-
-  if (options.Has("repeatPenaltyTokens"))
-  {
-    Napi::Uint32Array array = options.Get("repeatPenaltyTokens").As<Napi::Uint32Array>();
-    repeat_penalty_tokens.reserve(array.ElementLength());
-    for (size_t i = 0; i < array.ElementLength(); ++i)
-    {
-      repeat_penalty_tokens.push_back(static_cast<llama_token>(array[i]));
-    }
-  }
-
-  if (options.Has("repeatPenaltyPresencePenalty"))
-  {
-    repeat_penalty_presence_penalty = options.Get("repeatPenaltyPresencePenalty").As<Napi::Number>().FloatValue();
-  }
-
-  if (options.Has("repeatPenaltyFrequencyPenalty"))
-  {
-    repeat_penalty_frequency_penalty = options.Get("repeatPenaltyFrequencyPenalty").As<Napi::Number>().FloatValue();
-  }
-
-  // Select the best prediction.
-  if (llama_get_logits(ctx->ctx) == nullptr)
-  {
-    throw std::runtime_error("This model does not support token generation");
-  }
-
-  auto logits = llama_get_logits_ith(ctx->ctx, -1);
-  auto n_vocab = llama_n_vocab(ctx->model->model);
-
-  candidates.reserve(n_vocab);
-
-  for (llama_token token_id = 0; token_id < n_vocab; ++token_id)
-  {
-    auto logit = logits[token_id];
-    if (!tokenBias.empty() && tokenBias.find(token_id) != tokenBias.end())
-    {
-      auto logitBias = tokenBias.at(token_id);
-      if (logitBias == -INFINITY || logitBias < -INFINITY)
-      {
-        if (!llama_token_is_eog(ctx->model->model, token_id))
-        {
-          logit = -INFINITY;
-        }
-      }
-      else
-      {
-        logit += logitBias;
-      }
-    }
-    candidates.emplace_back(llama_token_data{token_id, logit, 0.0f});
-  }
-
-  llama_token_data_array candidates_p = {candidates.data(), candidates.size(), false};
-
-  if (!repeat_penalty_tokens.empty())
-  {
-    llama_sample_repetition_penalties(
-        ctx->ctx,
-        &candidates_p,
-        repeat_penalty_tokens.data(),
-        repeat_penalty_tokens.size(),
-        repeat_penalty,
-        repeat_penalty_frequency_penalty,
-        repeat_penalty_presence_penalty);
-  }
-}

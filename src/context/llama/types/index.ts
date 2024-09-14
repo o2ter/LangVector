@@ -26,7 +26,6 @@
 import { Awaitable } from '@o2ter/utils-js';
 import { ChatWrapper } from '../../../chat/wrapper/types';
 import { LLMTextValue } from '../../../types';
-import { LlamaGrammar } from '../../../device/llama/grammar';
 import { Schema } from './schema';
 import type { LlamaContext } from '../index';
 
@@ -78,9 +77,6 @@ export type LlamaSequenceRepeatPenalty = {
    * Enabled by default.
    */
   penalizeNewLine?: boolean;
-  /** Tokens to lower the predication probability of to be the next predicted token */
-  punishTokens?: Uint32List | ((ctx: LlamaContext) => Uint32List);
-  punishTokensFilter?: (ctx: LlamaContext, tokens: Uint32List) => Uint32List;
   /**
    * The relative amount to lower the probability of the tokens in `punishTokens` by
    * Defaults to `1.1`.
@@ -158,5 +154,5 @@ export type LLamaChatPromptOptions = {
    */
   stopTriggers?: LLMTextValue[];
 
-  grammar?: LlamaGrammar;
+  grammar?: string;
 };

@@ -30,11 +30,9 @@ import { Worker } from './worker';
 import { Awaitable, EventIterator } from '@o2ter/utils-js';
 import { LLMContext } from '../base';
 import { LlamaModel } from '../../model/llama';
-import { LlamaDevice } from '../../device/llama';
 import { LLamaChatPromptOptions, LlamaContextOptions } from './types';
 import { DisposedError, LLMTextValue } from '../../types';
 import { ChatHistoryItem } from '../../chat/wrapper/types';
-import { LlamaGrammar } from '../../device/llama/grammar';
 import * as llamaCpp from '../../plugins/llamaCpp';
 
 export class LlamaContext extends LLMContext<LlamaModel> {
@@ -176,56 +174,6 @@ export class LlamaContext extends LLMContext<LlamaModel> {
   }
 
   /** @internal */
-  private _grammarEvaluationState(
-    grammar: LlamaGrammar,
-  ) {
-    return new llamaCpp.LlamaGrammarEvaluationState(this._ctx, grammar._grammar);
-  }
-
-  /** @internal */
-  private _sampleCandidates(
-    options: LLamaChatPromptOptions,
-  ) {
-
-    const lastTokens = options.repeatPenalty ? options.repeatPenalty.lastTokens ?? 64 : 0;
-    const penalizeNewLine = options.repeatPenalty ? options.repeatPenalty.penalizeNewLine : null;
-    const punishTokensFilter = options.repeatPenalty ? options.repeatPenalty.punishTokensFilter : null;
-
-    const repeatPenalty = {
-      punishTokens: () => {
-        let tokens: Uint32List = this._tokens.slice(-lastTokens);
-        tokens = punishTokensFilter ? punishTokensFilter(this, tokens) : tokens;
-        if (penalizeNewLine !== false) {
-          const nlToken = this.model.tokens.nl;
-          if (nlToken != null) tokens = tokens.filter(token => token !== nlToken);
-        }
-        return tokens;
-      },
-      ...options.repeatPenalty ? options.repeatPenalty : {},
-    };
-    const punishTokens = options.repeatPenalty === false ?
-      [] : _.isFunction(repeatPenalty.punishTokens) ?
-        repeatPenalty.punishTokens(this) :
-        repeatPenalty.punishTokens;
-    const tokenBias = [
-      ..._.isFunction(options.tokenBias) ?
-        options.tokenBias(this) :
-        options.tokenBias ?? []
-    ];
-
-    return new llamaCpp.LlamaContextSampleCandidates(this._ctx, _.pickBy({
-      tokenBias: _.map(tokenBias, ([key, value]) => ({
-        key: key,
-        value: value === 'never' ? Number.NEGATIVE_INFINITY : value,
-      })),
-      repeatPenalty: repeatPenalty.penalty,
-      repeatPenaltyPresencePenalty: repeatPenalty.presencePenalty,
-      repeatPenaltyFrequencyPenalty: repeatPenalty.frequencyPenalty,
-      repeatPenaltyTokens: punishTokens instanceof Uint32Array ? punishTokens : new Uint32Array(punishTokens),
-    }, v => !_.isNil(v)));
-  }
-
-  /** @internal */
   private async _contextShiftStrategy() {
 
     const contextShiftStrategy = this._options.chatOptions?.contextShiftStrategy;
@@ -290,7 +238,7 @@ export class LlamaContext extends LLMContext<LlamaModel> {
 
     const modules: {
       beginTrigger: string;
-      grammar: LlamaGrammar;
+      grammar: string;
       stopGenerationTriggers: Uint32List[];
       handle: (tokens: number[]) => Awaitable<LLMTextValue[]>;
     }[] = [];
@@ -317,6 +265,24 @@ export class LlamaContext extends LLMContext<LlamaModel> {
   }
 
   /** @internal */
+  private _sampler(options: LLamaChatPromptOptions) {
+    return new llamaCpp.LlamaContextSampler(this.model._model, _.pickBy({
+      temperature: options.temperature,
+      minP: options.minP,
+      topK: options.topK,
+      topP: options.topP,
+      repeatPenalty: options.repeatPenalty ? _.pickBy({
+        lastTokens: options.repeatPenalty.lastTokens,
+        penalizeNewLine: options.repeatPenalty.penalizeNewLine,
+        penalty: options.repeatPenalty.penalty,
+        frequencyPenalty: options.repeatPenalty.frequencyPenalty,
+        presencePenalty: options.repeatPenalty.presencePenalty,
+      }, v => !_.isNil(v)) : null,
+      grammar: options.grammar,
+    }, v => !_.isNil(v)));
+  }
+
+  /** @internal */
   private async _evaluate(
     value: LLMTextValue,
     options: LLamaChatPromptOptions,
@@ -327,7 +293,7 @@ export class LlamaContext extends LLMContext<LlamaModel> {
 
     const modules = this._evaluate_modules();
     const chatWrapper = this._options.chatOptions?.chatWrapper;
-    const grammar = options.grammar ? this._grammarEvaluationState(options.grammar) : null;
+    const sampler = this._sampler(options);
     const stopTriggers = _.map(
       options.stopTriggers ?? chatWrapper?.stopGenerationTriggers(this),
       x => this.model.tokenize(x)
@@ -349,7 +315,7 @@ export class LlamaContext extends LLMContext<LlamaModel> {
           inputs = [];
 
           let maxTokens = options.maxTokens ?? -1;
-          let _grammar = grammar;
+          let _sampler = null;
           let _modules: typeof modules = [];
           let _selected_module: typeof modules[number] | undefined;
           let _module_records: [number, number][] | undefined;
@@ -362,23 +328,8 @@ export class LlamaContext extends LLMContext<LlamaModel> {
             } as const;
 
             const time = clock();
-            let candidates = this._sampleCandidates(options);
-
-            if (_grammar) {
-              _grammar.sampleToken(candidates);
-              if (!candidates.isValid()) {
-                // logit biases caused grammar sampling to fail, so sampling again without logit biases
-                candidates = this._sampleCandidates(_.omit(options, 'tokenBias'));
-                _grammar.sampleToken(candidates);
-              }
-            }
-
-            const sample = await this._ctx.sampleToken(candidates, _.pickBy({
-              temperature: options.temperature,
-              minP: options.minP,
-              topK: options.topK,
-              topP: options.topP,
-            }, v => !_.isNil(v)));
+            
+            const sample = await this._ctx.sampleToken(_sampler ?? sampler);
 
             if (this.model.isEogToken(sample)) {
               if (_selected_module && !_.isNil(_module_records)) {
@@ -410,7 +361,7 @@ export class LlamaContext extends LLMContext<LlamaModel> {
 
             let _record_pushed = false;
 
-            if (_.isNil(_grammar) && _.isNil(_selected_module) && _.isEmpty(_modules)) {
+            if (_.isNil(_sampler) && _.isNil(_selected_module) && _.isEmpty(_modules)) {
               let str_0 = '';
               let str_1 = this.model.detokenize(sample);
               while (!_.isEmpty(str_1)) {
@@ -440,15 +391,14 @@ export class LlamaContext extends LLMContext<LlamaModel> {
             } else {
               onToken(sample, _time);
             }
-            if (_grammar) _grammar.acceptToken(sample);
 
             if (_.isNil(_selected_module) && !_.isEmpty(_modules) && !_.isNil(_module_records)) {
               const record = this.model.detokenize(_.map(_module_records, ([x]) => x));
               for (const module of _modules) {
                 if (_.startsWith(record, module.beginTrigger)) {
                   _selected_module = module;
-                  _grammar = this._grammarEvaluationState(_selected_module.grammar);
-                  for (const [token] of _module_records) _grammar.acceptToken(token);
+                  _sampler = this._sampler({ ...options, grammar: _selected_module.grammar });
+                  for (const [token] of _module_records) _sampler.acceptToken(token);
                   continue loop;
                 } else if (record.length >= module.beginTrigger.length) {
                   _modules = _.filter(_modules, x => x !== module);
@@ -456,7 +406,7 @@ export class LlamaContext extends LLMContext<LlamaModel> {
               }
               if (_.isEmpty(_modules)) {
                 for (const [sample, time] of _module_records) onToken(sample, time);
-                _grammar = null;
+                _sampler = null;
                 _selected_module = undefined;
                 _module_records = undefined;
               }

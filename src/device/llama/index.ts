@@ -28,12 +28,9 @@ import path from 'path';
 import { LLMDevice } from '../base';
 import { LlamaModel } from '../../model/llama';
 import { LlamaModelOptions } from '../../model/llama/types';
-import { LlamaGrammar } from './grammar';
 import * as llamaCpp from '../../plugins/llamaCpp';
 
 export class LlamaDevice extends LLMDevice {
-
-  static Grammar = LlamaGrammar;
 
   static systemInfo() { return llamaCpp.systemInfo(); }
   static supportsGpuOffloading() { return llamaCpp.getSupportsGpuOffloading(); }
