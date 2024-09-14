@@ -266,14 +266,14 @@ export class LlamaContext extends LLMContext<LlamaModel> {
 
   /** @internal */
   private _sampler(options: LLamaChatPromptOptions) {
-    return new llamaCpp.LlamaContextSampler(this.model._model, {
+    return new llamaCpp.LlamaContextSampler(this.model._model, _.pickBy({
       temperature: options.temperature,
       minP: options.minP,
       topK: options.topK,
       topP: options.topP,
-      repeatPenalty: options.repeatPenalty,
+      repeatPenalty: options.repeatPenalty ? _.pickBy(options.repeatPenalty, v => !_.isNil(v)) : null,
       grammar: options.grammar,
-    });
+    }, v => !_.isNil(v)));
   }
 
   /** @internal */
