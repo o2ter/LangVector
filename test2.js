@@ -98,7 +98,7 @@ const functions = {
   });
 
   const messages = [
-    'hi',
+    'hi! what\'s today\'s special menu?',
   ];
 
   for (const message of messages) {
