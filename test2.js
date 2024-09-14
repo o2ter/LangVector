@@ -16,8 +16,8 @@ const modelsDir = path.join(__dirname, './models');
   ];
 
   for (const message of messages) {
-    for await (const res of context.prompt(message)) {
-      console.log(res)
+    for await (const { response, done } of context.prompt(message)) {
+      console.log({ response: model.detokenize(response, { decodeSpecial: true }), done })
     }
   }
 
