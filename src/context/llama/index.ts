@@ -315,7 +315,7 @@ export class LlamaContext extends LLMContext<LlamaModel> {
           inputs = [];
 
           let maxTokens = options.maxTokens ?? -1;
-          let _sampler = null;
+          let _sampler = options.grammar ? sampler : null;
           let _modules: typeof modules = [];
           let _selected_module: typeof modules[number] | undefined;
           let _module_records: [number, number][] | undefined;
