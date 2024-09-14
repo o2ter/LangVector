@@ -391,7 +391,6 @@ export class LlamaContext extends LLMContext<LlamaModel> {
             } else {
               onToken(sample, _time);
             }
-            if (_sampler) _sampler.acceptToken(sample);
 
             if (_.isNil(_selected_module) && !_.isEmpty(_modules) && !_.isNil(_module_records)) {
               const record = this.model.detokenize(_.map(_module_records, ([x]) => x));
