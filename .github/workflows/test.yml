@@ -74,18 +74,10 @@ jobs:
       fail-fast: false
       matrix:
         node_version: ['18', '20', '22']
-        target_arch: ['aarch64', 'x86_64']
+        target_arch: ['x86_64']
     env:
       TARGET_ARCH: ${{ matrix.target_arch }}
     steps:
-      - name: Install dependencies on Ubuntu
-        if: matrix.target_arch == 'aarch64'
-        run: |
-          sudo apt-get update
-          sudo apt-get install ninja-build cmake libtbb-dev g++-aarch64-linux-gnu gcc-aarch64-linux-gnu
-          
-          which aarch64-linux-gnu-gcc
-          which aarch64-linux-gnu-g++
       - uses: Jimver/cuda-toolkit@v0.2.16
         id: cuda-toolkit
         with:
