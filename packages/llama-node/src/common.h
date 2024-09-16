@@ -26,6 +26,7 @@
 #pragma once
 
 #include <stddef.h>
+#include <thread>
 
 #include "llama.h"
 #include "common/common.h"
