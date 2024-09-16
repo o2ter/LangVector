@@ -42,7 +42,7 @@
     "@loadable/babel-plugin": "^5.16.1",
     "@o2ter/i18n": "^0.0.10",
     "@o2ter/react-booster": "^0.0.91",
-    "@o2ter/react-ui": "^0.0.374",
+    "@o2ter/react-ui": "^0.0.375",
     "@o2ter/server-js": "^0.0.17",
     "@o2ter/valid.js": "^1.0.9",
     "@o2ter/wireframe": "^0.0.61",
