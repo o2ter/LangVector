@@ -139,7 +139,6 @@ jobs:
       - uses: actions/download-artifact@v4
         with:
           path: packages/llama-node/build/Release/
-          merge-multiple: true
       - run: git config --global user.name "${{ github.actor }}"
       - run: git config --global user.email "github-action-${{ github.actor }}@users.noreply.github.com"
       - run: npm version ${{ github.event.release.tag_name }}
