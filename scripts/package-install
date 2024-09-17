@@ -21,6 +21,28 @@ if [[ -z "${PACKAGE_CPP_SOURCE}" ]]; then
   exit 1
 fi
 
+SYSTEM_NAME="$(uname -s | tr '[:upper:]' '[:lower:]')"
+SYSTEM_ARCH="$(uname -m)"
+
+PREBUILD_DIR=""
+
+if [[ "${SYSTEM_NAME}-${SYSTEM_ARCH}" = "darwin-arm64" ]]; then
+  PREBUILD_DIR="macos.arch_arm64.release"
+elif [[ -n "$(uname -a | grep Ubuntu)" ]]; then
+  if [[ -x "$(command -v nvcc)" ]]; then
+    PREBUILD_DIR="ubuntu-cuda.arch_${SYSTEM_ARCH}.release"
+  elif [[ -x "$(command -v vulkaninfo)" ]]; then
+    PREBUILD_DIR="ubuntu-vulkan.arch_${SYSTEM_ARCH}.release"
+  else
+    PREBUILD_DIR="ubuntu.arch_${SYSTEM_ARCH}.release"
+  fi
+fi
+
+if [[ -f "./build/Release/${PREBUILD_DIR}/llama-node.node" ]]; then
+  cp "./build/Release/${PREBUILD_DIR}/llama-node.node" "./build/Release/llama-node.node"
+  exit 0
+fi
+
 EXTRA_OPTIONS=""
 
 if [[ -x "$(command -v nvcc)" ]]; then
@@ -29,9 +51,9 @@ elif [[ -x "$(command -v vulkaninfo)" ]]; then
   EXTRA_OPTIONS="${EXTRA_OPTIONS} --CDGGML_VULKAN=ON"
 fi
 
-if [[ -n "${TARGET_ARCH}" && "${TARGET_ARCH}" != "$(uname -m)" ]]; then
+if [[ -n "${TARGET_ARCH}" && "${TARGET_ARCH}" != "${SYSTEM_ARCH}" ]]; then
   TOOLCHAIN_DIR="$( cd ../../toolchains && pwd )"
-  EXTRA_OPTIONS="${EXTRA_OPTIONS} --CDCMAKE_TOOLCHAIN_FILE=${TOOLCHAIN_DIR}/$(uname -s | tr '[:upper:]' '[:lower:]').target-${TARGET_ARCH}.cmake"
+  EXTRA_OPTIONS="${EXTRA_OPTIONS} --CDCMAKE_TOOLCHAIN_FILE=${TOOLCHAIN_DIR}/"${SYSTEM_NAME}".target-${TARGET_ARCH}.cmake"
 fi
 
 cmake-js compile --CDPACKAGE_CPP_SOURCE=${PACKAGE_CPP_SOURCE} ${EXTRA_OPTIONS}
