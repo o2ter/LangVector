@@ -28,7 +28,7 @@
     "test": "rm -rf ./test/dist/* && npm-run-all --parallel watch:*"
   },
   "dependencies": {
-    "@o2ter/utils-js": "^0.0.10",
+    "@o2ter/utils-js": "^0.0.11",
     "cmake-js": "^7.3.0",
     "lodash": "^4.17.21",
     "myers.js": "^0.0.15",
