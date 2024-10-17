@@ -129,7 +129,7 @@ public:
 
           for (size_t i = 0; i < token_length; ++i)
           {
-            llama_batch_add(batch, tokens[i], i + startPos, {0}, logitEnd && i + 1 == token_length);
+            common_batch_add(batch, tokens[i], i + startPos, {0}, logitEnd && i + 1 == token_length);
           }
           if (llama_decode(ctx, batch) < 0)
           {
@@ -171,7 +171,7 @@ public:
     }
 
     Napi::Float32Array result = Napi::Float32Array::New(Env(), n_embd);
-    llama_embd_normalize(embeddings, result.Data(), n_embd, embd_norm);
+    common_embd_normalize(embeddings, result.Data(), n_embd, embd_norm);
 
     return result;
   }

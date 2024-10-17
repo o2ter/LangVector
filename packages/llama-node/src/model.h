@@ -223,7 +223,7 @@ public:
     bool addSpecial = info[1].As<Napi::Boolean>().Value();
     bool encodeSpecial = info[2].As<Napi::Boolean>().Value();
 
-    std::vector<llama_token> tokens = llama_tokenize(model, text, addSpecial, encodeSpecial);
+    auto tokens = common_tokenize(model, text, addSpecial, encodeSpecial);
 
     Napi::Uint32Array result = Napi::Uint32Array::New(Env(), tokens.size());
     for (size_t i = 0; i < tokens.size(); ++i)
@@ -389,7 +389,7 @@ public:
   Napi::Value ApplyChatTemplate(const Napi::CallbackInfo &info)
   {
     std::string tmpl = info[0].As<Napi::String>().Utf8Value();
-    std::vector<llama_chat_msg> msgs;
+    std::vector<common_chat_msg> msgs;
 
     auto _msgs = info[1].As<Napi::Array>();
     for (size_t i = 0; i < _msgs.Length(); ++i)
@@ -399,7 +399,7 @@ public:
       msgs.push_back({role, content});
     }
 
-    auto result = llama_chat_apply_template(model, tmpl, msgs, false);
+    auto result = common_chat_apply_template(model, tmpl, msgs, false);
 
     return Napi::String::New(Env(), result);
   }

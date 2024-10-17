@@ -299,7 +299,7 @@ public:
 
           for (size_t i = 0; i < token_length; ++i)
           {
-            llama_batch_add(batch, tokens[i], i + startPos, {0}, logitEnd && i + 1 == token_length);
+            common_batch_add(batch, tokens[i], i + startPos, {0}, logitEnd && i + 1 == token_length);
           }
           if (llama_decode(ctx, batch) < 0)
           {
