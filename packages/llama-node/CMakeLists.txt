@@ -27,6 +27,8 @@ execute_process(COMMAND node -p "require('node-addon-api').include.slice(1,-1)"
 
 include_directories(${NODE_ADDON_API_DIR} ${CMAKE_JS_INC})
 
+set(LLAMA_BUILD_COMMON ON)
+
 add_subdirectory(${PACKAGE_CPP_SOURCE} "llama.cpp")
 include_directories("gpuInfo")
 include_directories(${PACKAGE_CPP_SOURCE})
