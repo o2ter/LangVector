@@ -297,15 +297,15 @@ public:
   }
   Napi::Value PrefixToken(const Napi::CallbackInfo &info)
   {
-    return getNapiControlToken(info, model, llama_token_prefix(model));
+    return getNapiControlToken(info, model, llama_token_fim_pre(model));
   }
   Napi::Value MiddleToken(const Napi::CallbackInfo &info)
   {
-    return getNapiControlToken(info, model, llama_token_middle(model));
+    return getNapiControlToken(info, model, llama_token_fim_mid(model));
   }
   Napi::Value SuffixToken(const Napi::CallbackInfo &info)
   {
-    return getNapiControlToken(info, model, llama_token_suffix(model));
+    return getNapiControlToken(info, model, llama_token_fim_suf(model));
   }
   Napi::Value EotToken(const Napi::CallbackInfo &info)
   {
