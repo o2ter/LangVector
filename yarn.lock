@@ -7974,10 +7974,10 @@ prop-types@^15.7.2:
     object-assign "^4.1.1"
     react-is "^16.13.1"
 
-proto.io@^0.0.175:
-  version "0.0.175"
-  resolved "https://registry.yarnpkg.com/proto.io/-/proto.io-0.0.175.tgz#bfda15a03aeb79e9a2df3a5fa4df2c4b83653b3e"
-  integrity sha512-231latIhO0tdd9auv4o/oH/SZzIeeJjZ5IzkvzaK3ycCwLK04Vabqb9EEb0OswgNM/XCl0At2yyZ5YoiVDk3DQ==
+proto.io@^0.0.176:
+  version "0.0.176"
+  resolved "https://registry.yarnpkg.com/proto.io/-/proto.io-0.0.176.tgz#184bfc73dc1b7e18d848cecbad7b63161011c0e2"
+  integrity sha512-Xpr5b8MnhKFmXxlzymNNOthDjDb+UZwC7zeQiSVR67WEMAUZ5bGh5NaEAAvToXkKpdCG5I2PEzZjDwCfA8kd7g==
   dependencies:
     "@google-cloud/storage" "^7.14.0"
     "@o2ter/crypto-js" "^0.0.7"
