@@ -28,7 +28,7 @@
     "test": "rm -rf ./test/dist/* && npm-run-all --parallel watch:*"
   },
   "dependencies": {
-    "@o2ter/utils-js": "^0.0.12",
+    "@o2ter/utils-js": "^0.0.13",
     "cmake-js": "^7.3.0",
     "lodash": "^4.17.21",
     "myers.js": "^0.0.15",
@@ -43,7 +43,7 @@
     "@o2ter/i18n": "^0.0.10",
     "@o2ter/react-booster": "^0.0.94",
     "@o2ter/react-ui": "^0.0.397",
-    "@o2ter/server-js": "^0.0.19",
+    "@o2ter/server-js": "^0.0.20",
     "@o2ter/valid.js": "^1.0.11",
     "@o2ter/wireframe": "^0.0.61",
     "@rollup/plugin-babel": "^6.0.0",
