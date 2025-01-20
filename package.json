@@ -28,7 +28,7 @@
     "test": "rm -rf ./test/dist/* && npm-run-all --parallel watch:*"
   },
   "dependencies": {
-    "@o2ter/utils-js": "^0.0.13",
+    "@o2ter/utils-js": "^0.0.14",
     "cmake-js": "^7.3.0",
     "lodash": "^4.17.21",
     "myers.js": "^0.0.15",
@@ -58,7 +58,7 @@
     "babel-loader": "^9.1.2",
     "express": "^4.21.0",
     "lodash": "^4.17.21",
-    "proto.io": "^0.0.191",
+    "proto.io": "^0.0.192",
     "react": "^18.3.1",
     "react-dom": "^18.3.1",
     "react-native-reanimated": "^3.15.2",
