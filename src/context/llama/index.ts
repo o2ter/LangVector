@@ -27,7 +27,7 @@ import _ from 'lodash';
 import { myers } from 'myers.js';
 import { clock } from '../../utils';
 import { Worker } from './worker';
-import { Awaitable, EventIterator } from '@o2ter/utils-js';
+import { AsyncStream, Awaitable, EventIterator } from '@o2ter/utils-js';
 import { LLMContext } from '../base';
 import { LlamaModel } from '../../model/llama';
 import { LLamaChatPromptOptions, LlamaContextOptions } from './types';
@@ -433,9 +433,10 @@ export class LlamaContext extends LLMContext<LlamaModel> {
   /** @internal */
   private _evaluate_iterator(value: LLMTextValue, options: LLamaChatPromptOptions) {
     type Result = Awaited<ReturnType<LlamaContext['_evaluate']>>;
-    return EventIterator(async (push, resolve) => {
+    const stream = EventIterator(async (push, resolve) => {
       resolve(await this._evaluate(value, options, (token, time) => push({ token, time })));
-    }) as AsyncGenerator<{ token: number; time: number; }, { [K in keyof Result]: Result[K] }>;
+    });
+    return stream.makeAsyncIterable() as unknown as AsyncGenerator<{ token: number; time: number; }, { [K in keyof Result]: Result[K] }>;
   }
 
   prompt(value: LLMTextValue, options: LLamaChatPromptOptions = {}) {
