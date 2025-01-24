@@ -6,8 +6,7 @@
 
 import _ from 'lodash';
 import React from 'react';
-import { View } from '@o2ter/react-ui';
-import { useSearchParams } from 'react-router-dom';
+import { View, useSearchParams } from '@o2ter/react-ui';
 import { TabProps, TabsProps } from './types';
 import { DefaultTabbar } from './tabbar';
 import { TabsContext } from './context';
