@@ -70,7 +70,7 @@ public:
       params.pooling_type = static_cast<enum llama_pooling_type>(pooling_type);
     }
 
-    ctx = llama_new_context_with_model(model->model, params);
+    ctx = llama_init_from_model(model->model, params);
     if (ctx == NULL)
     {
       Napi::Error::New(Env(), "Failed to load context").ThrowAsJavaScriptException();
@@ -157,7 +157,7 @@ public:
       embd_norm = options.Get("normalize").As<Napi::Number>().Int32Value();
     }
 
-    const int n_embd = llama_n_embd(model->model);
+    const int n_embd = llama_model_n_embd(model->model);
     auto *embeddings = llama_get_embeddings_seq(ctx, 0);
     if (embeddings == NULL)
     {

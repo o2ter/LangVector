@@ -213,11 +213,6 @@ export class LlamaModel extends LLMModel<LlamaDevice> {
     return [..._detokenize(value)].join('');
   }
 
-  applyChatTemplate(msgs: { role: string; content: string; }[]): string | undefined {
-    const template = this.chatTemplate;
-    return template ? this._model.applyChatTemplate(template, msgs) : undefined;
-  }
-
   createContext(options: LlamaContextOptions = {}) {
     const _options = _.pickBy(options, v => !_.isNil(v));
     const ctx = new llamaCpp.LlamaContext(this._model, _options);

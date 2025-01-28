@@ -273,7 +273,6 @@ export class LlamaContext extends LLMContext<LlamaModel> {
       topP: options.topP,
       repeatPenalty: options.repeatPenalty ? _.pickBy({
         lastTokens: options.repeatPenalty.lastTokens,
-        penalizeNewLine: options.repeatPenalty.penalizeNewLine,
         penalty: options.repeatPenalty.penalty,
         frequencyPenalty: options.repeatPenalty.frequencyPenalty,
         presencePenalty: options.repeatPenalty.presencePenalty,

@@ -73,11 +73,6 @@ export type LlamaSequenceRepeatPenalty = {
    */
   lastTokens?: number;
   /**
-   * Penalize new line tokens.
-   * Enabled by default.
-   */
-  penalizeNewLine?: boolean;
-  /**
    * The relative amount to lower the probability of the tokens in `punishTokens` by
    * Defaults to `1.1`.
    * Set to `1` to disable.

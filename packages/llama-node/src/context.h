@@ -82,15 +82,9 @@ public:
       float repeat = 1.10f;    // 1.0 = disabled
       float presence = 0.00f;  // 0.0 = disabled
       float frequency = 0.00f; // 0.0 = disabled
-      bool penalize_nl = true;
-      bool ignore_eos = false;
       if (repeatPenalty.Has("lastTokens"))
       {
         last_n = repeatPenalty.Get("lastTokens").As<Napi::Number>().Int32Value();
-      }
-      if (repeatPenalty.Has("penalizeNewLine"))
-      {
-        penalize_nl = repeatPenalty.Get("penalizeNewLine").As<Napi::Boolean>().Value();
       }
       if (repeatPenalty.Has("penalty"))
       {
@@ -107,21 +101,16 @@ public:
       llama_sampler_chain_add(
           sampler,
           llama_sampler_init_penalties(
-              llama_n_vocab(model->model),
-              llama_token_eos(model->model),
-              llama_token_nl(model->model),
               last_n,
               repeat,
               frequency,
-              presence,
-              penalize_nl,
-              ignore_eos));
+              presence));
     }
 
     if (options.Has("grammar"))
     {
       std::string grammar = options.Get("grammar").As<Napi::String>().Utf8Value();
-      llama_sampler_chain_add(sampler, llama_sampler_init_grammar(model->model, grammar.c_str(), "root"));
+      llama_sampler_chain_add(sampler, llama_sampler_init_grammar(llama_model_get_vocab(model->model), grammar.c_str(), "root"));
     }
 
     if (temperature <= 0)
@@ -130,9 +119,8 @@ public:
     }
     else
     {
-      const int32_t resolved_top_k = top_k <= 0 ? llama_n_vocab(model->model) : std::min(top_k, llama_n_vocab(model->model));
+      const int32_t resolved_top_k = top_k <= 0 ? llama_vocab_n_tokens(llama_model_get_vocab(model->model)) : std::min(top_k, llama_vocab_n_tokens(llama_model_get_vocab(model->model)));
       const int32_t n_probs = 0;          // Number of probabilities to keep - 0 = disabled
-      const float tfs_z = 1.00f;          // Tail free sampling - 1.0 = disabled
       const float typical_p = 1.00f;      // Typical probability - 1.0 = disabled
       const float resolved_top_p = top_p; // Top p sampling - 1.0 = disabled
 
@@ -140,7 +128,6 @@ public:
       size_t min_keep = std::max(1, n_probs);
 
       llama_sampler_chain_add(sampler, llama_sampler_init_top_k(resolved_top_k));
-      llama_sampler_chain_add(sampler, llama_sampler_init_tail_free(tfs_z, min_keep));
       llama_sampler_chain_add(sampler, llama_sampler_init_typical(typical_p, min_keep));
       llama_sampler_chain_add(sampler, llama_sampler_init_top_p(resolved_top_p, min_keep));
       llama_sampler_chain_add(sampler, llama_sampler_init_min_p(min_p, min_keep));
@@ -225,7 +212,7 @@ public:
       params.n_threads_batch = resolved_n_threads;
     }
 
-    ctx = llama_new_context_with_model(model->model, params);
+    ctx = llama_init_from_model(model->model, params);
     if (ctx == NULL)
     {
       Napi::Error::New(Env(), "Failed to load context").ThrowAsJavaScriptException();
