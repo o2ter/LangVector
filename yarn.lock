@@ -8361,14 +8361,14 @@ prop-types@^15.7.2:
     object-assign "^4.1.1"
     react-is "^16.13.1"
 
-proto.io@^0.0.217:
-  version "0.0.217"
-  resolved "https://registry.yarnpkg.com/proto.io/-/proto.io-0.0.217.tgz#e052bfd72235cb74dbf0aeaf152a0ac2049d7cd8"
-  integrity sha512-kBQOMAcDS/UxCYp+gmjxXQvXvITvjysxn0hRBwsx9Ouo7GjEFBhwx72d8/zcChvvz7Kj6i9c/Gfy+fFVaMdm9w==
+proto.io@^0.0.218:
+  version "0.0.218"
+  resolved "https://registry.yarnpkg.com/proto.io/-/proto.io-0.0.218.tgz#0502525b29d09bed7f55fefc2ff25ec3299a66e5"
+  integrity sha512-HRsyvUJ6bzXP8VNmIbNH1Oy3TYXTink00uYsdXbjcVWjNjd80QcLHMpehEeVsHRXssHPCK6FbVDAEj0UWLmVZg==
   dependencies:
     "@google-cloud/storage" "^7.14.0"
     "@o2ter/crypto-js" "^0.0.7"
-    "@o2ter/utils-js" "^0.0.17"
+    "@o2ter/utils-js" "^0.0.18"
     ali-oss "^6.22.0"
     axios "^1.7.7"
     busboy "^1.6.0"
