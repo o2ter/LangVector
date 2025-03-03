@@ -2333,13 +2333,13 @@
     webpack "^5.97.1"
     webpack-cli "^6.0.1"
 
-"@o2ter/react-ui@^0.0.405":
-  version "0.0.405"
-  resolved "https://registry.yarnpkg.com/@o2ter/react-ui/-/react-ui-0.0.405.tgz#2f78d9fe40921d9907a41463840e9ca7bf0618bd"
-  integrity sha512-LWPHDFUxaYFne788C972MIcX7ET8CDjWQNpxTPo229PLt/vlaz2H/szFblV0H/hlsGDoCUvQNocIcXbFyIf0jQ==
+"@o2ter/react-ui@^0.0.406":
+  version "0.0.406"
+  resolved "https://registry.yarnpkg.com/@o2ter/react-ui/-/react-ui-0.0.406.tgz#3c646e36ed4bc4a45694cc637bab975dccda4dfc"
+  integrity sha512-NL+VKH/8w2VqHBp6cXjVEEbBB+2pPVQrOgEWbvlTwmb0F6Lye99VbCt0ZIAunu5FF3+K897C6qyQ9L0+4NJa5Q==
   dependencies:
     "@codemirror/lang-javascript" "^6.2.2"
-    "@o2ter/utils-js" "^0.0.17"
+    "@o2ter/utils-js" "^0.0.18"
     "@react-native-picker/picker" ">=2.7.6"
     "@react-native/normalize-colors" "^0.74.83"
     "@types/d3-dsv" "^3.0.7"
@@ -2402,13 +2402,6 @@
   version "0.0.12"
   resolved "https://registry.yarnpkg.com/@o2ter/utils-js/-/utils-js-0.0.12.tgz#fede4220b05792316cb1ca808448d906f2b69acb"
   integrity sha512-tF+6OEDq+OeC6iN4mgxzp7oCRGSaKiBOTAQG4r3Oga+eDMH5xIV0Zzs7cozsmebE91d2ioc4c/jgwBcCeFZMLw==
-  dependencies:
-    lodash ">=4.17.21"
-
-"@o2ter/utils-js@^0.0.17":
-  version "0.0.17"
-  resolved "https://registry.yarnpkg.com/@o2ter/utils-js/-/utils-js-0.0.17.tgz#b18be26781a0539c0cd592c26f5cd70d5622057c"
-  integrity sha512-IwbvwdCL9pxq5eK9Lsy+AOA8g3YNWNqebWEW68qy0Dc0zI+FlcLZsewJfBIYkQJ2kgroNTIEbohqHyQIHVt+zg==
   dependencies:
     lodash ">=4.17.21"
 
