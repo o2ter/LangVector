@@ -8,7 +8,10 @@ import sass from 'rollup-plugin-sass';
 import dts from 'rollup-plugin-dts';
 
 const rollupPlugins = [
-  typescript({ declaration: false }),
+  typescript({
+    declaration: false,
+    exclude: ['tests/**/*'],
+  }),
   babel({
     babelrc: false,
     exclude: 'node_modules/**',
