@@ -31,7 +31,7 @@
     "@o2ter/utils-js": "^0.0.18",
     "cmake-js": "^7.3.0",
     "lodash": "^4.17.21",
-    "myers.js": "^0.0.16",
+    "myers.js": "^0.0.17",
     "node-addon-api": "^8.1.0"
   },
   "devDependencies": {
