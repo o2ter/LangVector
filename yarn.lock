@@ -2296,10 +2296,10 @@
     events ">=3.3.0"
     lodash ">=4.17.21"
 
-"@o2ter/react-booster@^0.0.94":
-  version "0.0.94"
-  resolved "https://registry.yarnpkg.com/@o2ter/react-booster/-/react-booster-0.0.94.tgz#ff3826c3a196d2c70d9e5e80e131326fc8a2d921"
-  integrity sha512-pfSc5KZrjqNYxAlHEjUzY0p5Vh06yWjNZfAiFii/SDeS44sOUyTU0HEmbhhVk9H44aUvovWa03tOB2tVQXXf+g==
+"@o2ter/react-booster@^0.0.95":
+  version "0.0.95"
+  resolved "https://registry.yarnpkg.com/@o2ter/react-booster/-/react-booster-0.0.95.tgz#e778cb1425daa397055eaf18a1abc06aadd01140"
+  integrity sha512-R1pqJ27H8hyEUlYOe0s0+3ylZ5o3gD8qgNM0s8ZcBLwR9AMHzannd9V69T3yGUjpGSDHvXxEY6Ft50iU4lNpIQ==
   dependencies:
     "@babel/core" "^7.26.0"
     "@babel/preset-env" "^7.26.0"
@@ -2309,7 +2309,7 @@
     "@loadable/babel-plugin" "^5.16.1"
     "@loadable/component" "^5.16.4"
     "@loadable/webpack-plugin" "^5.15.2"
-    "@o2ter/utils-js" "^0.0.12"
+    "@o2ter/utils-js" "^0.0.18"
     autoprefixer "^10.4.20"
     babel-loader "^9.2.1"
     buffer "^6.0.3"
