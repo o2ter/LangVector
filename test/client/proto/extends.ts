@@ -23,7 +23,7 @@
 //  THE SOFTWARE.
 //
 
-import { classExtends } from 'proto.io/dist/client';
+import { classExtends } from 'proto.io/client';
 
 export default classExtends({
 });

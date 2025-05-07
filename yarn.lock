@@ -3769,10 +3769,19 @@ available-typed-arrays@^1.0.7:
   dependencies:
     possible-typed-array-names "^1.0.0"
 
-axios@^1.6.5, axios@^1.7.7:
+axios@^1.6.5:
   version "1.8.2"
   resolved "https://registry.yarnpkg.com/axios/-/axios-1.8.2.tgz#fabe06e241dfe83071d4edfbcaa7b1c3a40f7979"
   integrity sha512-ls4GYBm5aig9vWx8AWDSGLpnpDQRtWAfrjU+EuytuODrFBkqesN2RkOQCBzrA1RQNHw1SmRMSDDDSwzNAYQ6Rg==
+  dependencies:
+    follow-redirects "^1.15.6"
+    form-data "^4.0.0"
+    proxy-from-env "^1.1.0"
+
+axios@^1.8.2:
+  version "1.9.0"
+  resolved "https://registry.yarnpkg.com/axios/-/axios-1.9.0.tgz#25534e3b72b54540077d33046f77e3b8d7081901"
+  integrity sha512-re4CqKTJaURpzbLHtIi6XpDv20/CnpXOtjRY5/CU32L8gU8ek9UIivcfvSWvmKEngmVbrUtPpdDwWDWL7DNHvg==
   dependencies:
     follow-redirects "^1.15.6"
     form-data "^4.0.0"
@@ -8352,16 +8361,16 @@ prop-types@^15.7.2:
     object-assign "^4.1.1"
     react-is "^16.13.1"
 
-proto.io@^0.0.221:
-  version "0.0.221"
-  resolved "https://registry.yarnpkg.com/proto.io/-/proto.io-0.0.221.tgz#6cd5539e60efb05bf7836a62ff1bd1a01a6248e2"
-  integrity sha512-xsridE8svIm24P905BJmIE1p1GgqZxx0p3ts/QAiVojRgLAZw3lbYt40ko5jXh1eSj56L4LbkUraqgWq1nea0A==
+proto.io@^0.0.222:
+  version "0.0.222"
+  resolved "https://registry.yarnpkg.com/proto.io/-/proto.io-0.0.222.tgz#359c201517fc55f0b86d55d41f09d86e74db9533"
+  integrity sha512-/YObfK8ETAUMxmY9F7w85a6/noedA476ZPyg1MCO19c+7Imuv4jD9rQSZsrXMETMer9GUOh3W8oUIVP9zvIVFA==
   dependencies:
     "@google-cloud/storage" "^7.14.0"
     "@o2ter/crypto-js" "^0.0.7"
-    "@o2ter/utils-js" "^0.0.18"
+    "@o2ter/utils-js" "^0.0.19"
     ali-oss "^6.22.0"
-    axios "^1.7.7"
+    axios "^1.8.2"
     busboy "^1.6.0"
     decimal.js "^10.4.3"
     jsonwebtoken "^9.0.2"

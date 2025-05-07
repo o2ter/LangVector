@@ -23,7 +23,7 @@
 //  THE SOFTWARE.
 //
 
-import ProtoClient from 'proto.io/dist/client';
+import ProtoClient from 'proto.io/client';
 import { env } from '@o2ter/react-booster/src/route/client';
 import classExtends from './extends';
 
