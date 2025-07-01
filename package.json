@@ -24,8 +24,8 @@
     "clean": "rm -rf ./dist/*",
     "rollup": "yarn clean && rollup -c",
     "watch:build": "react-booster -w",
-    "watch:test": "until [ -f ./test/dist/server.js ]; do sleep 1; done && nodemon --watch ./test/dist ./test/dist/server.js",
-    "test": "rm -rf ./test/dist/* && npm-run-all --parallel watch:*"
+    "watch:test": "until [ -f ./test/dist/server.js ]; do sleep 1; done && npx nodemon --watch ./test/dist ./test/dist/server.js",
+    "test": "rm -rf ./test/dist/* && npx npm-run-all --parallel watch:*"
   },
   "dependencies": {
     "@o2ter/utils-js": "^0.0.19",
