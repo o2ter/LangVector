@@ -334,7 +334,7 @@ public:
     int32_t startPos = info[0].As<Napi::Number>().Int32Value();
     int32_t endPos = info[1].As<Napi::Number>().Int32Value();
 
-    bool result = llama_kv_cache_seq_rm(ctx, 0, startPos, endPos);
+    bool result = llama_memory_seq_rm(llama_get_memory(ctx), 0, startPos, endPos);
 
     return Napi::Boolean::New(Env(), result);
   }
@@ -344,7 +344,7 @@ public:
     int32_t endPos = info[1].As<Napi::Number>().Int32Value();
     int32_t shiftDelta = info[2].As<Napi::Number>().Int32Value();
 
-    llama_kv_cache_seq_add(ctx, 0, startPos, endPos, shiftDelta);
+    llama_memory_seq_add(llama_get_memory(ctx), 0, startPos, endPos, shiftDelta);
 
     return Env().Undefined();
   }

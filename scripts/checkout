@@ -9,5 +9,5 @@ SCRIPT_DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )"
 #
 
 cd "$SCRIPT_DIR"
-git submodule foreach --recursive git reset --hard
+git submodule foreach --recursive git reset --hard origin/master
 git submodule foreach --recursive git pull origin master
