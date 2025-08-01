@@ -9,8 +9,7 @@
     "toolchains/*",
     "scripts/install",
     "scripts/package-install",
-    "packages/llama-node",
-    "packages/stable-diffusion-node"
+    "packages/llama-node"
   ],
   "repository": "https://github.com/o2ter/LangVector.git",
   "author": "Susan Cheng <susan.doggie@gmail.com>",
