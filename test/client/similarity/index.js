@@ -24,30 +24,26 @@
 //
 
 import _ from 'lodash';
-import React from 'react';
-import { Select, TextInput, SegmentedControl } from '@o2ter/react-ui';
-import { Container } from '@o2ter/wireframe';
-import { useAsyncResource } from 'sugax';
-import { Proto } from '../proto';
+import { useResource, useState } from 'frosty';
 import { Similarity as _Similarity } from '../../../src/similarity';
 
 const embedding = (model, value) => Proto.run('llm_embedding', { model_name: model, value })
 
 export const Similarity = () => {
 
-  const [model, setModel] = React.useState('sentence-transformers/all-MiniLM-L6-v2/ggml-model-f16.gguf');
-  const [method, setMethod] = React.useState('cosine');
+  const [model, setModel] = useState('sentence-transformers/all-MiniLM-L6-v2/ggml-model-f16.gguf');
+  const [method, setMethod] = useState('cosine');
 
-  const [source, setSource] = React.useState('That is a happy person');
-  const [compare, setCompare] = React.useState([
+  const [source, setSource] = useState('That is a happy person');
+  const [compare, setCompare] = useState([
     'That is a happy dog',
     'That is a very happy person',
     'Today is a sunny day',
   ]);
 
-  const { resource: models } = useAsyncResource(() => Proto.run('llm_models'), []);
+  const { resource: models } = useResource(() => Proto.run('llm_models'), []);
 
-  const { resource: result } = useAsyncResource({
+  const { resource: result } = useResource({
     fetch: async () => {
       if (!model) return;
       const { vector: s } = await embedding(model, source);

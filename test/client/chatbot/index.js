@@ -24,11 +24,8 @@
 //
 
 import _ from 'lodash';
-import React from 'react';
+import { useCallback, useEffect, useMemo, useState } from 'frosty';
 import { io } from 'socket.io-client';
-import { Button, ScrollView, Text, TextInput } from '@o2ter/react-ui';
-import { useAsyncResource } from 'sugax';
-import Proto from '../proto';
 
 const ChatBox = ({ classes, text, ...props }) => (
   <Text classes={['m-3 px-3 py-1 rounded', classes]} {...props}>{text}</Text>
@@ -36,16 +33,14 @@ const ChatBox = ({ classes, text, ...props }) => (
 
 export const Chatbot = () => {
 
-  const socket = React.useMemo(() => io(), []);
+  const socket = useMemo(() => io(), []);
 
-  const [input, setInput] = React.useState('');
-  const [state, setState] = React.useState({});
-  const [userMessage, setUserMessage] = React.useState('');
-  const [partial, setPartial] = React.useState('');
+  const [input, setInput] = useState('');
+  const [state, setState] = useState({});
+  const [userMessage, setUserMessage] = useState('');
+  const [partial, setPartial] = useState('');
 
-  const { resource: models } = useAsyncResource(() => Proto.run('llm_models'), []);
-
-  React.useEffect(() => {
+  useEffect(() => {
 
     socket.on('response', ({
       partial,
@@ -62,12 +57,12 @@ export const Chatbot = () => {
 
   }, []);
 
-  const submit = React.useCallback(() => {
+  const submit = useCallback(() => {
     socket.emit('msg', input);
     setInput('');
   }, [input]);
 
-  const onchange = React.useCallback((key, value) => {
+  const onchange = useCallback((key, value) => {
     socket.emit('sync', _.set({}, key, value));
   }, []);
 

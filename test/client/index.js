@@ -24,7 +24,6 @@
 //
 
 import _ from 'lodash';
-import React from 'react';
 import { Tabs, Tab } from './tabs';
 import { Chatbot } from './chatbot';
 import { Similarity } from './similarity';

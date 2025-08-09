@@ -25,10 +25,6 @@
 
 import _ from 'lodash';
 import { Server } from '@o2ter/server-js';
-import ProtoRoute from 'proto.io';
-import { Proto } from './proto';
-import './cloud/main';
-
 import { createContext, models } from './llm';
 import { LlamaContext } from '../../src';
 
@@ -48,12 +44,6 @@ export const serverOptions: Server.Options = {
 
 /* eslint-disable no-param-reassign */
 export default async (app: Server, env: Record<string, any>) => {
-
-  env.PROTO_ENDPOINT = 'http://localhost:8080/proto';
-
-  app.express().use('/proto', await ProtoRoute({
-    proto: Proto,
-  }));
 
   app.socket().on('connection', async (socket) => {
 
