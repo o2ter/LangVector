@@ -39,11 +39,11 @@ export const App = () => (
         <button className="nav-link" id="similarity-tab" data-bs-toggle="tab" data-bs-target="#similarity" type="button" role="tab" aria-controls="similarity" aria-selected="false">Similarity</button>
       </li>
     </ul>
-    <div className="tab-content" id="myTabContent">
-      <div className="tab-pane fade show active" id="chatbot" role="tabpanel" aria-labelledby="chatbot-tab">
+    <div className="d-flex flex-column tab-content flex-fill" id="myTabContent">
+      <div className="d-flex tab-pane fade show active flex-fill" id="chatbot" role="tabpanel" aria-labelledby="chatbot-tab">
         <Chatbot />
       </div>
-      <div className="tab-pane fade" id="similarity" role="tabpanel" aria-labelledby="similarity-tab">
+      <div className="d-flex tab-pane fade flex-fill" id="similarity" role="tabpanel" aria-labelledby="similarity-tab">
         <Similarity />
       </div>
     </div>
