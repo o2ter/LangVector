@@ -41,7 +41,7 @@ export const App = () => (
     </ul>
     <div className="tab-content" id="myTabContent">
       <div className="tab-pane fade show active" id="chatbot" role="tabpanel" aria-labelledby="chatbot-tab">
-        {/* <Chatbot /> */}
+        <Chatbot />
       </div>
       <div className="tab-pane fade" id="similarity" role="tabpanel" aria-labelledby="similarity-tab">
         <Similarity />
