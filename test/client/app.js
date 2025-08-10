@@ -30,7 +30,7 @@ import './css/main.scss';
 import 'bootstrap';
 
 export const App = () => (
-  <>
+  <div className='d-flex flex-column flex-fill'>
     <ul className="nav nav-tabs" id="myTab" role="tablist">
       <li className="nav-item" role="presentation">
         <button className="nav-link active" id="chatbot-tab" data-bs-toggle="tab" data-bs-target="#chatbot" type="button" role="tab" aria-controls="chatbot" aria-selected="true">Chatbot</button>
@@ -41,11 +41,11 @@ export const App = () => (
     </ul>
     <div className="tab-content" id="myTabContent">
       <div className="tab-pane fade show active" id="chatbot" role="tabpanel" aria-labelledby="chatbot-tab">
-        <Chatbot />
+        {/* <Chatbot /> */}
       </div>
       <div className="tab-pane fade" id="similarity" role="tabpanel" aria-labelledby="similarity-tab">
         <Similarity />
       </div>
     </div>
-  </>
+  </div>
 );
