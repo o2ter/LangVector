@@ -39,7 +39,7 @@ export const App = () => (
         <button className="nav-link" id="similarity-tab" data-bs-toggle="tab" data-bs-target="#similarity" type="button" role="tab" aria-controls="similarity" aria-selected="false">Similarity</button>
       </li>
     </ul>
-    <div className="tab-content" id="myTabContent">
+    <div className="tab-content container" id="myTabContent">
       <div className="tab-pane fade show active" id="chatbot" role="tabpanel" aria-labelledby="chatbot-tab">
         {/* <Chatbot /> */}
       </div>
