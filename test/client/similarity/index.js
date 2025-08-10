@@ -30,6 +30,10 @@ import { Similarity as _Similarity } from '../../../src/similarity';
 const embedding = async (model, value) => {
   const res = await fetch('/api/llm_embedding', {
     method: 'POST',
+    headers: {
+      'Content-Type': 'application/json',
+      'Accept': 'application/json',
+    },
     body: JSON.stringify({ model_name: model, value }),
   });
   return res.json();
