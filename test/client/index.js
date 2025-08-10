@@ -23,28 +23,6 @@
 //  THE SOFTWARE.
 //
 
-import _ from 'lodash';
-import { Chatbot } from './chatbot';
-import { Similarity } from './similarity';
-import './css/main.scss';
+import { App } from './app';
 
-export default () => (
-  <>
-    <ul className="nav nav-tabs" id="myTab" role="tablist">
-      <li className="nav-item" role="presentation">
-        <button className="nav-link active" id="chatbot-tab" data-bs-toggle="tab" data-bs-target="#chatbot" type="button" role="tab" aria-controls="chatbot" aria-selected="true">Chatbot</button>
-      </li>
-      <li className="nav-item" role="presentation">
-        <button className="nav-link" id="similarity-tab" data-bs-toggle="tab" data-bs-target="#similarity" type="button" role="tab" aria-controls="similarity" aria-selected="false">Similarity</button>
-      </li>
-    </ul>
-    <div className="tab-content" id="myTabContent">
-      <div className="tab-pane fade show active" id="chatbot" role="tabpanel" aria-labelledby="chatbot-tab">
-        <Chatbot />
-      </div>
-      <div className="tab-pane fade" id="similarity" role="tabpanel" aria-labelledby="similarity-tab">
-        <Similarity />
-      </div>
-    </div>
-  </>
-);
+export default App;

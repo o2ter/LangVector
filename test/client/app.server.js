@@ -1,5 +1,5 @@
 //
-//  index.server.js
+//  app.server.js
 //
 //  The MIT License
 //  Copyright (c) 2021 - 2025 O2ter Limited. All rights reserved.
@@ -23,6 +23,7 @@
 //  THE SOFTWARE.
 //
 
-export const Similarity = () => (
-  <div />
+export const App = () => (
+  <>
+  </>
 );
