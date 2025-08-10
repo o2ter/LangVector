@@ -1,5 +1,5 @@
 //
-//  index.js
+//  index.server.js
 //
 //  The MIT License
 //  Copyright (c) 2021 - 2025 O2ter Limited. All rights reserved.
@@ -23,28 +23,6 @@
 //  THE SOFTWARE.
 //
 
-import _ from 'lodash';
-import { Chatbot } from './chatbot';
-import { Similarity } from './similarity';
-import './css/main.scss';
-
-export default () => (
-  <>
-    <ul class="nav nav-tabs" id="myTab" role="tablist">
-      <li class="nav-item" role="presentation">
-        <button class="nav-link active" id="chatbot-tab" data-bs-toggle="tab" data-bs-target="#chatbot" type="button" role="tab" aria-controls="chatbot" aria-selected="true">Chatbot</button>
-      </li>
-      <li class="nav-item" role="presentation">
-        <button class="nav-link" id="similarity-tab" data-bs-toggle="tab" data-bs-target="#similarity" type="button" role="tab" aria-controls="similarity" aria-selected="false">Similarity</button>
-      </li>
-    </ul>
-    <div class="tab-content" id="myTabContent">
-      <div class="tab-pane fade show active" id="chatbot" role="tabpanel" aria-labelledby="chatbot-tab">
-        <Chatbot />
-      </div>
-      <div class="tab-pane fade" id="similarity" role="tabpanel" aria-labelledby="similarity-tab">
-        <Similarity />
-      </div>
-    </div>
-  </>
+export const Chatbot = () => (
+  <div />
 );
