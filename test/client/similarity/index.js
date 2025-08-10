@@ -97,7 +97,7 @@ export const Similarity = () => {
       {_.map([...compare, ''], (x, i) => (
         <div key={i} className='d-flex flex-row flex-fill mt-1'>
           <input
-            classes='flex-fill'
+            className='flex-fill'
             value={x}
             onChange={e => setCompare(v => {
               const a = [...v];

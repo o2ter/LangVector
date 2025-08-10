@@ -28,7 +28,7 @@ import { useCallback, useEffect, useMemo, useState } from 'frosty';
 import { io } from 'socket.io-client';
 
 const ChatBox = ({ classes, text, ...props }) => (
-  <Text classes={['m-3 px-3 py-1 rounded', classes]} {...props}>{text}</Text>
+  <Text className={['m-3 px-3 py-1 rounded', classes]} {...props}>{text}</Text>
 );
 
 export const Chatbot = () => {
@@ -70,7 +70,7 @@ export const Chatbot = () => {
     <div className='d-flex flex-row flex-fill'>
       <div className='d-flex flex-column w-50 border-right'>
         <div className='d-flex flex-column flex-fill position-relative'>
-          <div classes='absolute-fill overflow-scroll'>
+          <div className='absolute-fill overflow-scroll'>
             <div>{state.raw}</div>
           </div>
         </div>
@@ -160,14 +160,14 @@ export const Chatbot = () => {
       </div>
       <div className='d-flex flex-column w-50'>
         <div className='d-flex flex-column flex-fill position-relative'>
-          <div classes='absolute-fill overflow-scroll'>
+          <div className='absolute-fill overflow-scroll'>
             {_.map(state.history, (x, i) => {
               switch (x.type) {
                 case 'user':
                   return (
                     <ChatBox
                       key={i}
-                      classes='bg-primary ml-auto'
+                      className='bg-primary ml-auto'
                       style={{ color: 'white' }}
                       text={x.text}
                     />
@@ -176,7 +176,7 @@ export const Chatbot = () => {
                   return (
                     <ChatBox
                       key={i}
-                      classes='bg-light mr-auto'
+                      className='bg-light mr-auto'
                       text={_.map(_.filter(x.response, s => _.isString(s)), s => s.trim()).join('\n')}
                     />
                   );
@@ -185,14 +185,14 @@ export const Chatbot = () => {
             })}
             {!_.isEmpty(userMessage) && (
               <ChatBox
-                classes='bg-primary ml-auto'
+                className='bg-primary ml-auto'
                 style={{ color: 'white' }}
                 text={userMessage}
               />
             )}
             {!_.isEmpty(partial) && (
               <ChatBox
-                classes='bg-light mr-auto'
+                className='bg-light mr-auto'
                 text={partial}
               />
             )}
@@ -200,7 +200,7 @@ export const Chatbot = () => {
         </div>
         <div className='d-flex flex-row p-2 gap-2 border-top'>
           <input
-            classes='flex-fill'
+            className='flex-fill'
             value={input}
             onChange={e => setInput(e.currentTarget.value)}
           />
