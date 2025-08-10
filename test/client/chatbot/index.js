@@ -28,7 +28,7 @@ import { useCallback, useEffect, useMemo, useState } from 'frosty';
 import { io } from 'socket.io-client';
 
 const ChatBox = ({ classes, text, ...props }) => (
-  <Text className={['m-3 px-3 py-1 rounded', classes]} {...props}>{text}</Text>
+  <div className={['m-3 px-3 py-1 rounded', classes]} {...props}>{text}</div>
 );
 
 export const Chatbot = () => {
