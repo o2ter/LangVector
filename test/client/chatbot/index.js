@@ -204,7 +204,7 @@ export const Chatbot = () => {
             value={input}
             onChange={e => setInput(e.currentTarget.value)}
           />
-          <button onClick={submit}>Send</button>
+          <button className='btn btn-primary' onClick={submit}>Send</button>
         </div>
       </div>
     </div>
