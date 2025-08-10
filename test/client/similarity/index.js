@@ -27,7 +27,13 @@ import _ from 'lodash';
 import { useResource, useState } from 'frosty';
 import { Similarity as _Similarity } from '../../../src/similarity';
 
-const embedding = (model, value) => Proto.run('llm_embedding', { model_name: model, value })
+const embedding = async (model, value) => {
+  const res = await fetch('/api/llm_embedding', {
+    method: 'POST',
+    body: JSON.stringify({ model_name: model, value }),
+  });
+  return res.json();
+}
 
 export const Similarity = () => {
 
@@ -41,7 +47,10 @@ export const Similarity = () => {
     'Today is a sunny day',
   ]);
 
-  const { resource: models } = useResource(() => Proto.run('llm_models'), []);
+  const { resource: models } = useResource(async () => {
+    const res = await fetch('/api/llm_models');
+    return res.json();
+  }, []);
 
   const { resource: result } = useResource({
     fetch: async () => {

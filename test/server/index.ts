@@ -25,7 +25,7 @@
 
 import _ from 'lodash';
 import { Server } from '@o2ter/server-js';
-import { createContext, models } from './llm';
+import { createContext, createModel, models } from './llm';
 import { LlamaContext } from '../../src';
 
 export const serverOptions: Server.Options = {
@@ -44,6 +44,20 @@ export const serverOptions: Server.Options = {
 
 /* eslint-disable no-param-reassign */
 export default async (app: Server, env: Record<string, any>) => {
+
+  app.express().get('/api/llm_models', (req, res) => {
+    res.json(models);
+  });
+
+  app.express().post('/api/llm_embedding', Server.json(), async (req, res) => {
+    const { model_name, value } = req.body;
+    const model = await createModel(model_name);
+    const { vector, ...x } = await model.embedding(value);
+    res.json({
+      vector: [...vector],
+      ...x,
+    });
+  });
 
   app.socket().on('connection', async (socket) => {
 
