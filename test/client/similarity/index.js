@@ -68,46 +68,47 @@ export const Similarity = () => {
 
   return (
     <div className='d-flex flex-column flex-fill'>
-      <Container>
-        <span className='mt-2'>Model</span>
-        <div className='d-flex flex-row flex-fill'>
-          <Select
-            value={model}
-            options={_.map(models, x => ({ value: x, label: x }))}
-            onValueChange={v => setModel(v)}
+      <span className='mt-2'>Model</span>
+      <div className='d-flex flex-row flex-fill'>
+        <select
+          value={model}
+          onChange={e => setModel(e.currentTarget.value)}
+        >
+          {_.map(models, x => (
+            <option value={x}>{x}</option>
+          ))}
+        </select>
+        {/* <SegmentedControl
+          value={method}
+          segments={[
+            { label: 'cosine', value: 'cosine' },
+            { label: 'distance', value: 'distance' },
+          ]}
+          onChange={v => setMethod(v)}
+        /> */}
+      </div>
+      <span className='mt-2'>Source Sentence</span>
+      <input value={source} onChange={e => setSource(e.currentTarget.value)} />
+      <span className='mt-2'>Sentences to compare to</span>
+      {_.map([...compare, ''], (x, i) => (
+        <div key={i} className='d-flex flex-row flex-fill mt-1'>
+          <input
+            classes='flex-fill'
+            value={x}
+            onChange={e => setCompare(v => {
+              const a = [...v];
+              a[i] = e.currentTarget.value;
+              return a;
+            })}
           />
-          <SegmentedControl
-            value={method}
-            segments={[
-              { label: 'cosine', value: 'cosine' },
-              { label: 'distance', value: 'distance' },
-            ]}
-            onChange={v => setMethod(v)}
-          />
+          {result?.[i] && (
+            <>
+              <span className='ml-2'>time: {result[i].time}</span>
+              <span className='ml-2'>{method}: {result[i][method]}</span>
+            </>
+          )}
         </div>
-        <span className='mt-2'>Source Sentence</span>
-        <TextInput value={source} onChangeText={setSource} />
-        <span className='mt-2'>Sentences to compare to</span>
-        {_.map([...compare, ''], (x, i) => (
-          <div key={i} className='d-flex flex-row flex-fill mt-1'>
-            <TextInput
-              classes='flex-fill'
-              value={x}
-              onChangeText={s => setCompare(v => {
-                const a = [...v];
-                a[i] = s;
-                return a;
-              })}
-            />
-            {result?.[i] && (
-              <>
-                <span className='ml-2'>time: {result[i].time}</span>
-                <span className='ml-2'>{method}: {result[i][method]}</span>
-              </>
-            )}
-          </div>
-        ))}
-      </Container>
+      ))}
     </div>
   );
 };

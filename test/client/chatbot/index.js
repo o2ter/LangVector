@@ -70,9 +70,9 @@ export const Chatbot = () => {
     <div className='d-flex flex-row flex-fill'>
       <div className='d-flex flex-column w-50 border-right'>
         <div className='d-flex flex-column flex-fill position-relative'>
-          <ScrollView classes='absolute-fill'>
-            <Text>{state.raw}</Text>
-          </ScrollView>
+          <div classes='absolute-fill overflow-scroll'>
+            <div>{state.raw}</div>
+          </div>
         </div>
         <div className='d-flex flex-column border-top'>
           <div className='row mb-3 px-3'>
@@ -160,7 +160,7 @@ export const Chatbot = () => {
       </div>
       <div className='d-flex flex-column w-50'>
         <div className='d-flex flex-column flex-fill position-relative'>
-          <ScrollView classes='absolute-fill'>
+          <div classes='absolute-fill overflow-scroll'>
             {_.map(state.history, (x, i) => {
               switch (x.type) {
                 case 'user':
@@ -196,16 +196,15 @@ export const Chatbot = () => {
                 text={partial}
               />
             )}
-          </ScrollView>
+          </div>
         </div>
         <div className='d-flex flex-row p-2 gap-2 border-top'>
-          <TextInput
+          <input
             classes='flex-fill'
             value={input}
-            onChangeText={setInput}
-            onSubmitEditing={submit}
+            onChange={e => setInput(e.currentTarget.value)}
           />
-          <Button title='Send' onPress={submit} />
+          <button title='Send' onClick={submit} />
         </div>
       </div>
     </div>
