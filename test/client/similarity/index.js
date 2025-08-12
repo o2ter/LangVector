@@ -72,22 +72,20 @@ export const Similarity = () => {
   return (
     <div className='d-flex flex-column h-100'>
       <span className='mt-2'>Model</span>
-      <div className='d-flex flex-row flex-fill'>
-        <select
-          className='form-control'
-          value={model}
-          onChange={e => setModel(e.currentTarget.value)}
-        >
-          {_.map(models, x => (
-            <option value={x}>{x}</option>
-          ))}
-        </select>
-      </div>
+      <select
+        className='form-control'
+        value={model}
+        onChange={e => setModel(e.currentTarget.value)}
+      >
+        {_.map(models, x => (
+          <option value={x}>{x}</option>
+        ))}
+      </select>
       <span className='mt-2'>Source Sentence</span>
       <input className='form-control' value={source} onChange={e => setSource(e.currentTarget.value)} />
       <span className='mt-2'>Sentences to compare to</span>
       {_.map([...compare, ''], (x, i) => (
-        <div key={i} className='d-flex flex-row flex-fill mt-1'>
+        <div key={i} className='d-flex flex-row mt-1 gap-3'>
           <input
             className='flex-fill form-control'
             value={x}
