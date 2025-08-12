@@ -183,6 +183,7 @@ export const Chatbot = () => {
             className='flex-fill form-control'
             value={input}
             onChange={e => setInput(e.currentTarget.value)}
+            onKeyUp={e => { if (e.key == 'Enter') submit(); }}
           />
           <button className='btn btn-primary' onClick={submit}>Send</button>
         </div>
