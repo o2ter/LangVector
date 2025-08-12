@@ -67,7 +67,7 @@ export const Chatbot = () => {
   }, []);
 
   return (
-    <div className='d-flex flex-row flex-fill'>
+    <div className='d-flex flex-row h-100'>
       <div className='d-flex flex-column w-50 border-right'>
         <div className='d-flex flex-column flex-fill position-relative'>
           <div className='absolute-fill overflow-scroll'>

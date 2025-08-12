@@ -70,7 +70,7 @@ export const Similarity = () => {
   }, [model, source, compare]);
 
   return (
-    <div className='d-flex flex-column flex-fill'>
+    <div className='d-flex flex-column h-100'>
       <span className='mt-2'>Model</span>
       <div className='d-flex flex-row flex-fill'>
         <select
