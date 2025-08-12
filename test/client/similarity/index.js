@@ -71,7 +71,7 @@ export const Similarity = () => {
 
   return (
     <div className='d-flex flex-column h-100'>
-      <span className='mt-2'>Model</span>
+      <span>Model</span>
       <select
         className='form-control'
         value={model}
@@ -81,22 +81,22 @@ export const Similarity = () => {
           <option value={x}>{x}</option>
         ))}
       </select>
-      <span className='mt-2'>Source Sentence</span>
+      <span>Source Sentence</span>
       <input className='form-control' value={source} onChange={e => setSource(e.currentTarget.value)} />
       <table border='0' cellspacing='0' cellpadding='0'>
         <thead>
           <tr>
             <th>
-              <span className='mt-2'>Sentences to compare to</span>
+              <span>Sentences to compare to</span>
             </th>
             <th>
-              <span className='mt-2'>time</span>
+              <span>time</span>
             </th>
             <th>
-              <span className='mt-2'>cosine</span>
+              <span>cosine</span>
             </th>
             <th>
-              <span className='mt-2'>distance</span>
+              <span>distance</span>
             </th>
           </tr>
         </thead>
@@ -115,13 +115,13 @@ export const Similarity = () => {
                 />
               </td>
               <td>
-                <span className='ml-2'>{result?.[i]?.time}</span>
+                <span>{result?.[i]?.time}</span>
               </td>
               <td>
-                <span className='ml-2'>{result?.[i]?.cosine}</span>
+                <span>{result?.[i]?.cosine}</span>
               </td>
               <td>
-                <span className='ml-2'>{result?.[i]?.distance}</span>
+                <span>{result?.[i]?.distance}</span>
               </td>
             </tr>
           ))}
