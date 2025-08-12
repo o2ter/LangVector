@@ -28,7 +28,7 @@
     "@o2ter/utils-js": "^0.0.19",
     "cmake-js": "^7.3.0",
     "lodash": "^4.17.21",
-    "myers.js": "^0.0.19",
+    "myers.js": "^0.0.20",
     "node-addon-api": "^8.1.0"
   },
   "devDependencies": {
@@ -46,7 +46,7 @@
     "@types/lodash": "^4.17.4",
     "babel-loader": "^9.1.2",
     "bootstrap": "^5.3.7",
-    "frosty": "^0.0.88",
+    "frosty": "^0.0.89",
     "rollup": "^4.22.4",
     "rollup-plugin-dts": "^6.1.1",
     "rollup-plugin-sass": "^1.13.2",

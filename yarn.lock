@@ -2232,10 +2232,10 @@ fresh@^2.0.0:
   resolved "https://registry.yarnpkg.com/fresh/-/fresh-2.0.0.tgz#8dd7df6a1b3a1b3a5cf186c05a5dd267622635a4"
   integrity sha512-Rx/WycZ60HOaqLKAi6cHRKKI7zxWbJ31MhntmtwMoaTeF7XFH9hhBp8vITaMidfljRQ6eYWCKkaTK+ykVJHP2A==
 
-frosty@^0.0.88:
-  version "0.0.88"
-  resolved "https://registry.yarnpkg.com/frosty/-/frosty-0.0.88.tgz#1fdc74523dd2bef05d8004a2da50f3b9936156cd"
-  integrity sha512-kRx1C0+qgGfWCZgjWi5v0KR4DmWbSxGfRb1VINsgJfvrcZYW4yTGBdnBYbNde2oZVSRYnILNKeEjVTnZHPi4IQ==
+frosty@^0.0.89:
+  version "0.0.89"
+  resolved "https://registry.yarnpkg.com/frosty/-/frosty-0.0.89.tgz#0aadf8c638ffdf1dd829fafdbd533d12a5937987"
+  integrity sha512-Y3nlRPusf+49x39ccBPxQSrakd2xLptRmhhQ1uYqUdAaH+bq5uD8i+kvZAN36fEtPCzCCu0oc30wJnGHemDT8w==
   dependencies:
     "@o2ter/utils-js" "^0.0.19"
     "@types/jsdom" "^21.1.7"
@@ -2244,7 +2244,7 @@ frosty@^0.0.88:
     csstype "^3.1.3"
     jsdom "^26.0.0"
     lodash ">=4.17.21"
-    myers.js "^0.0.19"
+    myers.js "^0.0.20"
     nextick "^0.0.2"
     postcss "^8.5.3"
     postcss-js "^4.0.1"
@@ -2735,10 +2735,10 @@ ms@^2.1.3:
   resolved "https://registry.yarnpkg.com/ms/-/ms-2.1.3.tgz#574c8138ce1d2b5861f0b44579dbadd60c6615b2"
   integrity sha512-6FlzubTLZG3J2a/NVCAleEhjzq5oxgHyaCU9yYXvcLsvoVaHJq/s5xXI6/XXP6tz7R9xAOtHnSO/tXtF3WRTlA==
 
-myers.js@^0.0.19:
-  version "0.0.19"
-  resolved "https://registry.yarnpkg.com/myers.js/-/myers.js-0.0.19.tgz#32dc85e8d91f69b405be5a02c357a2737e9b8064"
-  integrity sha512-QI3L42SlqwzTaIDkRkwhXZ4oQWx6kjzHzdWUn6Hn/LiqEywQLxKGuEXYrVH7ijQY46Wiyp7LMX3cIuH7NwQPEA==
+myers.js@^0.0.20:
+  version "0.0.20"
+  resolved "https://registry.yarnpkg.com/myers.js/-/myers.js-0.0.20.tgz#93ae821b490f7b6f66fed081b1b720ae19c066d0"
+  integrity sha512-uwTqcHx4ZezNxGH88HuzsNGizHMbxIep4Nq/QMDdNAJR0yuG5TeHMFEgxFhyn7qU4kDMqjXl0sIUd38+OzqNfg==
   dependencies:
     lodash "^4.17.21"
     nextick "^0.0.2"
