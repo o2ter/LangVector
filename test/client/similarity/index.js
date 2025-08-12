@@ -83,27 +83,50 @@ export const Similarity = () => {
       </select>
       <span className='mt-2'>Source Sentence</span>
       <input className='form-control' value={source} onChange={e => setSource(e.currentTarget.value)} />
-      <span className='mt-2'>Sentences to compare to</span>
-      {_.map([...compare, ''], (x, i) => (
-        <div key={i} className='d-flex flex-row mt-1 gap-3'>
-          <input
-            className='flex-fill form-control'
-            value={x}
-            onChange={e => setCompare(v => {
-              const a = [...v];
-              a[i] = e.currentTarget.value;
-              return a;
-            })}
-          />
-          {result?.[i] && (
-            <>
-              <span className='ml-2'>time: {result[i].time}</span>
-              <span className='ml-2'>cosine: {result[i].cosine}</span>
-              <span className='ml-2'>distance: {result[i].distance}</span>
-            </>
-          )}
-        </div>
-      ))}
+      <table border='0' cellspacing='0' cellpadding='0'>
+        <thead>
+          <tr>
+            <th>
+              <span className='mt-2'>Sentences to compare to</span>
+            </th>
+            <th>
+              <span className='mt-2'>time</span>
+            </th>
+            <th>
+              <span className='mt-2'>cosine</span>
+            </th>
+            <th>
+              <span className='mt-2'>distance</span>
+            </th>
+          </tr>
+        </thead>
+        <tbody>
+          {_.map([...compare, ''], (x, i) => (
+            <tr key={i}>
+              <td>
+                <input
+                  className='flex-fill form-control'
+                  value={x}
+                  onChange={e => setCompare(v => {
+                    const a = [...v];
+                    a[i] = e.currentTarget.value;
+                    return a;
+                  })}
+                />
+              </td>
+              <td>
+                <span className='ml-2'>{result?.[i]?.time}</span>
+              </td>
+              <td>
+                <span className='ml-2'>{result?.[i]?.cosine}</span>
+              </td>
+              <td>
+                <span className='ml-2'>{result?.[i]?.distance}</span>
+              </td>
+            </tr>
+          ))}
+        </tbody>
+      </table>
     </div>
   );
 };
