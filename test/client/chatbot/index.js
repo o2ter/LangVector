@@ -27,10 +27,6 @@ import _ from 'lodash';
 import { useCallback, useEffect, useMemo, useState } from 'frosty';
 import { io } from 'socket.io-client';
 
-const ChatBox = ({ classes, text, ...props }) => (
-  <div className={['m-3 px-3 py-1 rounded', classes]} {...props}>{text}</div>
-);
-
 export const Chatbot = () => {
 
   const socket = useMemo(() => io(), []);
@@ -160,41 +156,25 @@ export const Chatbot = () => {
       </div>
       <div className='d-flex flex-column w-50'>
         <div className='d-flex flex-column flex-fill position-relative'>
-          <div className='absolute-fill overflow-scroll'>
+          <div className='d-flex flex-column absolute-fill overflow-scroll'>
             {_.map(state.history, (x, i) => {
               switch (x.type) {
                 case 'user':
                   return (
-                    <ChatBox
-                      key={i}
-                      className='bg-primary ml-auto'
-                      style={{ color: 'white' }}
-                      text={x.text}
-                    />
+                    <div className='m-3 px-3 py-1 rounded bg-primary ms-auto text-white'>{x.text}</div>
                   );
                 case 'model':
                   return (
-                    <ChatBox
-                      key={i}
-                      className='bg-light mr-auto'
-                      text={_.map(_.filter(x.response, s => _.isString(s)), s => s.trim()).join('\n')}
-                    />
+                    <div className='m-3 px-3 py-1 rounded bg-light me-auto'>{_.map(_.filter(x.response, s => _.isString(s)), s => s.trim()).join('\n')}</div>
                   );
                 default: return null;
               }
             })}
             {!_.isEmpty(userMessage) && (
-              <ChatBox
-                className='bg-primary ml-auto'
-                style={{ color: 'white' }}
-                text={userMessage}
-              />
+              <div className='m-3 px-3 py-1 rounded bg-primary ms-auto text-white'>{userMessage}</div>
             )}
             {!_.isEmpty(partial) && (
-              <ChatBox
-                className='bg-light mr-auto'
-                text={partial}
-              />
+              <div className='m-3 px-3 py-1 rounded bg-light me-auto'>{partial}</div>
             )}
           </div>
         </div>
