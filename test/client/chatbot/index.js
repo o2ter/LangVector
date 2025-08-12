@@ -66,7 +66,7 @@ export const Chatbot = () => {
     <div className='d-flex flex-row h-100'>
       <div className='d-flex flex-column w-50 border-right'>
         <div className='d-flex flex-column flex-fill position-relative'>
-          <div className='absolute-fill overflow-scroll'>
+          <div className='position-absolute top-0 start-0 bottom-0 end-0 overflow-scroll'>
             <div>{state.raw}</div>
           </div>
         </div>
@@ -156,7 +156,7 @@ export const Chatbot = () => {
       </div>
       <div className='d-flex flex-column w-50'>
         <div className='d-flex flex-column flex-fill position-relative'>
-          <div className='d-flex flex-column absolute-fill overflow-scroll'>
+          <div className='d-flex flex-column position-absolute top-0 start-0 bottom-0 end-0 overflow-scroll'>
             {_.map(state.history, (x, i) => {
               switch (x.type) {
                 case 'user':
