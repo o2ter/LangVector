@@ -42,7 +42,6 @@ const embedding = async (model, value) => {
 export const Similarity = () => {
 
   const [model, setModel] = useState('sentence-transformers/all-MiniLM-L6-v2/ggml-model-f16.gguf');
-  const [method, setMethod] = useState('cosine');
 
   const [source, setSource] = useState('That is a happy person');
   const [compare, setCompare] = useState([
@@ -75,6 +74,7 @@ export const Similarity = () => {
       <span className='mt-2'>Model</span>
       <div className='d-flex flex-row flex-fill'>
         <select
+          className='form-control'
           value={model}
           onChange={e => setModel(e.currentTarget.value)}
         >
@@ -82,22 +82,14 @@ export const Similarity = () => {
             <option value={x}>{x}</option>
           ))}
         </select>
-        {/* <SegmentedControl
-          value={method}
-          segments={[
-            { label: 'cosine', value: 'cosine' },
-            { label: 'distance', value: 'distance' },
-          ]}
-          onChange={v => setMethod(v)}
-        /> */}
       </div>
       <span className='mt-2'>Source Sentence</span>
-      <input value={source} onChange={e => setSource(e.currentTarget.value)} />
+      <input className='form-control' value={source} onChange={e => setSource(e.currentTarget.value)} />
       <span className='mt-2'>Sentences to compare to</span>
       {_.map([...compare, ''], (x, i) => (
         <div key={i} className='d-flex flex-row flex-fill mt-1'>
           <input
-            className='flex-fill'
+            className='flex-fill form-control'
             value={x}
             onChange={e => setCompare(v => {
               const a = [...v];
@@ -108,7 +100,8 @@ export const Similarity = () => {
           {result?.[i] && (
             <>
               <span className='ml-2'>time: {result[i].time}</span>
-              <span className='ml-2'>{method}: {result[i][method]}</span>
+              <span className='ml-2'>cosine: {result[i].cosine}</span>
+              <span className='ml-2'>distance: {result[i].distance}</span>
             </>
           )}
         </div>

@@ -81,8 +81,8 @@ export const Chatbot = () => {
             <div className='col'>context size: {state.contextSize}/{state.maxContextSize}</div>
           </div>
           <div className='row mb-3 px-3 gap-3'>
-            <div className='col input-group align-items-center gap-1'>
-              <label>max tokens</label>
+            <div className='col input-group align-items-center'>
+              <label className="input-group-text">max tokens</label>
               <input
                 className='form-control'
                 type='number'
@@ -91,8 +91,8 @@ export const Chatbot = () => {
                 onChange={(e) => onchange('maxTokens', e.target.valueAsNumber)}
               />
             </div>
-            <div className='col input-group align-items-center gap-1'>
-              <label>temperature</label>
+            <div className='col input-group align-items-center'>
+              <label className="input-group-text">temperature</label>
               <input
                 className='form-control'
                 type='number'
@@ -103,8 +103,8 @@ export const Chatbot = () => {
             </div>
           </div>
           <div className='row mb-3 px-3 gap-3'>
-            <div className='col input-group align-items-center gap-1'>
-              <label>frequency penalty</label>
+            <div className='col input-group align-items-center'>
+              <label className="input-group-text">frequency penalty</label>
               <input
                 className='form-control'
                 type='number'
@@ -113,8 +113,8 @@ export const Chatbot = () => {
                 onChange={(e) => onchange('repeatPenalty.frequencyPenalty', e.target.valueAsNumber)}
               />
             </div>
-            <div className='col input-group align-items-center gap-1'>
-              <label>presence penalty</label>
+            <div className='col input-group align-items-center'>
+              <label className="input-group-text">presence penalty</label>
               <input
                 className='form-control'
                 type='number'
@@ -125,8 +125,8 @@ export const Chatbot = () => {
             </div>
           </div>
           <div className='row mb-3 px-3 gap-3'>
-            <div className='col input-group align-items-center gap-1'>
-              <label>minP</label>
+            <div className='col input-group align-items-center'>
+              <label className="input-group-text">minP</label>
               <input
                 className='form-control'
                 type='number'
@@ -135,8 +135,8 @@ export const Chatbot = () => {
                 onChange={(e) => onchange('minP', e.target.valueAsNumber)}
               />
             </div>
-            <div className='col input-group align-items-center gap-1'>
-              <label>topK</label>
+            <div className='col input-group align-items-center'>
+              <label className="input-group-text">topK</label>
               <input
                 className='form-control'
                 type='number'
@@ -145,8 +145,8 @@ export const Chatbot = () => {
                 onChange={(e) => onchange('topK', e.target.valueAsNumber)}
               />
             </div>
-            <div className='col input-group align-items-center gap-1'>
-              <label>topP</label>
+            <div className='col input-group align-items-center'>
+              <label className="input-group-text">topP</label>
               <input
                 className='form-control'
                 type='number'
@@ -200,7 +200,7 @@ export const Chatbot = () => {
         </div>
         <div className='d-flex flex-row p-2 gap-2 border-top'>
           <input
-            className='flex-fill'
+            className='flex-fill form-control'
             value={input}
             onChange={e => setInput(e.currentTarget.value)}
           />
