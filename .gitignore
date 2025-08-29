@@ -110,3 +110,6 @@ packages/*/build
 
 # Ai models
 models/
+
+# Temp
+.temp
