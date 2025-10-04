@@ -49,7 +49,7 @@ export default [
       },
       {
         file: 'dist/index.mjs',
-        format: 'esm',
+        format: 'es',
         sourcemap: true,
       },
     ],
