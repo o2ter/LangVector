@@ -120,6 +120,8 @@ jobs:
           path: packages/llama-node/build/Release/**/*
   publish:
     runs-on: ubuntu-latest
+    permissions:
+      id-token: write
     needs:
       - macos
       - ubuntu
@@ -133,6 +135,8 @@ jobs:
         with:
           node-version: '22'
           registry-url: 'https://registry.npmjs.org'
+      - name: Update npm & yarn
+        run: npm install -g npm@latest yarn@latest
       - run: yarn install && yarn rollup
         env:
           SKIP_BUILD_BIN: 1
