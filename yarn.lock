@@ -2251,10 +2251,10 @@ fresh@^2.0.0:
   resolved "https://registry.yarnpkg.com/fresh/-/fresh-2.0.0.tgz#8dd7df6a1b3a1b3a5cf186c05a5dd267622635a4"
   integrity sha512-Rx/WycZ60HOaqLKAi6cHRKKI7zxWbJ31MhntmtwMoaTeF7XFH9hhBp8vITaMidfljRQ6eYWCKkaTK+ykVJHP2A==
 
-frosty@^0.0.127:
-  version "0.0.127"
-  resolved "https://registry.yarnpkg.com/frosty/-/frosty-0.0.127.tgz#e4bd32c9d18439f32887490d5bf54b27f599e022"
-  integrity sha512-UqduUY3ZhzILt3JhSmhSWrYTkFXrWZ4wjtA7Dr7N0q/ow/CEDfu6KhL70EjxFpaPJDtndsw3XepAFESdqNDnLg==
+frosty@^0.0.128:
+  version "0.0.128"
+  resolved "https://registry.yarnpkg.com/frosty/-/frosty-0.0.128.tgz#1a6846a3fc3d612bd4455ea3f4b7766e033f669e"
+  integrity sha512-nOfL5sChHrMN/0re+tVD1BRxAB2t2SRSI1dedu3R2YM0QC+pan3QruDoux5glJJ7U1zzMZh1lQw04x9mnkp9sg==
   dependencies:
     "@o2ter/utils-js" "^0.0.19"
     "@types/jsdom" "^21.1.7"
