@@ -30,8 +30,6 @@ const rollupConfig = {
   input: 'src/index',
   external: [
     /node_modules/,
-    /^react$/,
-    /^react-native$/,
     /\.node$/,
   ],
   makeAbsoluteExternalsRelative: true,
