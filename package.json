@@ -47,7 +47,7 @@
     "babel-loader": "^9.1.2",
     "bootstrap": "^5.3.7",
     "frosty": "^0.0.145",
-    "rollup": "^4.22.4",
+    "rollup": "^4.59.0",
     "rollup-plugin-dts": "^6.1.1",
     "rollup-plugin-sass": "^1.13.2",
     "socket.io-client": "^4.8.1",
